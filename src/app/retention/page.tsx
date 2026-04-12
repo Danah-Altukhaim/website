@@ -183,10 +183,10 @@ export default function RetentionPage() {
           <div className="flex items-center gap-4">
             <span className="font-medium text-gray-700">{t('retention.riskRecalc')}</span>
             <span className="text-gray-500">
-              {t('retention.lastCalculated')}: {new Date(recalcInfo.last_calculated).toLocaleDateString(isAr ? 'ar-EG' : 'en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+              {t('retention.lastCalculated')}: {new Date(recalcInfo.last_calculated).toLocaleDateString(isAr ? 'ar-KW' : 'en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
             </span>
             <span className="text-gray-500">
-              {t('retention.nextScheduled')}: {new Date(recalcInfo.next_scheduled).toLocaleDateString(isAr ? 'ar-EG' : 'en-US', { month: 'short', day: 'numeric' })}
+              {t('retention.nextScheduled')}: {new Date(recalcInfo.next_scheduled).toLocaleDateString(isAr ? 'ar-KW' : 'en-US', { month: 'short', day: 'numeric' })}
             </span>
           </div>
           <span className="text-xs text-gray-400">{t('retention.modelVersion')} {recalcInfo.model_version} &middot; {t('retention.recalcWeekly')}</span>
@@ -209,13 +209,13 @@ export default function RetentionPage() {
                       {isAr ? r.student_name_ar : r.student_name_en}
                     </Link>
                     <p className="text-xs text-gray-500">
-                      {isAr ? r.action_ar : r.action_en} &middot; {t('retention.interventionOn', { value: new Date(r.intervention_date).toLocaleDateString(isAr ? 'ar-EG' : 'en-US') })}
+                      {isAr ? r.action_ar : r.action_en} &middot; {t('retention.interventionOn', { value: new Date(r.intervention_date).toLocaleDateString(isAr ? 'ar-KW' : 'en-US') })}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-xs text-gray-500">
-                    {t('retention.dueDate', { value: new Date(r.due_date).toLocaleDateString(isAr ? 'ar-EG' : 'en-US') })}
+                    {t('retention.dueDate', { value: new Date(r.due_date).toLocaleDateString(isAr ? 'ar-KW' : 'en-US') })}
                   </span>
                   <button
                     onClick={() => handleDismissReminder(r.id)}
@@ -313,7 +313,7 @@ export default function RetentionPage() {
               </ul>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-400">
-                  {t('retention.lastActive', { value: new Date(s.last_active).toLocaleDateString(isAr ? 'ar-EG' : 'en-US') })}
+                  {t('retention.lastActive', { value: new Date(s.last_active).toLocaleDateString(isAr ? 'ar-KW' : 'en-US') })}
                 </span>
                 <div className="flex items-center gap-2">
                   <select

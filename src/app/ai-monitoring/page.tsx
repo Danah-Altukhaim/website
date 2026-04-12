@@ -122,7 +122,7 @@ export default function AIMonitoringPage() {
                   }`}>{locale === 'ar' ? STATUS_LABELS_AR[e.status] || e.status : e.status}</span>
                 </div>
                 <p className="text-sm text-gray-600">{pick(e.topic_en, e.topic_ar)}</p>
-                <p className="text-xs text-gray-400 mt-1">{new Date(e.timestamp).toLocaleString()}</p>
+                <p className="text-xs text-gray-400 mt-1">{new Date(e.timestamp).toLocaleString(locale === 'ar' ? 'ar-KW' : 'en-US')}</p>
               </div>
             ))}
           </div>
