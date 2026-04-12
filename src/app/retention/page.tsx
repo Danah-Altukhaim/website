@@ -18,7 +18,8 @@ interface FollowUpReminder {
   intervention_date: string;
   due_date: string;
   status: 'overdue' | 'upcoming';
-  action: string;
+  action_en: string;
+  action_ar: string;
 }
 
 interface RiskRecalcInfo {
@@ -208,7 +209,7 @@ export default function RetentionPage() {
                       {isAr ? r.student_name_ar : r.student_name_en}
                     </Link>
                     <p className="text-xs text-gray-500">
-                      {r.action} &middot; {t('retention.interventionOn', { value: new Date(r.intervention_date).toLocaleDateString(isAr ? 'ar-SA' : 'en-US') })}
+                      {isAr ? r.action_ar : r.action_en} &middot; {t('retention.interventionOn', { value: new Date(r.intervention_date).toLocaleDateString(isAr ? 'ar-SA' : 'en-US') })}
                     </p>
                   </div>
                 </div>

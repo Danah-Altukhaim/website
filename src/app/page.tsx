@@ -15,7 +15,7 @@ interface EngagementData {
   engagement_by_cohort: { cohort: string; active_users: number; avg_session_min: number }[];
   engagement_by_major: { major_en: string; major_ar: string; active_users: number; avg_session_min: number }[];
   engagement_by_year: { year: string; year_ar: string; active_users: number; avg_session_min: number }[];
-  peak_hours: { hour: number; users: number; label_en: string }[];
+  peak_hours: { hour: number; users: number; label_en: string; label_ar: string }[];
   period: { start: string; end: string };
 }
 
@@ -204,7 +204,7 @@ export default function EngagementPage() {
                   className="w-full bg-pair-500 rounded-t-md transition-all"
                   style={{ height: `${heightPercent}%`, minHeight: 4 }}
                 />
-                <span className="text-xs text-gray-500 mt-2">{p.label_en}</span>
+                <span className="text-xs text-gray-500 mt-2">{locale === 'ar' ? p.label_ar : p.label_en}</span>
               </div>
             );
           })}
@@ -227,8 +227,8 @@ export default function EngagementPage() {
           })}
         </div>
         <div className="flex justify-between mt-2">
-          <span className="text-xs text-gray-400">{data.peak_hours[0]?.label_en}</span>
-          <span className="text-xs text-gray-400">{data.peak_hours[data.peak_hours.length - 1]?.label_en}</span>
+          <span className="text-xs text-gray-400">{locale === 'ar' ? data.peak_hours[0]?.label_ar : data.peak_hours[0]?.label_en}</span>
+          <span className="text-xs text-gray-400">{locale === 'ar' ? data.peak_hours[data.peak_hours.length - 1]?.label_ar : data.peak_hours[data.peak_hours.length - 1]?.label_en}</span>
         </div>
       </div>
 

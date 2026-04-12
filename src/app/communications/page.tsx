@@ -24,6 +24,13 @@ const AUDIENCE_KEY: Record<string, string> = {
   graduating: 'comms.graduating',
 };
 
+const CHANNEL_LABELS_AR: Record<string, string> = {
+  push: 'إشعار',
+  email: 'بريد',
+  sms: 'رسالة نصية',
+  whatsapp: 'واتساب',
+};
+
 const AUDIENCE_ESTIMATE: Record<string, number> = {
   all_students: 4200,
   at_risk: 47,
@@ -290,7 +297,7 @@ export default function CommunicationsPage() {
                     : 'bg-white text-gray-600 border-gray-300'
                 }`}
               >
-                {ch.toUpperCase()}
+                {locale === 'ar' ? (CHANNEL_LABELS_AR[ch] || ch) : ch.toUpperCase()}
               </button>
             ))}
           </div>
@@ -343,7 +350,7 @@ export default function CommunicationsPage() {
                       <div className="flex gap-1 flex-wrap">
                         {msg.channels.map((ch) => (
                           <span key={ch} className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">
-                            {ch.toUpperCase()}
+                            {locale === 'ar' ? (CHANNEL_LABELS_AR[ch] || ch) : ch.toUpperCase()}
                           </span>
                         ))}
                       </div>
