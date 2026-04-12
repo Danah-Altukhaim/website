@@ -140,9 +140,9 @@ export default function EngagementPage() {
             {data.engagement_by_cohort.map((c) => (
               <div key={c.cohort} className="flex items-center justify-between text-sm">
                 <span className="text-gray-600">{t('engagement.classOf', { value: c.cohort })}</span>
-                <div>
-                  <span className="font-medium">{c.active_users.toLocaleString()}</span>
-                  <span className="text-gray-400 text-xs ms-2">
+                <div className="flex items-center gap-3">
+                  <span className="font-medium" dir="ltr">{c.active_users.toLocaleString()}</span>
+                  <span className="text-gray-400 text-xs" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
                     {t('engagement.avgMin', { value: String(c.avg_session_min) })}
                   </span>
                 </div>
@@ -159,9 +159,9 @@ export default function EngagementPage() {
                 <span className="text-gray-600">
                   {locale === 'ar' ? m.major_ar : m.major_en}
                 </span>
-                <div>
-                  <span className="font-medium">{m.active_users.toLocaleString()}</span>
-                  <span className="text-gray-400 text-xs ms-2">
+                <div className="flex items-center gap-3">
+                  <span className="font-medium" dir="ltr">{m.active_users.toLocaleString()}</span>
+                  <span className="text-gray-400 text-xs" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
                     {t('engagement.mSuffix', { value: String(m.avg_session_min) })}
                   </span>
                 </div>
@@ -178,9 +178,9 @@ export default function EngagementPage() {
                 <span className="text-gray-600">
                   {locale === 'ar' ? y.year_ar : y.year}
                 </span>
-                <div>
-                  <span className="font-medium">{y.active_users.toLocaleString()}</span>
-                  <span className="text-gray-400 text-xs ms-2">
+                <div className="flex items-center gap-3">
+                  <span className="font-medium" dir="ltr">{y.active_users.toLocaleString()}</span>
+                  <span className="text-gray-400 text-xs" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
                     {t('engagement.mSuffix', { value: String(y.avg_session_min) })}
                   </span>
                 </div>

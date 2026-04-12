@@ -110,7 +110,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'engagement.classOf': 'Class of {value}',
     'engagement.min': '{value} min',
     'engagement.avgMin': '{value}m avg',
-    'engagement.mSuffix': '{value}m',
+    'engagement.mSuffix': '{value} min',
     'engagement.trend': 'Engagement Trend',
     'engagement.users': 'users',
 
@@ -513,8 +513,8 @@ const translations: Record<Locale, Record<string, string>> = {
     'engagement.peakHours': 'ساعات الذروة',
     'engagement.classOf': 'دفعة {value}',
     'engagement.min': '{value} دقيقة',
-    'engagement.avgMin': '{value}د متوسط',
-    'engagement.mSuffix': '{value}د',
+    'engagement.avgMin': '{value} د متوسط',
+    'engagement.mSuffix': '{value} د',
     'engagement.trend': 'اتجاه التفاعل',
     'engagement.users': 'مستخدم',
 
