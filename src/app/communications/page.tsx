@@ -208,25 +208,31 @@ export default function CommunicationsPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">{t('comms.filterByMajor')}</label>
             <div className="flex flex-wrap gap-2">
-              {['Computer Science', 'Engineering', 'Business', 'Science', 'Arts'].map((major) => (
+              {[
+                { value: 'Computer Science', ar: 'علوم الحاسب' },
+                { value: 'Engineering', ar: 'الهندسة' },
+                { value: 'Business', ar: 'إدارة الأعمال' },
+                { value: 'Science', ar: 'العلوم' },
+                { value: 'Arts', ar: 'الآداب' },
+              ].map((major) => (
                 <button
-                  key={major}
+                  key={major.value}
                   type="button"
                   onClick={() =>
                     setForm((prev) => ({
                       ...prev,
-                      target_majors: prev.target_majors.includes(major)
-                        ? prev.target_majors.filter((m) => m !== major)
-                        : [...prev.target_majors, major],
+                      target_majors: prev.target_majors.includes(major.value)
+                        ? prev.target_majors.filter((m) => m !== major.value)
+                        : [...prev.target_majors, major.value],
                     }))
                   }
                   className={`px-3 py-1 rounded-lg text-xs border ${
-                    form.target_majors.includes(major)
+                    form.target_majors.includes(major.value)
                       ? 'bg-pair-600 text-white border-pair-600'
                       : 'bg-white text-gray-600 border-gray-300'
                   }`}
                 >
-                  {major}
+                  {locale === 'ar' ? major.ar : major.value}
                 </button>
               ))}
             </div>
@@ -234,25 +240,31 @@ export default function CommunicationsPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">{t('comms.filterByYear')}</label>
             <div className="flex flex-wrap gap-2">
-              {['1st Year', '2nd Year', '3rd Year', '4th Year', '5th Year'].map((year) => (
+              {[
+                { value: '1st Year', ar: 'السنة الأولى' },
+                { value: '2nd Year', ar: 'السنة الثانية' },
+                { value: '3rd Year', ar: 'السنة الثالثة' },
+                { value: '4th Year', ar: 'السنة الرابعة' },
+                { value: '5th Year', ar: 'السنة الخامسة' },
+              ].map((year) => (
                 <button
-                  key={year}
+                  key={year.value}
                   type="button"
                   onClick={() =>
                     setForm((prev) => ({
                       ...prev,
-                      target_years: prev.target_years.includes(year)
-                        ? prev.target_years.filter((y) => y !== year)
-                        : [...prev.target_years, year],
+                      target_years: prev.target_years.includes(year.value)
+                        ? prev.target_years.filter((y) => y !== year.value)
+                        : [...prev.target_years, year.value],
                     }))
                   }
                   className={`px-3 py-1 rounded-lg text-xs border ${
-                    form.target_years.includes(year)
+                    form.target_years.includes(year.value)
                       ? 'bg-pair-600 text-white border-pair-600'
                       : 'bg-white text-gray-600 border-gray-300'
                   }`}
                 >
-                  {year}
+                  {locale === 'ar' ? year.ar : year.value}
                 </button>
               ))}
             </div>
