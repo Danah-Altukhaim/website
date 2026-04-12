@@ -521,7 +521,7 @@ export const api = {
     await delay(500);
     return { message_id: `comm_${Date.now()}`, recipients_count: 342, status: 'queued', ...body };
   }),
-  getBranding: async () => withErrorHandling('getBranding', async () => { await delay(); return { university_name_en: 'Canadian College of Kuwait', university_name_ar: 'الكلية الكندية في الكويت', primary_color: '#006341', secondary_color: '#76B82A' }; }),
+  getBranding: async () => withErrorHandling('getBranding', async () => { await delay(); return { university_name_en: 'Canadian College of Kuwait', university_name_ar: 'الكلية الكندية في الكويت', primary_color: '#006341', secondary_color: '#E20613', font_family: 'Almarai', logo_url: '' }; }),
   updateBranding: async (body: Record<string, unknown>) => withErrorHandling('updateBranding', async () => { await delay(500); return { ...body, updated_at: new Date().toISOString() }; }),
   getUsers: async () => withErrorHandling('getUsers', async () => { await delay(); return ADMIN_USERS; }),
   createUser: async (body: Record<string, unknown>) => withErrorHandling('createUser', async () => {
