@@ -48,12 +48,12 @@ export default function SettingsPage() {
 
   // Branding state
   const [form, setForm] = useState({
-    university_name_en: 'Pair University',
-    university_name_ar: 'جامعة بير',
+    university_name_en: 'Canadian College of Kuwait',
+    university_name_ar: 'الكلية الكندية في الكويت',
     primary_color: '#006341',
-    secondary_color: '#76B82A',
+    secondary_color: '#E20613',
     logo_url: '',
-    font_family: 'Hind',
+    font_family: 'Almarai',
   });
   const [enabledModules, setEnabledModules] = useState<Record<string, boolean>>({
     academics: true,
@@ -259,7 +259,7 @@ export default function SettingsPage() {
                     onChange={(e) => setForm({ ...form, font_family: e.target.value })}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
                   >
-                    {['Hind', 'Montserrat', 'Noto Sans Arabic', 'Cairo', 'Outfit', 'Tajawal', 'IBM Plex Sans Arabic', 'Inter', 'Roboto'].map((f) => (
+                    {['Almarai', 'Cairo', 'Tajawal', 'Noto Sans Arabic', 'IBM Plex Sans Arabic', 'Hind', 'Montserrat', 'Outfit', 'Inter', 'Roboto'].map((f) => (
                       <option key={f} value={f}>{f}</option>
                     ))}
                   </select>
