@@ -167,7 +167,7 @@ export default function Sidebar() {
                   collapsed ? 'justify-center' : ''
                 } ${
                   active
-                    ? 'bg-pair-50 text-pair-600 font-medium border-s-[3px] border-danger-600'
+                    ? `bg-pair-50 text-pair-600 font-medium ${collapsed ? '' : 'border-s-[3px] border-danger-600'}`
                     : 'text-[#737477] hover:bg-[#EEEEEE] hover:text-[#222222]'
                 }`}
               >

@@ -113,6 +113,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'engagement.mSuffix': '{value} min',
     'engagement.trend': 'Engagement Trend',
     'engagement.users': 'users',
+    'engagement.activeUsersTooltip': '{value} active users from {label}',
 
     // Retention
     'retention.title': 'Retention Dashboard',
@@ -518,6 +519,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'engagement.mSuffix': '{value} دقيقة',
     'engagement.trend': 'اتجاه التفاعل',
     'engagement.users': 'مستخدم',
+    'engagement.activeUsersTooltip': '{value} مستخدم نشط من {label}',
 
     // Retention
     'retention.title': 'لوحة الاستبقاء',

@@ -141,7 +141,15 @@ export default function EngagementPage() {
               <div key={c.cohort} className="flex items-center justify-between text-sm">
                 <span className="text-gray-600">{t('engagement.classOf', { value: c.cohort })}</span>
                 <div className="flex items-center gap-4 tabular-nums">
-                  <bdi className="font-medium">{c.active_users.toLocaleString()}</bdi>
+                  <bdi
+                    className="font-medium cursor-help"
+                    title={t('engagement.activeUsersTooltip', {
+                      value: c.active_users.toLocaleString(),
+                      label: t('engagement.classOf', { value: c.cohort }),
+                    })}
+                  >
+                    {c.active_users.toLocaleString()}
+                  </bdi>
                   <bdi className="text-gray-400 text-xs whitespace-nowrap">
                     {t('engagement.avgMin', { value: String(c.avg_session_min) })}
                   </bdi>
@@ -160,7 +168,15 @@ export default function EngagementPage() {
                   {locale === 'ar' ? m.major_ar : m.major_en}
                 </span>
                 <div className="flex items-center gap-4 tabular-nums">
-                  <bdi className="font-medium">{m.active_users.toLocaleString()}</bdi>
+                  <bdi
+                    className="font-medium cursor-help"
+                    title={t('engagement.activeUsersTooltip', {
+                      value: m.active_users.toLocaleString(),
+                      label: locale === 'ar' ? m.major_ar : m.major_en,
+                    })}
+                  >
+                    {m.active_users.toLocaleString()}
+                  </bdi>
                   <bdi className="text-gray-400 text-xs whitespace-nowrap">
                     {t('engagement.mSuffix', { value: String(m.avg_session_min) })}
                   </bdi>
@@ -179,7 +195,15 @@ export default function EngagementPage() {
                   {locale === 'ar' ? y.year_ar : y.year}
                 </span>
                 <div className="flex items-center gap-4 tabular-nums">
-                  <bdi className="font-medium">{y.active_users.toLocaleString()}</bdi>
+                  <bdi
+                    className="font-medium cursor-help"
+                    title={t('engagement.activeUsersTooltip', {
+                      value: y.active_users.toLocaleString(),
+                      label: locale === 'ar' ? y.year_ar : y.year,
+                    })}
+                  >
+                    {y.active_users.toLocaleString()}
+                  </bdi>
                   <bdi className="text-gray-400 text-xs whitespace-nowrap">
                     {t('engagement.mSuffix', { value: String(y.avg_session_min) })}
                   </bdi>
