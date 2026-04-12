@@ -192,7 +192,6 @@ export default function UsersPage() {
   };
 
   const primaryName = (u: AdminUser) => locale === 'ar' ? u.name_ar : u.name_en;
-  const secondaryName = (u: AdminUser) => locale === 'ar' ? u.name_en : u.name_ar;
 
   if (users.length === 0 && !error) {
     return (
@@ -445,10 +444,7 @@ export default function UsersPage() {
                       />
                     </td>
                     <td className="px-6 py-4">
-                      <div>
-                        <span className="font-medium">{primaryName(u)}</span>
-                        <span className="block text-xs text-gray-400">{secondaryName(u)}</span>
-                      </div>
+                      <span className="font-medium">{primaryName(u)}</span>
                     </td>
                     <td className="px-6 py-4 text-gray-600">{u.email}</td>
                     <td className="px-6 py-4">
