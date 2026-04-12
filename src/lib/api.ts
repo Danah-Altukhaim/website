@@ -294,16 +294,16 @@ function generateProfile(id: string) {
 }
 
 const AUDIT_LOG = [
-  { id: 'log_001', timestamp: '2026-04-08T14:30:00Z', admin_name: 'Dr. Abdullah Al-Faisal', action: 'Updated branding colors', resource: 'Branding Config', ip: '10.0.1.15' },
-  { id: 'log_002', timestamp: '2026-04-08T12:15:00Z', admin_name: 'Noura Al-Shahri', action: 'Sent communication to all students', resource: 'Communications', ip: '10.0.1.22' },
-  { id: 'log_003', timestamp: '2026-04-08T10:45:00Z', admin_name: 'Ahmed Al-Ghamdi', action: 'Scheduled intervention for Mohammed Al-Otaibi', resource: 'Retention', ip: '10.0.1.35' },
-  { id: 'log_004', timestamp: '2026-04-07T16:20:00Z', admin_name: 'Noura Al-Shahri', action: 'Imported 150 student records', resource: 'User Management', ip: '10.0.1.22' },
-  { id: 'log_005', timestamp: '2026-04-07T14:00:00Z', admin_name: 'Dr. Abdullah Al-Faisal', action: 'Changed role for admin_003 to advisor', resource: 'User Management', ip: '10.0.1.15' },
-  { id: 'log_006', timestamp: '2026-04-07T11:30:00Z', admin_name: 'Noura Al-Shahri', action: 'Triggered manual data sync', resource: 'Integrations', ip: '10.0.1.22' },
-  { id: 'log_007', timestamp: '2026-04-07T09:00:00Z', admin_name: 'Ahmed Al-Ghamdi', action: 'Marked intervention as Resolved for student_402', resource: 'Retention', ip: '10.0.1.35' },
-  { id: 'log_008', timestamp: '2026-04-06T15:45:00Z', admin_name: 'Dr. Abdullah Al-Faisal', action: 'Approved club "Robotics Society"', resource: 'Content Management', ip: '10.0.1.15' },
-  { id: 'log_009', timestamp: '2026-04-06T10:30:00Z', admin_name: 'Noura Al-Shahri', action: 'Exported student data (CSV)', resource: 'User Management', ip: '10.0.1.22' },
-  { id: 'log_010', timestamp: '2026-04-05T13:15:00Z', admin_name: 'Ahmed Al-Ghamdi', action: 'Sent communication to at-risk students', resource: 'Communications', ip: '10.0.1.35' },
+  { id: 'log_001', timestamp: '2026-04-08T14:30:00Z', admin_name_en: 'Dr. Abdullah Al-Faisal', admin_name_ar: 'د. عبدالله الفيصل', action_en: 'Updated branding colors', action_ar: 'تحديث ألوان الهوية', resource_en: 'Branding Config', resource_ar: 'إعدادات الهوية', ip: '10.0.1.15' },
+  { id: 'log_002', timestamp: '2026-04-08T12:15:00Z', admin_name_en: 'Noura Al-Shahri', admin_name_ar: 'نورة الشهري', action_en: 'Sent communication to all students', action_ar: 'إرسال إشعار لجميع الطلاب', resource_en: 'Communications', resource_ar: 'المراسلات', ip: '10.0.1.22' },
+  { id: 'log_003', timestamp: '2026-04-08T10:45:00Z', admin_name_en: 'Ahmed Al-Ghamdi', admin_name_ar: 'أحمد الغامدي', action_en: 'Scheduled intervention for Mohammed Al-Otaibi', action_ar: 'جدولة تدخل لمحمد العتيبي', resource_en: 'Retention', resource_ar: 'الاحتفاظ بالطلاب', ip: '10.0.1.35' },
+  { id: 'log_004', timestamp: '2026-04-07T16:20:00Z', admin_name_en: 'Noura Al-Shahri', admin_name_ar: 'نورة الشهري', action_en: 'Imported 150 student records', action_ar: 'استيراد 150 سجل طالب', resource_en: 'User Management', resource_ar: 'إدارة المستخدمين', ip: '10.0.1.22' },
+  { id: 'log_005', timestamp: '2026-04-07T14:00:00Z', admin_name_en: 'Dr. Abdullah Al-Faisal', admin_name_ar: 'د. عبدالله الفيصل', action_en: 'Changed role for admin_003 to advisor', action_ar: 'تغيير دور admin_003 إلى مرشد', resource_en: 'User Management', resource_ar: 'إدارة المستخدمين', ip: '10.0.1.15' },
+  { id: 'log_006', timestamp: '2026-04-07T11:30:00Z', admin_name_en: 'Noura Al-Shahri', admin_name_ar: 'نورة الشهري', action_en: 'Triggered manual data sync', action_ar: 'تشغيل مزامنة يدوية للبيانات', resource_en: 'Integrations', resource_ar: 'التكاملات', ip: '10.0.1.22' },
+  { id: 'log_007', timestamp: '2026-04-07T09:00:00Z', admin_name_en: 'Ahmed Al-Ghamdi', admin_name_ar: 'أحمد الغامدي', action_en: 'Marked intervention as Resolved for student_402', action_ar: 'تحديد تدخل الطالب student_402 كمُنجز', resource_en: 'Retention', resource_ar: 'الاحتفاظ بالطلاب', ip: '10.0.1.35' },
+  { id: 'log_008', timestamp: '2026-04-06T15:45:00Z', admin_name_en: 'Dr. Abdullah Al-Faisal', admin_name_ar: 'د. عبدالله الفيصل', action_en: 'Approved club "Robotics Society"', action_ar: 'اعتماد نادي "جمعية الروبوتات"', resource_en: 'Content Management', resource_ar: 'إدارة المحتوى', ip: '10.0.1.15' },
+  { id: 'log_009', timestamp: '2026-04-06T10:30:00Z', admin_name_en: 'Noura Al-Shahri', admin_name_ar: 'نورة الشهري', action_en: 'Exported student data (CSV)', action_ar: 'تصدير بيانات الطلاب (CSV)', resource_en: 'User Management', resource_ar: 'إدارة المستخدمين', ip: '10.0.1.22' },
+  { id: 'log_010', timestamp: '2026-04-05T13:15:00Z', admin_name_en: 'Ahmed Al-Ghamdi', admin_name_ar: 'أحمد الغامدي', action_en: 'Sent communication to at-risk students', action_ar: 'إرسال إشعار للطلاب المعرضين للخطر', resource_en: 'Communications', resource_ar: 'المراسلات', ip: '10.0.1.35' },
 ];
 
 const PAYMENT_ANALYTICS = {
