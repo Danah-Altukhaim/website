@@ -162,7 +162,7 @@ const AT_RISK_STUDENTS = [
 const ADMIN_USERS = [
   {
     id: 'admin_001',
-    email: 'dean@ksu.edu.sa',
+    email: 'dean@cck.edu.kw',
     name_ar: 'د. عبدالله الفيصل',
     name_en: 'Dr. Abdullah Al-Faisal',
     role: 'super_admin',
@@ -172,7 +172,7 @@ const ADMIN_USERS = [
   },
   {
     id: 'admin_002',
-    email: 'registrar@ksu.edu.sa',
+    email: 'registrar@cck.edu.kw',
     name_ar: 'نورة الشهري',
     name_en: 'Noura Al-Shahri',
     role: 'university_admin',
@@ -182,7 +182,7 @@ const ADMIN_USERS = [
   },
   {
     id: 'admin_003',
-    email: 'advisor.cs@ksu.edu.sa',
+    email: 'advisor.cs@cck.edu.kw',
     name_ar: 'أحمد الغامدي',
     name_en: 'Ahmed Al-Ghamdi',
     role: 'advisor',
@@ -195,9 +195,9 @@ const ADMIN_USERS = [
 const STUDENT_PROFILES: Record<string, object> = {
   student_401: {
     id: 'student_401', name_en: 'Mohammed Al-Otaibi', name_ar: 'محمد العتيبي', student_id: '441012345',
-    email: 'm.otaibi@students.ksu.edu.sa', risk_score: 0.85, risk_level: 'high',
+    email: 'm.otaibi@students.cck.edu.kw', risk_score: 0.85, risk_level: 'high',
     college_en: 'College of Computer Science', major_en: 'Software Engineering', year: '3rd Year', gpa: 1.8,
-    assigned_advisor: { name_en: 'Ahmed Al-Ghamdi', email: 'advisor.cs@ksu.edu.sa' },
+    assigned_advisor: { name_en: 'Ahmed Al-Ghamdi', email: 'advisor.cs@cck.edu.kw' },
     contributing_factors: [
       { factor_en: 'Sharp GPA decline', weight: 0.4 },
       { factor_en: 'Frequent absences in last 3 weeks', weight: 0.3 },
@@ -235,9 +235,9 @@ const STUDENT_PROFILES: Record<string, object> = {
   },
   student_402: {
     id: 'student_402', name_en: 'Sarah Al-Dosari', name_ar: 'سارة الدوسري', student_id: '441023456',
-    email: 's.dosari@students.ksu.edu.sa', risk_score: 0.78, risk_level: 'high',
+    email: 's.dosari@students.cck.edu.kw', risk_score: 0.78, risk_level: 'high',
     college_en: 'College of Engineering', major_en: 'Civil Engineering', year: '4th Year', gpa: 2.1,
-    assigned_advisor: { name_en: 'Fatima Al-Rashid', email: 'advisor.eng@ksu.edu.sa' },
+    assigned_advisor: { name_en: 'Fatima Al-Rashid', email: 'advisor.eng@cck.edu.kw' },
     contributing_factors: [
       { factor_en: 'Overdue tuition payment', weight: 0.35 },
       { factor_en: 'Decreased platform engagement', weight: 0.25 },
@@ -274,8 +274,8 @@ function generateProfile(id: string) {
   const s = AT_RISK_STUDENTS.find((s) => s.id === id);
   if (!s) return null;
   return {
-    ...s, email: `${id}@students.ksu.edu.sa`, major_en: 'General Studies', year: '2nd Year',
-    assigned_advisor: { name_en: 'Ahmed Al-Ghamdi', email: 'advisor.cs@ksu.edu.sa' },
+    ...s, email: `${id}@students.cck.edu.kw`, major_en: 'General Studies', year: '2nd Year',
+    assigned_advisor: { name_en: 'Ahmed Al-Ghamdi', email: 'advisor.cs@cck.edu.kw' },
     academic_history: [
       { semester: 'Fall 2025', gpa: 2.8, credits: 15, status: 'Good Standing' },
       { semester: 'Spring 2026', gpa: s.gpa, credits: 12, status: s.gpa < 2.0 ? 'Probation' : 'Warning' },
@@ -424,7 +424,7 @@ const CAMPUS_DIRECTORY = [
     id: 'dir_1', type: 'building' as const,
     name_en: 'Main Administration Building', name_ar: 'مبنى الإدارة الرئيسي',
     location_en: 'Central Campus', location_ar: 'الحرم المركزي',
-    phone: '+966-11-467-0000', email: 'admin@ksu.edu.sa',
+    phone: '+966-11-467-0000', email: 'admin@cck.edu.kw',
     hours_en: 'Sun–Thu 8:00–16:00', hours_ar: 'الأحد–الخميس ٨:٠٠–١٦:٠٠',
     status: 'published' as const,
   },
@@ -432,7 +432,7 @@ const CAMPUS_DIRECTORY = [
     id: 'dir_2', type: 'office' as const,
     name_en: 'Registrar Office', name_ar: 'مكتب القبول والتسجيل',
     location_en: 'Admin Building, Floor 2', location_ar: 'مبنى الإدارة، الطابق الثاني',
-    phone: '+966-11-467-1111', email: 'registrar@ksu.edu.sa',
+    phone: '+966-11-467-1111', email: 'registrar@cck.edu.kw',
     hours_en: 'Sun–Thu 9:00–15:00', hours_ar: 'الأحد–الخميس ٩:٠٠–١٥:٠٠',
     status: 'published' as const,
   },
@@ -440,7 +440,7 @@ const CAMPUS_DIRECTORY = [
     id: 'dir_3', type: 'service' as const,
     name_en: 'Student Health Center', name_ar: 'مركز صحة الطلاب',
     location_en: 'Building 14', location_ar: 'مبنى ١٤',
-    phone: '+966-11-467-2222', email: 'health@ksu.edu.sa',
+    phone: '+966-11-467-2222', email: 'health@cck.edu.kw',
     hours_en: 'Sun–Thu 8:00–20:00', hours_ar: 'الأحد–الخميس ٨:٠٠–٢٠:٠٠',
     status: 'published' as const,
   },
@@ -448,7 +448,7 @@ const CAMPUS_DIRECTORY = [
     id: 'dir_4', type: 'service' as const,
     name_en: 'IT Help Desk', name_ar: 'مكتب الدعم التقني',
     location_en: 'Library Building, Ground Floor', location_ar: 'مبنى المكتبة، الطابق الأرضي',
-    phone: '+966-11-467-3333', email: 'it@ksu.edu.sa',
+    phone: '+966-11-467-3333', email: 'it@cck.edu.kw',
     hours_en: 'Sun–Thu 8:00–22:00', hours_ar: 'الأحد–الخميس ٨:٠٠–٢٢:٠٠',
     status: 'draft' as const,
   },
@@ -456,7 +456,7 @@ const CAMPUS_DIRECTORY = [
     id: 'dir_5', type: 'building' as const,
     name_en: 'College of Computer Science', name_ar: 'كلية علوم الحاسب',
     location_en: 'North Campus', location_ar: 'الحرم الشمالي',
-    phone: '+966-11-467-4444', email: 'cs@ksu.edu.sa',
+    phone: '+966-11-467-4444', email: 'cs@cck.edu.kw',
     hours_en: 'Sun–Thu 7:30–21:00', hours_ar: 'الأحد–الخميس ٧:٣٠–٢١:٠٠',
     status: 'published' as const,
   },

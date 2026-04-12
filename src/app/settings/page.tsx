@@ -73,7 +73,7 @@ export default function SettingsPage() {
     language: 'en',
     academic_year: '2025-2026',
     semester: 'Spring',
-    support_email: 'support@university.edu.sa',
+    support_email: 'support@cck.edu.kw',
     max_students: '50000',
   });
 

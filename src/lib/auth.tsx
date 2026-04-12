@@ -19,17 +19,17 @@ interface AuthContextType {
 }
 
 const MOCK_CREDENTIALS: Record<string, { password: string; user: AdminUser }> = {
-  'dean@pu.edu.kw': {
+  'dean@cck.edu.kw': {
     password: 'admin123',
-    user: { id: 'admin_001', email: 'dean@pu.edu.kw', name_en: 'Dr. Abdullah Al-Faisal', name_ar: 'د. عبدالله الفيصل', role: 'super_admin' },
+    user: { id: 'admin_001', email: 'dean@cck.edu.kw', name_en: 'Dr. Abdullah Al-Faisal', name_ar: 'د. عبدالله الفيصل', role: 'super_admin' },
   },
-  'registrar@pu.edu.kw': {
+  'registrar@cck.edu.kw': {
     password: 'admin123',
-    user: { id: 'admin_002', email: 'registrar@pu.edu.kw', name_en: 'Noura Al-Shahri', name_ar: 'نورة الشهري', role: 'university_admin' },
+    user: { id: 'admin_002', email: 'registrar@cck.edu.kw', name_en: 'Noura Al-Shahri', name_ar: 'نورة الشهري', role: 'university_admin' },
   },
-  'advisor.cs@pu.edu.kw': {
+  'advisor.cs@cck.edu.kw': {
     password: 'admin123',
-    user: { id: 'admin_003', email: 'advisor.cs@pu.edu.kw', name_en: 'Ahmed Al-Ghamdi', name_ar: 'أحمد الغامدي', role: 'advisor' },
+    user: { id: 'admin_003', email: 'advisor.cs@cck.edu.kw', name_en: 'Ahmed Al-Ghamdi', name_ar: 'أحمد الغامدي', role: 'advisor' },
   },
 };
 
