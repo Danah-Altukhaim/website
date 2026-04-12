@@ -356,7 +356,7 @@ export default function CommunicationsPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-gray-500 text-xs">
-                      {new Date(msg.sent_at).toLocaleString(locale === 'ar' ? 'ar-SA' : 'en-US')}
+                      {new Date(msg.sent_at).toLocaleString(locale === 'ar' ? 'ar-EG' : 'en-US')}
                     </td>
                   </tr>
                 ))}

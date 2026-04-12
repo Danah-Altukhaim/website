@@ -469,7 +469,7 @@ export default function UsersPage() {
                     </td>
                     <td className="px-6 py-4 text-gray-500 text-xs">
                       {u.last_login
-                        ? new Date(u.last_login).toLocaleString(locale === 'ar' ? 'ar-SA' : 'en-US')
+                        ? new Date(u.last_login).toLocaleString(locale === 'ar' ? 'ar-EG' : 'en-US')
                         : '\u2014'}
                     </td>
                   </tr>
