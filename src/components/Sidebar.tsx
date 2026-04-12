@@ -119,10 +119,19 @@ export default function Sidebar() {
     >
       {/* Header */}
       <div className="p-4 border-b border-[#D9D9D9] flex items-center justify-between gap-2">
-        {!collapsed && (
-          <div className="min-w-0">
-            <h1 className="text-xl font-bold text-[#222222] truncate">{t('nav.appName')}</h1>
-            <p className="text-xs text-[#737477] mt-0.5 truncate">{t('nav.subtitle')}</p>
+        {!collapsed ? (
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-9 h-9 rounded-lg bg-pair-600 flex items-center justify-center shrink-0 border-b-[3px] border-danger-600">
+              <span className="text-white font-bold text-sm">CCK</span>
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-base font-bold text-[#222222] truncate leading-tight">{t('nav.appName')}</h1>
+              <p className="text-[11px] text-[#737477] truncate">{t('nav.subtitle')}</p>
+            </div>
+          </div>
+        ) : (
+          <div className="w-9 h-9 rounded-lg bg-pair-600 flex items-center justify-center mx-auto border-b-[3px] border-danger-600">
+            <span className="text-white font-bold text-[10px]">CCK</span>
           </div>
         )}
         <button
@@ -158,7 +167,7 @@ export default function Sidebar() {
                   collapsed ? 'justify-center' : ''
                 } ${
                   active
-                    ? 'bg-pair-50 text-pair-600 font-medium'
+                    ? 'bg-pair-50 text-pair-600 font-medium border-s-[3px] border-danger-600'
                     : 'text-[#737477] hover:bg-[#EEEEEE] hover:text-[#222222]'
                 }`}
               >

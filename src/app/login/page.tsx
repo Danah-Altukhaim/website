@@ -46,8 +46,8 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-pair-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl font-bold text-white">م</span>
+            <div className="w-16 h-16 bg-pair-600 rounded-2xl flex items-center justify-center mx-auto mb-4 border-b-4 border-danger-600">
+              <span className="text-2xl font-bold text-white">CCK</span>
             </div>
             <h1 className="text-2xl font-bold text-gray-900">{t('login.title')}</h1>
             <p className="text-sm text-gray-500 mt-1">{t('login.subtitle')}</p>
