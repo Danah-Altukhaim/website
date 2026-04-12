@@ -328,7 +328,7 @@ export default function CommunicationsPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-gray-500 border-b bg-gray-50">
-                  <th className="px-6 py-3 text-start">{locale === 'ar' ? t('comms.subjectAr') : t('comms.subjectEn')}</th>
+                  <th className="px-6 py-3 text-start">{t('comms.subject')}</th>
                   <th className="px-6 py-3 text-start">{t('comms.targetAudience')}</th>
                   <th className="px-6 py-3 text-start">{t('comms.recipients', { value: '#' }).replace('#', '').trim()}</th>
                   <th className="px-6 py-3 text-start">{t('comms.channels')}</th>
@@ -340,9 +340,6 @@ export default function CommunicationsPage() {
                   <tr key={msg.message_id} className="border-b border-gray-50 last:border-0">
                     <td className="px-6 py-4 font-medium">
                       {locale === 'ar' ? msg.subject_ar : msg.subject_en}
-                      <span className="block text-xs text-gray-400">
-                        {locale === 'ar' ? msg.subject_en : msg.subject_ar}
-                      </span>
                     </td>
                     <td className="px-6 py-4 text-gray-600">{audienceLabel(msg.target_audience)}</td>
                     <td className="px-6 py-4 text-gray-600">{msg.recipients_count.toLocaleString()}</td>
