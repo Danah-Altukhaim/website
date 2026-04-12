@@ -81,24 +81,23 @@
   --font-arabic: 'Almarai', system-ui, sans-serif;
 }
 
-/* ── Base typography ──
- * Body color = CCK --rt-body (#737477), headings = CCK --rt-heading (#222222).
- */
+/* Force Almarai everywhere — no exceptions. */
+*, *::before, *::after {
+  font-family: 'Almarai', system-ui, sans-serif !important;
+}
+
 body {
-  font-family: 'Almarai', system-ui, sans-serif;
   color: #222222;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Almarai', system-ui, sans-serif;
   color: #222222;
 }
 
 [dir="rtl"],
 [lang="ar"] {
-  font-family: 'Almarai', system-ui, sans-serif;
   letter-spacing: 0;
   line-height: 1.8;
 }

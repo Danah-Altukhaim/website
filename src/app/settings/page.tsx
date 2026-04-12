@@ -255,13 +255,11 @@ export default function SettingsPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('settings.fontFamily')}</label>
                   <select
-                    value={form.font_family}
-                    onChange={(e) => setForm({ ...form, font_family: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                    value="Almarai"
+                    disabled
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-500 cursor-not-allowed"
                   >
-                    {['Almarai', 'Cairo', 'Tajawal', 'Noto Sans Arabic', 'IBM Plex Sans Arabic', 'Hind', 'Montserrat', 'Outfit', 'Inter', 'Roboto'].map((f) => (
-                      <option key={f} value={f}>{f}</option>
-                    ))}
+                    <option value="Almarai">Almarai</option>
                   </select>
                 </div>
                 <div>
@@ -280,7 +278,7 @@ export default function SettingsPage() {
                 <p className="text-sm font-medium text-gray-700 mb-3">{t('settings.preview')}</p>
                 <div
                   className="flex items-center gap-4 p-4 rounded-lg"
-                  style={{ backgroundColor: form.primary_color, fontFamily: form.font_family }}
+                  style={{ backgroundColor: form.primary_color }}
                 >
                   <div
                     className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-xs font-bold"
