@@ -30,9 +30,9 @@ export default function LoginPage() {
   const handleDemoLogin = async () => {
     setError(false);
     setLoading(true);
-    setEmail('dean@cck.edu.kw');
+    setEmail('registrar@cck.edu.kw');
     setPassword('admin123');
-    const ok = await login('dean@cck.edu.kw', 'admin123');
+    const ok = await login('registrar@cck.edu.kw', 'admin123');
     if (ok) {
       router.replace('/');
     } else {
@@ -46,8 +46,8 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-pair-600 rounded-2xl flex items-center justify-center mx-auto mb-4 border-b-4 border-danger-600">
-              <span className="text-2xl font-bold text-white">CCK</span>
+            <div className="w-16 h-16 bg-pair-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <span className="text-lg font-bold text-white tracking-wider">CCK</span>
             </div>
             <h1 className="text-2xl font-bold text-gray-900">{t('login.title')}</h1>
             <p className="text-sm text-gray-500 mt-1">{t('login.subtitle')}</p>
@@ -67,7 +67,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-pair-500 focus:border-pair-500 outline-none"
-                placeholder="dean@cck.edu.kw"
+                placeholder="registrar@cck.edu.kw"
                 required
                 dir="ltr"
               />
@@ -108,7 +108,7 @@ export default function LoginPage() {
             disabled={loading}
             className="mt-4 w-full bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg py-2.5 text-xs text-gray-500 hover:text-gray-700 transition-colors disabled:opacity-50"
           >
-            {locale === 'ar' ? 'دخول تجريبي سريع · dean@cck.edu.kw' : 'Quick demo login · dean@cck.edu.kw'}
+            {locale === 'ar' ? 'دخول تجريبي · registrar@cck.edu.kw' : 'Quick demo login · registrar@cck.edu.kw'}
           </button>
         </div>
       </div>

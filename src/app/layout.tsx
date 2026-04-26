@@ -5,8 +5,8 @@ import AppShell from '@/components/AppShell';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Masari Admin',
-  description: 'University admin dashboard',
+  title: 'CCK-Hub Admin',
+  description: 'CCK-Hub — Document Management & Workflow System',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

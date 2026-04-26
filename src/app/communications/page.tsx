@@ -24,13 +24,6 @@ const AUDIENCE_KEY: Record<string, string> = {
   graduating: 'comms.graduating',
 };
 
-const CHANNEL_LABELS_AR: Record<string, string> = {
-  push: 'إشعار',
-  email: 'بريد',
-  sms: 'رسالة نصية',
-  whatsapp: 'واتساب',
-};
-
 const AUDIENCE_ESTIMATE: Record<string, number> = {
   all_students: 4200,
   at_risk: 47,
@@ -208,31 +201,25 @@ export default function CommunicationsPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">{t('comms.filterByMajor')}</label>
             <div className="flex flex-wrap gap-2">
-              {[
-                { value: 'Computer Science', ar: 'علوم الحاسب' },
-                { value: 'Engineering', ar: 'الهندسة' },
-                { value: 'Business', ar: 'إدارة الأعمال' },
-                { value: 'Science', ar: 'العلوم' },
-                { value: 'Arts', ar: 'الآداب' },
-              ].map((major) => (
+              {['Computer Science', 'Engineering', 'Business', 'Science', 'Arts'].map((major) => (
                 <button
-                  key={major.value}
+                  key={major}
                   type="button"
                   onClick={() =>
                     setForm((prev) => ({
                       ...prev,
-                      target_majors: prev.target_majors.includes(major.value)
-                        ? prev.target_majors.filter((m) => m !== major.value)
-                        : [...prev.target_majors, major.value],
+                      target_majors: prev.target_majors.includes(major)
+                        ? prev.target_majors.filter((m) => m !== major)
+                        : [...prev.target_majors, major],
                     }))
                   }
                   className={`px-3 py-1 rounded-lg text-xs border ${
-                    form.target_majors.includes(major.value)
+                    form.target_majors.includes(major)
                       ? 'bg-pair-600 text-white border-pair-600'
                       : 'bg-white text-gray-600 border-gray-300'
                   }`}
                 >
-                  {locale === 'ar' ? major.ar : major.value}
+                  {major}
                 </button>
               ))}
             </div>
@@ -240,31 +227,25 @@ export default function CommunicationsPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">{t('comms.filterByYear')}</label>
             <div className="flex flex-wrap gap-2">
-              {[
-                { value: '1st Year', ar: 'السنة الأولى' },
-                { value: '2nd Year', ar: 'السنة الثانية' },
-                { value: '3rd Year', ar: 'السنة الثالثة' },
-                { value: '4th Year', ar: 'السنة الرابعة' },
-                { value: '5th Year', ar: 'السنة الخامسة' },
-              ].map((year) => (
+              {['1st Year', '2nd Year', '3rd Year', '4th Year', '5th Year'].map((year) => (
                 <button
-                  key={year.value}
+                  key={year}
                   type="button"
                   onClick={() =>
                     setForm((prev) => ({
                       ...prev,
-                      target_years: prev.target_years.includes(year.value)
-                        ? prev.target_years.filter((y) => y !== year.value)
-                        : [...prev.target_years, year.value],
+                      target_years: prev.target_years.includes(year)
+                        ? prev.target_years.filter((y) => y !== year)
+                        : [...prev.target_years, year],
                     }))
                   }
                   className={`px-3 py-1 rounded-lg text-xs border ${
-                    form.target_years.includes(year.value)
+                    form.target_years.includes(year)
                       ? 'bg-pair-600 text-white border-pair-600'
                       : 'bg-white text-gray-600 border-gray-300'
                   }`}
                 >
-                  {locale === 'ar' ? year.ar : year.value}
+                  {year}
                 </button>
               ))}
             </div>
@@ -309,7 +290,7 @@ export default function CommunicationsPage() {
                     : 'bg-white text-gray-600 border-gray-300'
                 }`}
               >
-                {locale === 'ar' ? (CHANNEL_LABELS_AR[ch] || ch) : ch.toUpperCase()}
+                {ch.toUpperCase()}
               </button>
             ))}
           </div>
@@ -340,7 +321,7 @@ export default function CommunicationsPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-gray-500 border-b bg-gray-50">
-                  <th className="px-6 py-3 text-start">{t('comms.subject')}</th>
+                  <th className="px-6 py-3 text-start">{locale === 'ar' ? t('comms.subjectAr') : t('comms.subjectEn')}</th>
                   <th className="px-6 py-3 text-start">{t('comms.targetAudience')}</th>
                   <th className="px-6 py-3 text-start">{t('comms.recipients', { value: '#' }).replace('#', '').trim()}</th>
                   <th className="px-6 py-3 text-start">{t('comms.channels')}</th>
@@ -352,6 +333,9 @@ export default function CommunicationsPage() {
                   <tr key={msg.message_id} className="border-b border-gray-50 last:border-0">
                     <td className="px-6 py-4 font-medium">
                       {locale === 'ar' ? msg.subject_ar : msg.subject_en}
+                      <span className="block text-xs text-gray-400">
+                        {locale === 'ar' ? msg.subject_en : msg.subject_ar}
+                      </span>
                     </td>
                     <td className="px-6 py-4 text-gray-600">{audienceLabel(msg.target_audience)}</td>
                     <td className="px-6 py-4 text-gray-600">{msg.recipients_count.toLocaleString()}</td>
@@ -359,13 +343,13 @@ export default function CommunicationsPage() {
                       <div className="flex gap-1 flex-wrap">
                         {msg.channels.map((ch) => (
                           <span key={ch} className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">
-                            {locale === 'ar' ? (CHANNEL_LABELS_AR[ch] || ch) : ch.toUpperCase()}
+                            {ch.toUpperCase()}
                           </span>
                         ))}
                       </div>
                     </td>
                     <td className="px-6 py-4 text-gray-500 text-xs">
-                      {new Date(msg.sent_at).toLocaleString(locale === 'ar' ? 'ar-KW' : 'en-US')}
+                      {new Date(msg.sent_at).toLocaleString(locale === 'ar' ? 'ar-SA' : 'en-US')}
                     </td>
                   </tr>
                 ))}

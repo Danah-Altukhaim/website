@@ -13,8 +13,8 @@ interface PaymentData {
   collection_rate: number;
   outstanding_balance: number;
   by_cohort: { cohort: string; billed: number; collected: number; rate: number }[];
-  by_method: { method_en: string; method_ar: string; count: number; amount: number; percentage: number }[];
-  overdue_by_college: { college_en: string; college_ar: string; students: number; amount: number }[];
+  by_method: { method: string; count: number; amount: number; percentage: number }[];
+  overdue_by_college: { college: string; students: number; amount: number }[];
 }
 
 type OverdueSortKey = 'students' | 'amount';
@@ -23,7 +23,6 @@ type SortDir = 'asc' | 'desc';
 export default function PaymentsPage() {
   const { t, locale } = useI18n();
   const dir = locale === 'ar' ? 'rtl' : 'ltr';
-  const pick = (en: string, ar: string) => (locale === 'ar' ? ar : en);
 
   const [data, setData] = useState<PaymentData | null>(null);
   const [error, setError] = useState(false);
@@ -110,9 +109,9 @@ export default function PaymentsPage() {
           <h2 className="text-lg font-semibold mb-4">{t('payments.methods')}</h2>
           <div className="space-y-4">
             {data.by_method.map((m) => (
-              <div key={m.method_en}>
+              <div key={m.method}>
                 <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-600">{pick(m.method_en, m.method_ar)}</span>
+                  <span className="text-gray-600">{m.method}</span>
                   <span className="text-gray-500">{m.count.toLocaleString()} {t('payments.transactions')} &middot; {(m.amount / 1000000).toFixed(1)}M KWD</span>
                 </div>
                 <div className="w-full bg-gray-100 rounded-full h-3">
@@ -141,8 +140,8 @@ export default function PaymentsPage() {
           </thead>
           <tbody>
             {sortedOverdue.map((c) => (
-              <tr key={c.college_en} className="border-b border-gray-50">
-                <td className="py-3">{pick(c.college_en, c.college_ar)}</td>
+              <tr key={c.college} className="border-b border-gray-50">
+                <td className="py-3">{c.college}</td>
                 <td className="py-3">{c.students}</td>
                 <td className="py-3 font-medium text-danger-600">{(c.amount / 1000).toFixed(0)}K KWD</td>
               </tr>

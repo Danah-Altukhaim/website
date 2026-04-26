@@ -14,6 +14,66 @@ const ChartIcon = () => (
   </svg>
 );
 
+const HomeIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 9l7-6 7 6" /><path d="M5 9v8h10V9" />
+  </svg>
+);
+
+const InboxIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 12V5a2 2 0 012-2h10a2 2 0 012 2v7" /><path d="M3 12h4l1 2h4l1-2h4" /><path d="M3 12v3a2 2 0 002 2h10a2 2 0 002-2v-3" />
+  </svg>
+);
+
+const GraduationIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M2 7l8-4 8 4-8 4-8-4z" /><path d="M5 9v4c0 1.5 2.5 3 5 3s5-1.5 5-3V9" />
+  </svg>
+);
+
+const HandHeartIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M10 17l-5-5a3 3 0 014.5-4 3 3 0 014.5 4l-4 4z" />
+  </svg>
+);
+
+const GavelIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 17h10" /><path d="M11 5l4 4-7 7-4-4 7-7z" /><path d="M13 3l4 4" />
+  </svg>
+);
+
+const AlertIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M10 2L1 17h18L10 2z" /><path d="M10 8v4" /><circle cx="10" cy="15" r="0.5" />
+  </svg>
+);
+
+const FlagIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 17V3" /><path d="M4 4h11l-2 4 2 4H4" />
+  </svg>
+);
+
+const ChatIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H8l-4 3v-3H5a2 2 0 01-2-2V5z" />
+  </svg>
+);
+
+const TrophyIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M5 3h10v4a5 5 0 01-10 0V3z" /><path d="M5 5H3v2a3 3 0 003 3" /><path d="M15 5h2v2a3 3 0 01-3 3" /><path d="M8 13v3M12 13v3M7 17h6" />
+  </svg>
+);
+
+const PhoneIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 3h3l1 4-2 1a8 8 0 005 5l1-2 4 1v3a1 1 0 01-1 1A13 13 0 013 4a1 1 0 011-1z" />
+  </svg>
+);
+
 const ShieldIcon = () => (
   <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M10 2L3 5.5V10c0 4.5 3 7.5 7 8.5 4-1 7-4 7-8.5V5.5L10 2z" />
@@ -88,7 +148,17 @@ const CollapseIcon = ({ collapsed, isRTL }: { collapsed: boolean; isRTL: boolean
 /* ── Nav Items ── */
 
 const nav = [
-  { href: '/', labelKey: 'nav.engagement', section: 'nav.analytics', icon: ChartIcon },
+  { href: '/', labelKey: 'nav.dashboard', section: 'nav.workflows', icon: HomeIcon },
+  { href: '/requests', labelKey: 'nav.requests', section: 'nav.workflows', icon: InboxIcon },
+  { href: '/admissions', labelKey: 'nav.admissions', section: 'nav.workflows', icon: GraduationIcon },
+  { href: '/social-allowance', labelKey: 'nav.socialAllowance', section: 'nav.workflows', icon: HandHeartIcon },
+  { href: '/appeals', labelKey: 'nav.appeals', section: 'nav.workflows', icon: GavelIcon },
+  { href: '/fa-screen', labelKey: 'nav.faScreen', section: 'nav.workflows', icon: AlertIcon },
+  { href: '/warnings', labelKey: 'nav.warnings', section: 'nav.workflows', icon: FlagIcon },
+  { href: '/feedback', labelKey: 'nav.complaints', section: 'nav.workflows', icon: ChatIcon },
+  { href: '/sport', labelKey: 'nav.sport', section: 'nav.workflows', icon: TrophyIcon },
+  { href: '/directory', labelKey: 'nav.directory', section: 'nav.workflows', icon: PhoneIcon },
+  { href: '/engagement', labelKey: 'nav.engagement', section: 'nav.analytics', icon: ChartIcon },
   { href: '/retention', labelKey: 'nav.retention', section: 'nav.analytics', icon: ShieldIcon },
   { href: '/payments', labelKey: 'nav.payments', section: 'nav.analytics', icon: CreditCardIcon },
   { href: '/ai-monitoring', labelKey: 'nav.aiAdvisor', section: 'nav.analytics', icon: BrainIcon },
@@ -119,19 +189,10 @@ export default function Sidebar() {
     >
       {/* Header */}
       <div className="p-4 border-b border-[#D9D9D9] flex items-center justify-between gap-2">
-        {!collapsed ? (
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-lg bg-pair-600 flex items-center justify-center shrink-0 border-b-[3px] border-danger-600">
-              <span className="text-white font-bold text-sm">CCK</span>
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-base font-bold text-[#222222] truncate leading-tight">{t('nav.appName')}</h1>
-              <p className="text-[11px] text-[#737477] truncate">{t('nav.subtitle')}</p>
-            </div>
-          </div>
-        ) : (
-          <div className="w-9 h-9 rounded-lg bg-pair-600 flex items-center justify-center mx-auto border-b-[3px] border-danger-600">
-            <span className="text-white font-bold text-[10px]">CCK</span>
+        {!collapsed && (
+          <div className="min-w-0">
+            <h1 className="text-xl font-bold text-[#222222] truncate">{t('nav.appName')}</h1>
+            <p className="text-xs text-[#737477] mt-0.5 truncate">{t('nav.subtitle')}</p>
           </div>
         )}
         <button
@@ -167,7 +228,7 @@ export default function Sidebar() {
                   collapsed ? 'justify-center' : ''
                 } ${
                   active
-                    ? `bg-pair-50 text-pair-600 font-medium ${collapsed ? '' : 'border-s-[3px] border-danger-600'}`
+                    ? 'bg-pair-50 text-pair-600 font-medium'
                     : 'text-[#737477] hover:bg-[#EEEEEE] hover:text-[#222222]'
                 }`}
               >

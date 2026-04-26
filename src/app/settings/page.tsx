@@ -48,12 +48,12 @@ export default function SettingsPage() {
 
   // Branding state
   const [form, setForm] = useState({
-    university_name_en: 'Canadian College of Kuwait',
-    university_name_ar: 'الكلية الكندية في الكويت',
+    university_name_en: 'Pair University',
+    university_name_ar: 'جامعة بير',
     primary_color: '#006341',
-    secondary_color: '#E20613',
+    secondary_color: '#76B82A',
     logo_url: '',
-    font_family: 'Almarai',
+    font_family: 'Hind',
   });
   const [enabledModules, setEnabledModules] = useState<Record<string, boolean>>({
     academics: true,
@@ -73,7 +73,7 @@ export default function SettingsPage() {
     language: 'en',
     academic_year: '2025-2026',
     semester: 'Spring',
-    support_email: 'support@cck.edu.kw',
+    support_email: 'support@university.edu.sa',
     max_students: '50000',
   });
 
@@ -255,11 +255,13 @@ export default function SettingsPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('settings.fontFamily')}</label>
                   <select
-                    value="Almarai"
-                    disabled
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-500 cursor-not-allowed"
+                    value={form.font_family}
+                    onChange={(e) => setForm({ ...form, font_family: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
                   >
-                    <option value="Almarai">Almarai</option>
+                    {['Hind', 'Montserrat', 'Noto Sans Arabic', 'Cairo', 'Outfit', 'Tajawal', 'IBM Plex Sans Arabic', 'Inter', 'Roboto'].map((f) => (
+                      <option key={f} value={f}>{f}</option>
+                    ))}
                   </select>
                 </div>
                 <div>
@@ -278,7 +280,7 @@ export default function SettingsPage() {
                 <p className="text-sm font-medium text-gray-700 mb-3">{t('settings.preview')}</p>
                 <div
                   className="flex items-center gap-4 p-4 rounded-lg"
-                  style={{ backgroundColor: form.primary_color }}
+                  style={{ backgroundColor: form.primary_color, fontFamily: form.font_family }}
                 >
                   <div
                     className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-xs font-bold"

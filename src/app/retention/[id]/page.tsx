@@ -17,26 +17,22 @@ interface StudentProfile {
   risk_score: number;
   risk_level: string;
   college_en: string;
-  college_ar: string;
   major_en: string;
-  major_ar: string;
-  year_en: string;
-  year_ar: string;
+  year: string;
   gpa: number;
-  assigned_advisor: { name_en: string; name_ar: string; email: string };
-  contributing_factors: { factor_en: string; factor_ar: string; weight: number }[];
-  academic_history: { semester_en: string; semester_ar: string; gpa: number; credits: number; status: string; status_ar: string }[];
-  attendance: { course_en: string; course_ar: string; attended: number; total: number; rate: number }[];
-  payment_status: { item_en: string; item_ar: string; amount: number; status: string; status_ar: string; due_date: string }[];
-  engagement_timeline: { date: string; action_en: string; action_ar: string }[];
-  interventions: { date: string; type_en: string; type_ar: string; advisor_en: string; advisor_ar: string; outcome: string; outcome_ar: string; notes_en: string; notes_ar: string }[];
+  assigned_advisor: { name_en: string; email: string };
+  contributing_factors: { factor_en: string; weight: number }[];
+  academic_history: { semester: string; gpa: number; credits: number; status: string }[];
+  attendance: { course: string; attended: number; total: number; rate: number }[];
+  payment_status: { item: string; amount: number; status: string; due_date: string }[];
+  engagement_timeline: { date: string; action: string }[];
+  interventions: { date: string; type: string; advisor: string; outcome: string; notes: string }[];
 }
 
 export default function StudentProfilePage() {
   const params = useParams();
   const { t, locale } = useI18n();
   const isAr = locale === 'ar';
-  const pick = (en: string, ar: string) => (isAr ? ar : en);
 
   const [student, setStudent] = useState<StudentProfile | null>(null);
   const [error, setError] = useState(false);
@@ -64,8 +60,8 @@ export default function StudentProfilePage() {
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">{pick(student.name_en, student.name_ar)}</h1>
-          <p className="text-gray-500">{pick(student.name_ar, student.name_en)} &middot; #{student.student_id} &middot; {student.email}</p>
+          <h1 className="text-2xl font-bold">{student.name_en}</h1>
+          <p className="text-gray-500">{student.name_ar} &middot; #{student.student_id} &middot; {student.email}</p>
         </div>
         <div className="flex items-center gap-3">
           <span className={`px-3 py-1 rounded text-sm font-medium ${riskColor}`}>
@@ -78,16 +74,15 @@ export default function StudentProfilePage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-white rounded-xl border border-gray-200 p-4">
           <p className="text-sm text-gray-500">{t('retention.college')}</p>
-          <p className="font-medium">{pick(student.college_en, student.college_ar)}</p>
+          <p className="font-medium">{student.college_en}</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-200 p-4">
           <p className="text-sm text-gray-500">{t('student.major')}</p>
-          <p className="font-medium">{pick(student.major_en, student.major_ar)}</p>
-          <p className="text-xs text-gray-400">{pick(student.year_en, student.year_ar)}</p>
+          <p className="font-medium">{student.major_en}</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-200 p-4">
           <p className="text-sm text-gray-500">{t('student.assignedAdvisor')}</p>
-          <p className="font-medium">{pick(student.assigned_advisor.name_en, student.assigned_advisor.name_ar)}</p>
+          <p className="font-medium">{student.assigned_advisor.name_en}</p>
           <p className="text-xs text-gray-400">{student.assigned_advisor.email}</p>
         </div>
       </div>
@@ -107,13 +102,13 @@ export default function StudentProfilePage() {
             </thead>
             <tbody>
               {student.academic_history.map((s) => (
-                <tr key={s.semester_en} className="border-b border-gray-50">
-                  <td className="py-2">{pick(s.semester_en, s.semester_ar)}</td>
+                <tr key={s.semester} className="border-b border-gray-50">
+                  <td className="py-2">{s.semester}</td>
                   <td className="py-2">{s.gpa}</td>
                   <td className="py-2">{s.credits}</td>
                   <td className="py-2">
                     <span className={`px-2 py-0.5 rounded text-xs ${s.status === 'Good Standing' ? 'bg-oasis-100 text-oasis-700' : s.status === 'Probation' ? 'bg-danger-100 text-danger-700' : 'bg-gold-100 text-gold-700'}`}>
-                      {pick(s.status, s.status_ar)}
+                      {s.status}
                     </span>
                   </td>
                 </tr>
@@ -127,9 +122,9 @@ export default function StudentProfilePage() {
           <h2 className="text-lg font-semibold mb-4">{t('student.attendance')}</h2>
           <div className="space-y-3">
             {student.attendance.map((a) => (
-              <div key={a.course_en}>
+              <div key={a.course}>
                 <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-600">{pick(a.course_en, a.course_ar)}</span>
+                  <span className="text-gray-600">{a.course}</span>
                   <span className={`text-xs font-medium ${a.rate >= 80 ? 'text-oasis-600' : a.rate >= 60 ? 'text-gold-600' : 'text-danger-600'}`}>
                     {a.attended}/{a.total} ({a.rate}%)
                   </span>
@@ -162,12 +157,12 @@ export default function StudentProfilePage() {
             <tbody>
               {student.payment_status.map((p, i) => (
                 <tr key={i} className="border-b border-gray-50">
-                  <td className="py-2">{pick(p.item_en, p.item_ar)}</td>
+                  <td className="py-2">{p.item}</td>
                   <td className="py-2">{p.amount.toLocaleString()} KWD</td>
                   <td className="py-2 text-xs text-gray-500">{p.due_date}</td>
                   <td className="py-2">
                     <span className={`px-2 py-0.5 rounded text-xs ${p.status === 'Paid' ? 'bg-oasis-100 text-oasis-700' : p.status === 'Overdue' ? 'bg-danger-100 text-danger-700' : 'bg-gold-100 text-gold-700'}`}>
-                      {pick(p.status, p.status_ar)}
+                      {p.status}
                     </span>
                   </td>
                 </tr>
@@ -183,7 +178,7 @@ export default function StudentProfilePage() {
             {student.engagement_timeline.map((e, i) => (
               <div key={i} className="flex items-start gap-3 text-sm">
                 <span className="text-xs text-gray-400 w-20 shrink-0">{e.date}</span>
-                <span className="text-gray-600">{pick(e.action_en, e.action_ar)}</span>
+                <span className="text-gray-600">{e.action}</span>
               </div>
             ))}
           </div>
@@ -210,14 +205,14 @@ export default function StudentProfilePage() {
               {student.interventions.map((inv, i) => (
                 <tr key={i} className="border-b border-gray-50">
                   <td className="py-2 text-xs text-gray-500">{inv.date}</td>
-                  <td className="py-2">{pick(inv.type_en, inv.type_ar)}</td>
-                  <td className="py-2">{pick(inv.advisor_en, inv.advisor_ar)}</td>
+                  <td className="py-2">{inv.type}</td>
+                  <td className="py-2">{inv.advisor}</td>
                   <td className="py-2">
                     <span className={`px-2 py-0.5 rounded text-xs ${inv.outcome === 'Resolved' ? 'bg-oasis-100 text-oasis-700' : inv.outcome === 'Ongoing' ? 'bg-blue-100 text-blue-700' : inv.outcome === 'Escalated' ? 'bg-danger-100 text-danger-700' : 'bg-gray-100 text-gray-700'}`}>
-                      {pick(inv.outcome, inv.outcome_ar)}
+                      {inv.outcome}
                     </span>
                   </td>
-                  <td className="py-2 text-xs text-gray-500">{pick(inv.notes_en, inv.notes_ar)}</td>
+                  <td className="py-2 text-xs text-gray-500">{inv.notes}</td>
                 </tr>
               ))}
             </tbody>

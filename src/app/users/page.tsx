@@ -192,6 +192,7 @@ export default function UsersPage() {
   };
 
   const primaryName = (u: AdminUser) => locale === 'ar' ? u.name_ar : u.name_en;
+  const secondaryName = (u: AdminUser) => locale === 'ar' ? u.name_en : u.name_ar;
 
   if (users.length === 0 && !error) {
     return (
@@ -444,7 +445,10 @@ export default function UsersPage() {
                       />
                     </td>
                     <td className="px-6 py-4">
-                      <span className="font-medium">{primaryName(u)}</span>
+                      <div>
+                        <span className="font-medium">{primaryName(u)}</span>
+                        <span className="block text-xs text-gray-400">{secondaryName(u)}</span>
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-gray-600">{u.email}</td>
                     <td className="px-6 py-4">
@@ -465,7 +469,7 @@ export default function UsersPage() {
                     </td>
                     <td className="px-6 py-4 text-gray-500 text-xs">
                       {u.last_login
-                        ? new Date(u.last_login).toLocaleString(locale === 'ar' ? 'ar-KW' : 'en-US')
+                        ? new Date(u.last_login).toLocaleString(locale === 'ar' ? 'ar-SA' : 'en-US')
                         : '\u2014'}
                     </td>
                   </tr>

@@ -7,7 +7,7 @@
  * Gotham is proprietary → Montserrat is used as the geometric substitute.
  * Hind is loaded for body copy; Noto Sans Arabic for Arabic.
  */
-@import url('https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Hind:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap');
 
 @theme {
   /* ── Primary — CCK Green (rt-primary #006341) ──
@@ -76,28 +76,32 @@
    * Gotham is proprietary → Montserrat (geometric sans) substitutes.
    * Hind is CCK's English body face. Noto Sans Arabic for Arabic.
    */
-  --font-heading: 'Almarai', system-ui, sans-serif;
-  --font-body: 'Almarai', system-ui, sans-serif;
-  --font-arabic: 'Almarai', system-ui, sans-serif;
+  --font-heading: 'Montserrat', 'Gotham', system-ui, sans-serif;
+  --font-body: 'Hind', system-ui, sans-serif;
+  --font-arabic: 'Noto Sans Arabic', 'Cairo', system-ui, sans-serif;
 }
 
-/* Force Almarai everywhere — no exceptions. */
-*, *::before, *::after {
-  font-family: 'Almarai', system-ui, sans-serif !important;
-}
-
+/* ── Base typography ──
+ * Body color = CCK --rt-body (#737477), headings = CCK --rt-heading (#222222).
+ */
 body {
+  font-family: 'Hind', system-ui, sans-serif;
   color: #222222;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', 'Gotham', system-ui, sans-serif;
   color: #222222;
 }
 
+/* Arabic containers use Noto Sans Arabic.
+ * CCK rule: never add letter-spacing to Arabic (breaks ligatures),
+ * line-height bumped so ligatures aren't clipped. */
 [dir="rtl"],
 [lang="ar"] {
+  font-family: 'Noto Sans Arabic', 'Cairo', system-ui, sans-serif;
   letter-spacing: 0;
   line-height: 1.8;
 }

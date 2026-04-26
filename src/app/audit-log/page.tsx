@@ -11,12 +11,9 @@ import Pagination from '@/components/Pagination';
 interface LogEntry {
   id: string;
   timestamp: string;
-  admin_name_en: string;
-  admin_name_ar: string;
-  action_en: string;
-  action_ar: string;
-  resource_en: string;
-  resource_ar: string;
+  admin_name: string;
+  action: string;
+  resource: string;
   ip: string;
 }
 
@@ -26,8 +23,7 @@ type SortDir = 'asc' | 'desc';
 const PAGE_SIZE = 10;
 
 export default function AuditLogPage() {
-  const { t, isRTL, locale } = useI18n();
-  const pick = (en: string, ar: string) => (locale === 'ar' ? ar : en);
+  const { t, isRTL } = useI18n();
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [error, setError] = useState(false);
   const [filter, setFilter] = useState('');
@@ -66,8 +62,8 @@ export default function AuditLogPage() {
       const lowerFilter = filter.toLowerCase();
       result = result.filter(
         (l) =>
-          pick(l.admin_name_en, l.admin_name_ar).toLowerCase().includes(lowerFilter) ||
-          pick(l.resource_en, l.resource_ar).toLowerCase().includes(lowerFilter)
+          l.admin_name.toLowerCase().includes(lowerFilter) ||
+          l.resource.toLowerCase().includes(lowerFilter)
       );
     }
 
@@ -79,22 +75,15 @@ export default function AuditLogPage() {
       result = result.filter((l) => l.timestamp <= dateTo + 'T23:59:59Z');
     }
 
-    const sortField = (l: LogEntry): string => {
-      if (sortKey === 'timestamp') return l.timestamp;
-      if (sortKey === 'admin_name') return pick(l.admin_name_en, l.admin_name_ar);
-      if (sortKey === 'action') return pick(l.action_en, l.action_ar);
-      return pick(l.resource_en, l.resource_ar);
-    };
-
     result = [...result].sort((a, b) => {
-      const aVal = sortField(a);
-      const bVal = sortField(b);
+      const aVal = a[sortKey];
+      const bVal = b[sortKey];
       const cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
       return sortDir === 'asc' ? cmp : -cmp;
     });
 
     return result;
-  }, [logs, filter, dateFrom, dateTo, sortKey, sortDir, locale]);
+  }, [logs, filter, dateFrom, dateTo, sortKey, sortDir]);
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -189,13 +178,13 @@ export default function AuditLogPage() {
             {paginated.map((log) => (
               <tr key={log.id} className="border-b border-gray-50 last:border-0">
                 <td className="px-6 py-4 text-xs text-gray-500">
-                  {new Date(log.timestamp).toLocaleString(locale === 'ar' ? 'ar-KW' : 'en-US')}
+                  {new Date(log.timestamp).toLocaleString()}
                 </td>
-                <td className="px-6 py-4 font-medium">{pick(log.admin_name_en, log.admin_name_ar)}</td>
-                <td className="px-6 py-4 text-gray-600">{pick(log.action_en, log.action_ar)}</td>
+                <td className="px-6 py-4 font-medium">{log.admin_name}</td>
+                <td className="px-6 py-4 text-gray-600">{log.action}</td>
                 <td className="px-6 py-4">
                   <span className="px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-600">
-                    {pick(log.resource_en, log.resource_ar)}
+                    {log.resource}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-xs text-gray-400 font-mono">{log.ip}</td>

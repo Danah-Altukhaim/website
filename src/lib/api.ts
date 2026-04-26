@@ -162,7 +162,7 @@ const AT_RISK_STUDENTS = [
 const ADMIN_USERS = [
   {
     id: 'admin_001',
-    email: 'dean@cck.edu.kw',
+    email: 'dean@ksu.edu.sa',
     name_ar: 'د. عبدالله الفيصل',
     name_en: 'Dr. Abdullah Al-Faisal',
     role: 'super_admin',
@@ -172,7 +172,7 @@ const ADMIN_USERS = [
   },
   {
     id: 'admin_002',
-    email: 'registrar@cck.edu.kw',
+    email: 'registrar@ksu.edu.sa',
     name_ar: 'نورة الشهري',
     name_en: 'Noura Al-Shahri',
     role: 'university_admin',
@@ -182,7 +182,7 @@ const ADMIN_USERS = [
   },
   {
     id: 'admin_003',
-    email: 'advisor.cs@cck.edu.kw',
+    email: 'advisor.cs@ksu.edu.sa',
     name_ar: 'أحمد الغامدي',
     name_en: 'Ahmed Al-Ghamdi',
     role: 'advisor',
@@ -195,80 +195,76 @@ const ADMIN_USERS = [
 const STUDENT_PROFILES: Record<string, object> = {
   student_401: {
     id: 'student_401', name_en: 'Mohammed Al-Otaibi', name_ar: 'محمد العتيبي', student_id: '441012345',
-    email: 'm.otaibi@students.cck.edu.kw', risk_score: 0.85, risk_level: 'high',
-    college_en: 'College of Computer Science', college_ar: 'كلية علوم الحاسب',
-    major_en: 'Software Engineering', major_ar: 'هندسة البرمجيات',
-    year_en: '3rd Year', year_ar: 'السنة الثالثة', gpa: 1.8,
-    assigned_advisor: { name_en: 'Ahmed Al-Ghamdi', name_ar: 'أحمد الغامدي', email: 'advisor.cs@cck.edu.kw' },
+    email: 'm.otaibi@students.ksu.edu.sa', risk_score: 0.85, risk_level: 'high',
+    college_en: 'College of Computer Science', major_en: 'Software Engineering', year: '3rd Year', gpa: 1.8,
+    assigned_advisor: { name_en: 'Ahmed Al-Ghamdi', email: 'advisor.cs@ksu.edu.sa' },
     contributing_factors: [
-      { factor_en: 'Sharp GPA decline', factor_ar: 'انخفاض حاد في المعدل التراكمي', weight: 0.4 },
-      { factor_en: 'Frequent absences in last 3 weeks', factor_ar: 'غياب متكرر في آخر ٣ أسابيع', weight: 0.3 },
-      { factor_en: '4 missing assignments', factor_ar: 'عدم تسليم ٤ واجبات', weight: 0.15 },
+      { factor_en: 'Sharp GPA decline', weight: 0.4 },
+      { factor_en: 'Frequent absences in last 3 weeks', weight: 0.3 },
+      { factor_en: '4 missing assignments', weight: 0.15 },
     ],
     academic_history: [
-      { semester_en: 'Fall 2024', semester_ar: 'خريف ٢٠٢٤', gpa: 3.2, credits: 15, status: 'Good Standing', status_ar: 'وضع جيد' },
-      { semester_en: 'Spring 2025', semester_ar: 'ربيع ٢٠٢٥', gpa: 2.6, credits: 15, status: 'Good Standing', status_ar: 'وضع جيد' },
-      { semester_en: 'Fall 2025', semester_ar: 'خريف ٢٠٢٥', gpa: 2.1, credits: 12, status: 'Warning', status_ar: 'إنذار' },
-      { semester_en: 'Spring 2026', semester_ar: 'ربيع ٢٠٢٦', gpa: 1.8, credits: 12, status: 'Probation', status_ar: 'تحت المراقبة' },
+      { semester: 'Fall 2024', gpa: 3.2, credits: 15, status: 'Good Standing' },
+      { semester: 'Spring 2025', gpa: 2.6, credits: 15, status: 'Good Standing' },
+      { semester: 'Fall 2025', gpa: 2.1, credits: 12, status: 'Warning' },
+      { semester: 'Spring 2026', gpa: 1.8, credits: 12, status: 'Probation' },
     ],
     attendance: [
-      { course_en: 'CS301 - Software Engineering', course_ar: 'CS301 - هندسة البرمجيات', attended: 8, total: 14, rate: 57 },
-      { course_en: 'CS310 - Database Systems', course_ar: 'CS310 - أنظمة قواعد البيانات', attended: 10, total: 14, rate: 71 },
-      { course_en: 'CS350 - Networks', course_ar: 'CS350 - الشبكات', attended: 12, total: 14, rate: 86 },
-      { course_en: 'MATH301 - Linear Algebra', course_ar: 'MATH301 - الجبر الخطي', attended: 6, total: 14, rate: 43 },
+      { course: 'CS301 - Software Engineering', attended: 8, total: 14, rate: 57 },
+      { course: 'CS310 - Database Systems', attended: 10, total: 14, rate: 71 },
+      { course: 'CS350 - Networks', attended: 12, total: 14, rate: 86 },
+      { course: 'MATH301 - Linear Algebra', attended: 6, total: 14, rate: 43 },
     ],
     payment_status: [
-      { item_en: 'Tuition - Spring 2026', item_ar: 'الرسوم الدراسية - ربيع ٢٠٢٦', amount: 22500, status: 'Paid', status_ar: 'مدفوع', due_date: '2026-01-15' },
-      { item_en: 'Lab Fees', item_ar: 'رسوم المختبر', amount: 1500, status: 'Paid', status_ar: 'مدفوع', due_date: '2026-01-15' },
-      { item_en: 'Late Registration Fee', item_ar: 'رسوم التسجيل المتأخر', amount: 500, status: 'Overdue', status_ar: 'متأخر', due_date: '2026-03-01' },
+      { item: 'Tuition - Spring 2026', amount: 22500, status: 'Paid', due_date: '2026-01-15' },
+      { item: 'Lab Fees', amount: 1500, status: 'Paid', due_date: '2026-01-15' },
+      { item: 'Late Registration Fee', amount: 500, status: 'Overdue', due_date: '2026-03-01' },
     ],
     engagement_timeline: [
-      { date: 'Apr 2', action_en: 'Last app login', action_ar: 'آخر دخول للتطبيق' },
-      { date: 'Apr 1', action_en: 'Viewed grade for CS301', action_ar: 'عرض درجة CS301' },
-      { date: 'Mar 28', action_en: 'Opened AI Advisor — asked about withdrawal', action_ar: 'فتح المستشار الذكي — استفسار عن الانسحاب' },
-      { date: 'Mar 25', action_en: 'Checked payment balance', action_ar: 'التحقق من الرصيد المالي' },
-      { date: 'Mar 20', action_en: 'Viewed schedule', action_ar: 'عرض الجدول' },
-      { date: 'Mar 15', action_en: 'Last LMS login (Blackboard)', action_ar: 'آخر دخول لنظام التعلم (بلاك بورد)' },
+      { date: 'Apr 2', action: 'Last app login' },
+      { date: 'Apr 1', action: 'Viewed grade for CS301' },
+      { date: 'Mar 28', action: 'Opened AI Advisor — asked about withdrawal' },
+      { date: 'Mar 25', action: 'Checked payment balance' },
+      { date: 'Mar 20', action: 'Viewed schedule' },
+      { date: 'Mar 15', action: 'Last LMS login (Blackboard)' },
     ],
     interventions: [
-      { date: '2026-03-10', type_en: 'Schedule Meeting', type_ar: 'جدولة اجتماع', advisor_en: 'Ahmed Al-Ghamdi', advisor_ar: 'أحمد الغامدي', outcome: 'Ongoing', outcome_ar: 'مستمر', notes_en: 'Student agreed to attend tutoring sessions', notes_ar: 'وافق الطالب على حضور جلسات الدعم الأكاديمي' },
-      { date: '2026-02-15', type_en: 'Send In-App Message', type_ar: 'إرسال رسالة داخل التطبيق', advisor_en: 'Ahmed Al-Ghamdi', advisor_ar: 'أحمد الغامدي', outcome: 'Resolved', outcome_ar: 'مُنجز', notes_en: 'Reminded about missing assignments, submitted 2 of 4', notes_ar: 'تذكير بالواجبات المفقودة، تم تسليم ٢ من ٤' },
+      { date: '2026-03-10', type: 'Schedule Meeting', advisor: 'Ahmed Al-Ghamdi', outcome: 'Ongoing', notes: 'Student agreed to attend tutoring sessions' },
+      { date: '2026-02-15', type: 'Send In-App Message', advisor: 'Ahmed Al-Ghamdi', outcome: 'Resolved', notes: 'Reminded about missing assignments, submitted 2 of 4' },
     ],
   },
   student_402: {
     id: 'student_402', name_en: 'Sarah Al-Dosari', name_ar: 'سارة الدوسري', student_id: '441023456',
-    email: 's.dosari@students.cck.edu.kw', risk_score: 0.78, risk_level: 'high',
-    college_en: 'College of Engineering', college_ar: 'كلية الهندسة',
-    major_en: 'Civil Engineering', major_ar: 'الهندسة المدنية',
-    year_en: '4th Year', year_ar: 'السنة الرابعة', gpa: 2.1,
-    assigned_advisor: { name_en: 'Fatima Al-Rashid', name_ar: 'فاطمة الراشد', email: 'advisor.eng@cck.edu.kw' },
+    email: 's.dosari@students.ksu.edu.sa', risk_score: 0.78, risk_level: 'high',
+    college_en: 'College of Engineering', major_en: 'Civil Engineering', year: '4th Year', gpa: 2.1,
+    assigned_advisor: { name_en: 'Fatima Al-Rashid', email: 'advisor.eng@ksu.edu.sa' },
     contributing_factors: [
-      { factor_en: 'Overdue tuition payment', factor_ar: 'تأخر في سداد الرسوم الدراسية', weight: 0.35 },
-      { factor_en: 'Decreased platform engagement', factor_ar: 'انخفاض التفاعل مع المنصة', weight: 0.25 },
-      { factor_en: 'Failed 2 courses', factor_ar: 'رسوب في مادتين', weight: 0.18 },
+      { factor_en: 'Overdue tuition payment', weight: 0.35 },
+      { factor_en: 'Decreased platform engagement', weight: 0.25 },
+      { factor_en: 'Failed 2 courses', weight: 0.18 },
     ],
     academic_history: [
-      { semester_en: 'Fall 2024', semester_ar: 'خريف ٢٠٢٤', gpa: 2.8, credits: 16, status: 'Good Standing', status_ar: 'وضع جيد' },
-      { semester_en: 'Spring 2025', semester_ar: 'ربيع ٢٠٢٥', gpa: 2.5, credits: 15, status: 'Good Standing', status_ar: 'وضع جيد' },
-      { semester_en: 'Fall 2025', semester_ar: 'خريف ٢٠٢٥', gpa: 2.3, credits: 14, status: 'Warning', status_ar: 'إنذار' },
-      { semester_en: 'Spring 2026', semester_ar: 'ربيع ٢٠٢٦', gpa: 2.1, credits: 12, status: 'Warning', status_ar: 'إنذار' },
+      { semester: 'Fall 2024', gpa: 2.8, credits: 16, status: 'Good Standing' },
+      { semester: 'Spring 2025', gpa: 2.5, credits: 15, status: 'Good Standing' },
+      { semester: 'Fall 2025', gpa: 2.3, credits: 14, status: 'Warning' },
+      { semester: 'Spring 2026', gpa: 2.1, credits: 12, status: 'Warning' },
     ],
     attendance: [
-      { course_en: 'CE401 - Structural Analysis', course_ar: 'CE401 - التحليل الإنشائي', attended: 11, total: 14, rate: 79 },
-      { course_en: 'CE410 - Construction Mgmt', course_ar: 'CE410 - إدارة الإنشاءات', attended: 9, total: 14, rate: 64 },
-      { course_en: 'CE450 - Capstone Project', course_ar: 'CE450 - مشروع التخرج', attended: 13, total: 14, rate: 93 },
+      { course: 'CE401 - Structural Analysis', attended: 11, total: 14, rate: 79 },
+      { course: 'CE410 - Construction Mgmt', attended: 9, total: 14, rate: 64 },
+      { course: 'CE450 - Capstone Project', attended: 13, total: 14, rate: 93 },
     ],
     payment_status: [
-      { item_en: 'Tuition - Spring 2026', item_ar: 'الرسوم الدراسية - ربيع ٢٠٢٦', amount: 24000, status: 'Overdue', status_ar: 'متأخر', due_date: '2026-01-15' },
-      { item_en: 'Lab Fees', item_ar: 'رسوم المختبر', amount: 2000, status: 'Overdue', status_ar: 'متأخر', due_date: '2026-01-15' },
+      { item: 'Tuition - Spring 2026', amount: 24000, status: 'Overdue', due_date: '2026-01-15' },
+      { item: 'Lab Fees', amount: 2000, status: 'Overdue', due_date: '2026-01-15' },
     ],
     engagement_timeline: [
-      { date: 'Apr 5', action_en: 'Last app login', action_ar: 'آخر دخول للتطبيق' },
-      { date: 'Apr 3', action_en: 'Checked payment — saw overdue notice', action_ar: 'التحقق من السداد — مشاهدة إشعار التأخير' },
-      { date: 'Mar 30', action_en: 'Viewed capstone project deadline', action_ar: 'عرض موعد تسليم مشروع التخرج' },
+      { date: 'Apr 5', action: 'Last app login' },
+      { date: 'Apr 3', action: 'Checked payment — saw overdue notice' },
+      { date: 'Mar 30', action: 'Viewed capstone project deadline' },
     ],
     interventions: [
-      { date: '2026-03-20', type_en: 'Contact Parent/Guardian', type_ar: 'التواصل مع ولي الأمر', advisor_en: 'Fatima Al-Rashid', advisor_ar: 'فاطمة الراشد', outcome: 'Ongoing', outcome_ar: 'مستمر', notes_en: 'Discussed financial situation with family', notes_ar: 'مناقشة الوضع المالي مع الأسرة' },
+      { date: '2026-03-20', type: 'Contact Parent/Guardian', advisor: 'Fatima Al-Rashid', outcome: 'Ongoing', notes: 'Discussed financial situation with family' },
     ],
   },
 };
@@ -278,38 +274,36 @@ function generateProfile(id: string) {
   const s = AT_RISK_STUDENTS.find((s) => s.id === id);
   if (!s) return null;
   return {
-    ...s, email: `${id}@students.cck.edu.kw`,
-    major_en: 'General Studies', major_ar: 'دراسات عامة',
-    year_en: '2nd Year', year_ar: 'السنة الثانية',
-    assigned_advisor: { name_en: 'Ahmed Al-Ghamdi', name_ar: 'أحمد الغامدي', email: 'advisor.cs@cck.edu.kw' },
+    ...s, email: `${id}@students.ksu.edu.sa`, major_en: 'General Studies', year: '2nd Year',
+    assigned_advisor: { name_en: 'Ahmed Al-Ghamdi', email: 'advisor.cs@ksu.edu.sa' },
     academic_history: [
-      { semester_en: 'Fall 2025', semester_ar: 'خريف ٢٠٢٥', gpa: 2.8, credits: 15, status: 'Good Standing', status_ar: 'وضع جيد' },
-      { semester_en: 'Spring 2026', semester_ar: 'ربيع ٢٠٢٦', gpa: s.gpa, credits: 12, status: s.gpa < 2.0 ? 'Probation' : 'Warning', status_ar: s.gpa < 2.0 ? 'تحت المراقبة' : 'إنذار' },
+      { semester: 'Fall 2025', gpa: 2.8, credits: 15, status: 'Good Standing' },
+      { semester: 'Spring 2026', gpa: s.gpa, credits: 12, status: s.gpa < 2.0 ? 'Probation' : 'Warning' },
     ],
     attendance: [
-      { course_en: 'GEN201 - Core Course', course_ar: 'GEN201 - مقرر أساسي', attended: 9, total: 14, rate: 64 },
-      { course_en: 'GEN202 - Elective', course_ar: 'GEN202 - مقرر اختياري', attended: 11, total: 14, rate: 79 },
+      { course: 'GEN201 - Core Course', attended: 9, total: 14, rate: 64 },
+      { course: 'GEN202 - Elective', attended: 11, total: 14, rate: 79 },
     ],
-    payment_status: [{ item_en: 'Tuition - Spring 2026', item_ar: 'الرسوم الدراسية - ربيع ٢٠٢٦', amount: 20000, status: 'Paid', status_ar: 'مدفوع', due_date: '2026-01-15' }],
+    payment_status: [{ item: 'Tuition - Spring 2026', amount: 20000, status: 'Paid', due_date: '2026-01-15' }],
     engagement_timeline: [
-      { date: 'Apr 7', action_en: 'Last app login', action_ar: 'آخر دخول للتطبيق' },
-      { date: 'Apr 5', action_en: 'Viewed schedule', action_ar: 'عرض الجدول' },
+      { date: 'Apr 7', action: 'Last app login' },
+      { date: 'Apr 5', action: 'Viewed schedule' },
     ],
     interventions: [],
   };
 }
 
 const AUDIT_LOG = [
-  { id: 'log_001', timestamp: '2026-04-08T14:30:00Z', admin_name_en: 'Dr. Abdullah Al-Faisal', admin_name_ar: 'د. عبدالله الفيصل', action_en: 'Updated branding colors', action_ar: 'تحديث ألوان الهوية', resource_en: 'Branding Config', resource_ar: 'إعدادات الهوية', ip: '10.0.1.15' },
-  { id: 'log_002', timestamp: '2026-04-08T12:15:00Z', admin_name_en: 'Noura Al-Shahri', admin_name_ar: 'نورة الشهري', action_en: 'Sent communication to all students', action_ar: 'إرسال إشعار لجميع الطلاب', resource_en: 'Communications', resource_ar: 'المراسلات', ip: '10.0.1.22' },
-  { id: 'log_003', timestamp: '2026-04-08T10:45:00Z', admin_name_en: 'Ahmed Al-Ghamdi', admin_name_ar: 'أحمد الغامدي', action_en: 'Scheduled intervention for Mohammed Al-Otaibi', action_ar: 'جدولة تدخل لمحمد العتيبي', resource_en: 'Retention', resource_ar: 'الاحتفاظ بالطلاب', ip: '10.0.1.35' },
-  { id: 'log_004', timestamp: '2026-04-07T16:20:00Z', admin_name_en: 'Noura Al-Shahri', admin_name_ar: 'نورة الشهري', action_en: 'Imported 150 student records', action_ar: 'استيراد 150 سجل طالب', resource_en: 'User Management', resource_ar: 'إدارة المستخدمين', ip: '10.0.1.22' },
-  { id: 'log_005', timestamp: '2026-04-07T14:00:00Z', admin_name_en: 'Dr. Abdullah Al-Faisal', admin_name_ar: 'د. عبدالله الفيصل', action_en: 'Changed role for admin_003 to advisor', action_ar: 'تغيير دور admin_003 إلى مرشد', resource_en: 'User Management', resource_ar: 'إدارة المستخدمين', ip: '10.0.1.15' },
-  { id: 'log_006', timestamp: '2026-04-07T11:30:00Z', admin_name_en: 'Noura Al-Shahri', admin_name_ar: 'نورة الشهري', action_en: 'Triggered manual data sync', action_ar: 'تشغيل مزامنة يدوية للبيانات', resource_en: 'Integrations', resource_ar: 'التكاملات', ip: '10.0.1.22' },
-  { id: 'log_007', timestamp: '2026-04-07T09:00:00Z', admin_name_en: 'Ahmed Al-Ghamdi', admin_name_ar: 'أحمد الغامدي', action_en: 'Marked intervention as Resolved for student_402', action_ar: 'تحديد تدخل الطالب student_402 كمُنجز', resource_en: 'Retention', resource_ar: 'الاحتفاظ بالطلاب', ip: '10.0.1.35' },
-  { id: 'log_008', timestamp: '2026-04-06T15:45:00Z', admin_name_en: 'Dr. Abdullah Al-Faisal', admin_name_ar: 'د. عبدالله الفيصل', action_en: 'Approved club "Robotics Society"', action_ar: 'اعتماد نادي "جمعية الروبوتات"', resource_en: 'Content Management', resource_ar: 'إدارة المحتوى', ip: '10.0.1.15' },
-  { id: 'log_009', timestamp: '2026-04-06T10:30:00Z', admin_name_en: 'Noura Al-Shahri', admin_name_ar: 'نورة الشهري', action_en: 'Exported student data (CSV)', action_ar: 'تصدير بيانات الطلاب (CSV)', resource_en: 'User Management', resource_ar: 'إدارة المستخدمين', ip: '10.0.1.22' },
-  { id: 'log_010', timestamp: '2026-04-05T13:15:00Z', admin_name_en: 'Ahmed Al-Ghamdi', admin_name_ar: 'أحمد الغامدي', action_en: 'Sent communication to at-risk students', action_ar: 'إرسال إشعار للطلاب المعرضين للخطر', resource_en: 'Communications', resource_ar: 'المراسلات', ip: '10.0.1.35' },
+  { id: 'log_001', timestamp: '2026-04-08T14:30:00Z', admin_name: 'Dr. Abdullah Al-Faisal', action: 'Updated branding colors', resource: 'Branding Config', ip: '10.0.1.15' },
+  { id: 'log_002', timestamp: '2026-04-08T12:15:00Z', admin_name: 'Noura Al-Shahri', action: 'Sent communication to all students', resource: 'Communications', ip: '10.0.1.22' },
+  { id: 'log_003', timestamp: '2026-04-08T10:45:00Z', admin_name: 'Ahmed Al-Ghamdi', action: 'Scheduled intervention for Mohammed Al-Otaibi', resource: 'Retention', ip: '10.0.1.35' },
+  { id: 'log_004', timestamp: '2026-04-07T16:20:00Z', admin_name: 'Noura Al-Shahri', action: 'Imported 150 student records', resource: 'User Management', ip: '10.0.1.22' },
+  { id: 'log_005', timestamp: '2026-04-07T14:00:00Z', admin_name: 'Dr. Abdullah Al-Faisal', action: 'Changed role for admin_003 to advisor', resource: 'User Management', ip: '10.0.1.15' },
+  { id: 'log_006', timestamp: '2026-04-07T11:30:00Z', admin_name: 'Noura Al-Shahri', action: 'Triggered manual data sync', resource: 'Integrations', ip: '10.0.1.22' },
+  { id: 'log_007', timestamp: '2026-04-07T09:00:00Z', admin_name: 'Ahmed Al-Ghamdi', action: 'Marked intervention as Resolved for student_402', resource: 'Retention', ip: '10.0.1.35' },
+  { id: 'log_008', timestamp: '2026-04-06T15:45:00Z', admin_name: 'Dr. Abdullah Al-Faisal', action: 'Approved club "Robotics Society"', resource: 'Content Management', ip: '10.0.1.15' },
+  { id: 'log_009', timestamp: '2026-04-06T10:30:00Z', admin_name: 'Noura Al-Shahri', action: 'Exported student data (CSV)', resource: 'User Management', ip: '10.0.1.22' },
+  { id: 'log_010', timestamp: '2026-04-05T13:15:00Z', admin_name: 'Ahmed Al-Ghamdi', action: 'Sent communication to at-risk students', resource: 'Communications', ip: '10.0.1.35' },
 ];
 
 const PAYMENT_ANALYTICS = {
@@ -324,17 +318,17 @@ const PAYMENT_ANALYTICS = {
     { cohort: '2026', billed: 3800000, collected: 2920000, rate: 76.8 },
   ],
   by_method: [
-    { method_en: 'KNET', method_ar: 'كي نت', count: 2840, amount: 9650000, percentage: 58.0 },
-    { method_en: 'Credit Card', method_ar: 'بطاقة ائتمان', count: 1250, amount: 4320000, percentage: 26.0 },
-    { method_en: 'Bank Transfer', method_ar: 'تحويل بنكي', count: 480, amount: 2150000, percentage: 12.9 },
-    { method_en: 'Cash', method_ar: 'نقدي', count: 120, amount: 512000, percentage: 3.1 },
+    { method: 'KNET', count: 2840, amount: 9650000, percentage: 58.0 },
+    { method: 'Credit Card', count: 1250, amount: 4320000, percentage: 26.0 },
+    { method: 'Bank Transfer', count: 480, amount: 2150000, percentage: 12.9 },
+    { method: 'Cash', count: 120, amount: 512000, percentage: 3.1 },
   ],
   overdue_by_college: [
-    { college_en: 'Engineering', college_ar: 'الهندسة', students: 45, amount: 720000 },
-    { college_en: 'Business', college_ar: 'إدارة الأعمال', students: 38, amount: 580000 },
-    { college_en: 'Computer Science', college_ar: 'علوم الحاسب', students: 22, amount: 420000 },
-    { college_en: 'Science', college_ar: 'العلوم', students: 18, amount: 310000 },
-    { college_en: 'Arts', college_ar: 'الآداب', students: 15, amount: 238000 },
+    { college: 'Engineering', students: 45, amount: 720000 },
+    { college: 'Business', students: 38, amount: 580000 },
+    { college: 'Computer Science', students: 22, amount: 420000 },
+    { college: 'Science', students: 18, amount: 310000 },
+    { college: 'Arts', students: 15, amount: 238000 },
   ],
 };
 
@@ -345,19 +339,19 @@ const AI_MONITORING = {
   avg_response_time_sec: 2.1,
   conversations_today: 342,
   topic_distribution: [
-    { topic_en: 'Registration & Enrollment', topic_ar: 'التسجيل والقبول', count: 3200, percentage: 25.7 },
-    { topic_en: 'Grade Inquiries', topic_ar: 'استفسارات الدرجات', count: 2680, percentage: 21.5 },
-    { topic_en: 'Course Recommendations', topic_ar: 'توصيات المقررات', count: 1870, percentage: 15.0 },
-    { topic_en: 'Schedule Conflicts', topic_ar: 'تعارضات الجدول', count: 1560, percentage: 12.5 },
-    { topic_en: 'Financial Aid & Payments', topic_ar: 'المساعدات المالية والمدفوعات', count: 1240, percentage: 10.0 },
-    { topic_en: 'Campus Services', topic_ar: 'خدمات الحرم', count: 980, percentage: 7.9 },
-    { topic_en: 'Other', topic_ar: 'أخرى', count: 920, percentage: 7.4 },
+    { topic: 'Registration & Enrollment', count: 3200, percentage: 25.7 },
+    { topic: 'Grade Inquiries', count: 2680, percentage: 21.5 },
+    { topic: 'Course Recommendations', count: 1870, percentage: 15.0 },
+    { topic: 'Schedule Conflicts', count: 1560, percentage: 12.5 },
+    { topic: 'Financial Aid & Payments', count: 1240, percentage: 10.0 },
+    { topic: 'Campus Services', count: 980, percentage: 7.9 },
+    { topic: 'Other', count: 920, percentage: 7.4 },
   ],
   escalation_reasons: [
-    { reason_en: 'Low confidence (<70%)', reason_ar: 'ثقة منخفضة (<٧٠٪)', count: 580, percentage: 56.1 },
-    { reason_en: 'Student requested human', reason_ar: 'طلب الطالب التحدث مع شخص', count: 245, percentage: 23.7 },
-    { reason_en: 'Sensitive topic detected', reason_ar: 'موضوع حساس', count: 132, percentage: 12.8 },
-    { reason_en: 'Multi-step process', reason_ar: 'إجراء متعدد الخطوات', count: 77, percentage: 7.4 },
+    { reason: 'Low confidence (<70%)', count: 580, percentage: 56.1 },
+    { reason: 'Student requested human', count: 245, percentage: 23.7 },
+    { reason: 'Sensitive topic detected', count: 132, percentage: 12.8 },
+    { reason: 'Multi-step process', count: 77, percentage: 7.4 },
   ],
   satisfaction_breakdown: [
     { rating: 5, count: 4200, percentage: 33.7 },
@@ -367,28 +361,28 @@ const AI_MONITORING = {
     { rating: 1, count: 590, percentage: 4.7 },
   ],
   recent_escalations: [
-    { id: 'esc_01', student_en: 'Khalid M.', student_ar: 'خالد م.', topic_en: 'Financial hold on registration', topic_ar: 'إيقاف مالي على التسجيل', timestamp: '2026-04-08T14:20:00Z', status: 'pending' },
-    { id: 'esc_02', student_en: 'Noura A.', student_ar: 'نورة أ.', topic_en: 'Grade dispute CS301', topic_ar: 'اعتراض على درجة CS301', timestamp: '2026-04-08T11:45:00Z', status: 'assigned' },
-    { id: 'esc_03', student_en: 'Omar S.', student_ar: 'عمر س.', topic_en: 'Graduation requirements unclear', topic_ar: 'متطلبات التخرج غير واضحة', timestamp: '2026-04-08T09:30:00Z', status: 'resolved' },
+    { id: 'esc_01', student: 'Khalid M.', topic: 'Financial hold on registration', timestamp: '2026-04-08T14:20:00Z', status: 'pending' },
+    { id: 'esc_02', student: 'Noura A.', topic: 'Grade dispute CS301', timestamp: '2026-04-08T11:45:00Z', status: 'assigned' },
+    { id: 'esc_03', student: 'Omar S.', topic: 'Graduation requirements unclear', timestamp: '2026-04-08T09:30:00Z', status: 'resolved' },
   ],
 };
 
 const CONTENT_ITEMS = {
   events: [
-    { id: 'evt_1', title_en: 'Career Fair 2026', title_ar: 'معرض التوظيف ٢٠٢٦', date: '2026-04-20', status: 'approved', status_ar: 'معتمد', category_en: 'Career', category_ar: 'مهني' },
-    { id: 'evt_2', title_en: 'Hackathon: AI for Education', title_ar: 'هاكاثون: الذكاء الاصطناعي للتعليم', date: '2026-04-25', status: 'pending', status_ar: 'قيد الانتظار', category_en: 'Academic', category_ar: 'أكاديمي' },
-    { id: 'evt_3', title_en: 'Spring Sports Tournament', title_ar: 'بطولة الربيع الرياضية', date: '2026-05-01', status: 'approved', status_ar: 'معتمد', category_en: 'Sports', category_ar: 'رياضي' },
+    { id: 'evt_1', title_en: 'Career Fair 2026', title_ar: 'معرض التوظيف ٢٠٢٦', date: '2026-04-20', status: 'approved', category: 'Career' },
+    { id: 'evt_2', title_en: 'Hackathon: AI for Education', title_ar: 'هاكاثون: الذكاء الاصطناعي للتعليم', date: '2026-04-25', status: 'pending', category: 'Academic' },
+    { id: 'evt_3', title_en: 'Spring Sports Tournament', title_ar: 'بطولة الربيع الرياضية', date: '2026-05-01', status: 'approved', category: 'Sports' },
   ],
   news: [
-    { id: 'news_1', title_en: 'New Library Hours for Exam Period', title_ar: 'ساعات المكتبة الجديدة لفترة الاختبارات', date: '2026-04-08', status: 'published', status_ar: 'منشور' },
-    { id: 'news_2', title_en: 'Scholarship Applications Open', title_ar: 'فتح باب التقديم للمنح الدراسية', date: '2026-04-05', status: 'published', status_ar: 'منشور' },
-    { id: 'news_3', title_en: 'Campus Wi-Fi Upgrade', title_ar: 'تحديث شبكة الواي فاي', date: '2026-04-03', status: 'draft', status_ar: 'مسودة' },
+    { id: 'news_1', title_en: 'New Library Hours for Exam Period', title_ar: 'ساعات المكتبة الجديدة لفترة الاختبارات', date: '2026-04-08', status: 'published' },
+    { id: 'news_2', title_en: 'Scholarship Applications Open', title_ar: 'فتح باب التقديم للمنح الدراسية', date: '2026-04-05', status: 'published' },
+    { id: 'news_3', title_en: 'Campus Wi-Fi Upgrade', title_ar: 'تحديث شبكة الواي فاي', date: '2026-04-03', status: 'draft' },
   ],
   clubs: [
-    { id: 'club_1', name_en: 'Robotics Society', name_ar: 'جمعية الروبوتات', members: 45, status: 'approved', status_ar: 'معتمد', advisor_en: 'Dr. Hassan', advisor_ar: 'د. حسن' },
-    { id: 'club_2', name_en: 'Debate Club', name_ar: 'نادي المناظرات', members: 32, status: 'pending', status_ar: 'قيد الانتظار', advisor_en: 'Dr. Layla', advisor_ar: 'د. ليلى' },
-    { id: 'club_3', name_en: 'Photography Club', name_ar: 'نادي التصوير', members: 28, status: 'approved', status_ar: 'معتمد', advisor_en: 'Prof. Saleh', advisor_ar: 'أ. صالح' },
-    { id: 'club_4', name_en: 'Entrepreneurship Hub', name_ar: 'مركز ريادة الأعمال', members: 67, status: 'approved', status_ar: 'معتمد', advisor_en: 'Dr. Nasser', advisor_ar: 'د. ناصر' },
+    { id: 'club_1', name_en: 'Robotics Society', name_ar: 'جمعية الروبوتات', members: 45, status: 'approved', advisor: 'Dr. Hassan' },
+    { id: 'club_2', name_en: 'Debate Club', name_ar: 'نادي المناظرات', members: 32, status: 'pending', advisor: 'Dr. Layla' },
+    { id: 'club_3', name_en: 'Photography Club', name_ar: 'نادي التصوير', members: 28, status: 'approved', advisor: 'Prof. Saleh' },
+    { id: 'club_4', name_en: 'Entrepreneurship Hub', name_ar: 'مركز ريادة الأعمال', members: 67, status: 'approved', advisor: 'Dr. Nasser' },
   ],
 };
 
@@ -398,22 +392,18 @@ const INTEGRATIONS = [
     name_ar: 'بلاك بورد',
     name_en: 'Blackboard',
     status: 'connected',
-    status_ar: 'متصل',
     last_sync: '2026-04-08T06:00:00Z',
     records_synced: 12450,
     health: 'healthy',
-    health_ar: 'سليم',
   },
   {
     adapter_id: 'banner',
     name_ar: 'بانر',
     name_en: 'Banner',
     status: 'syncing',
-    status_ar: 'جارٍ المزامنة',
     last_sync: '2026-04-08T07:30:00Z',
     records_synced: 8920,
     health: 'healthy',
-    health_ar: 'سليم',
     sync_progress: 67,
   },
   {
@@ -421,11 +411,9 @@ const INTEGRATIONS = [
     name_ar: 'كانفاس',
     name_en: 'Canvas',
     status: 'disconnected',
-    status_ar: 'غير متصل',
     last_sync: '2026-04-01T12:00:00Z',
     records_synced: 0,
     health: 'error',
-    health_ar: 'خطأ',
     error_ar: 'انتهت صلاحية مفتاح الاتصال',
     error_en: 'API key expired',
   },
@@ -436,7 +424,7 @@ const CAMPUS_DIRECTORY = [
     id: 'dir_1', type: 'building' as const,
     name_en: 'Main Administration Building', name_ar: 'مبنى الإدارة الرئيسي',
     location_en: 'Central Campus', location_ar: 'الحرم المركزي',
-    phone: '+966-11-467-0000', email: 'admin@cck.edu.kw',
+    phone: '+966-11-467-0000', email: 'admin@ksu.edu.sa',
     hours_en: 'Sun–Thu 8:00–16:00', hours_ar: 'الأحد–الخميس ٨:٠٠–١٦:٠٠',
     status: 'published' as const,
   },
@@ -444,7 +432,7 @@ const CAMPUS_DIRECTORY = [
     id: 'dir_2', type: 'office' as const,
     name_en: 'Registrar Office', name_ar: 'مكتب القبول والتسجيل',
     location_en: 'Admin Building, Floor 2', location_ar: 'مبنى الإدارة، الطابق الثاني',
-    phone: '+966-11-467-1111', email: 'registrar@cck.edu.kw',
+    phone: '+966-11-467-1111', email: 'registrar@ksu.edu.sa',
     hours_en: 'Sun–Thu 9:00–15:00', hours_ar: 'الأحد–الخميس ٩:٠٠–١٥:٠٠',
     status: 'published' as const,
   },
@@ -452,7 +440,7 @@ const CAMPUS_DIRECTORY = [
     id: 'dir_3', type: 'service' as const,
     name_en: 'Student Health Center', name_ar: 'مركز صحة الطلاب',
     location_en: 'Building 14', location_ar: 'مبنى ١٤',
-    phone: '+966-11-467-2222', email: 'health@cck.edu.kw',
+    phone: '+966-11-467-2222', email: 'health@ksu.edu.sa',
     hours_en: 'Sun–Thu 8:00–20:00', hours_ar: 'الأحد–الخميس ٨:٠٠–٢٠:٠٠',
     status: 'published' as const,
   },
@@ -460,7 +448,7 @@ const CAMPUS_DIRECTORY = [
     id: 'dir_4', type: 'service' as const,
     name_en: 'IT Help Desk', name_ar: 'مكتب الدعم التقني',
     location_en: 'Library Building, Ground Floor', location_ar: 'مبنى المكتبة، الطابق الأرضي',
-    phone: '+966-11-467-3333', email: 'it@cck.edu.kw',
+    phone: '+966-11-467-3333', email: 'it@ksu.edu.sa',
     hours_en: 'Sun–Thu 8:00–22:00', hours_ar: 'الأحد–الخميس ٨:٠٠–٢٢:٠٠',
     status: 'draft' as const,
   },
@@ -468,7 +456,7 @@ const CAMPUS_DIRECTORY = [
     id: 'dir_5', type: 'building' as const,
     name_en: 'College of Computer Science', name_ar: 'كلية علوم الحاسب',
     location_en: 'North Campus', location_ar: 'الحرم الشمالي',
-    phone: '+966-11-467-4444', email: 'cs@cck.edu.kw',
+    phone: '+966-11-467-4444', email: 'cs@ksu.edu.sa',
     hours_en: 'Sun–Thu 7:30–21:00', hours_ar: 'الأحد–الخميس ٧:٣٠–٢١:٠٠',
     status: 'published' as const,
   },
@@ -500,13 +488,574 @@ const FEATURE_HEATMAP = {
 };
 
 const FOLLOW_UP_REMINDERS = [
-  { id: 'fu_1', student_id: 'student_401', student_name_en: 'Mohammed Al-Otaibi', student_name_ar: 'محمد العتيبي', intervention_date: '2026-03-10', due_date: '2026-04-09', status: 'overdue' as const, action_en: 'Schedule Meeting', action_ar: 'جدولة اجتماع' },
-  { id: 'fu_2', student_id: 'student_402', student_name_en: 'Sarah Al-Dosari', student_name_ar: 'سارة الدوسري', intervention_date: '2026-03-20', due_date: '2026-04-19', status: 'upcoming' as const, action_en: 'Contact Parent/Guardian', action_ar: 'التواصل مع ولي الأمر' },
+  { id: 'fu_1', student_id: 'student_401', student_name_en: 'Mohammed Al-Otaibi', student_name_ar: 'محمد العتيبي', intervention_date: '2026-03-10', due_date: '2026-04-09', status: 'overdue' as const, action: 'Schedule Meeting' },
+  { id: 'fu_2', student_id: 'student_402', student_name_en: 'Sarah Al-Dosari', student_name_ar: 'سارة الدوسري', intervention_date: '2026-03-20', due_date: '2026-04-19', status: 'upcoming' as const, action: 'Contact Parent/Guardian' },
 ];
 
 const SENT_MESSAGES = [
   { message_id: 'comm_001', subject_en: 'Registration Reminder', subject_ar: 'تذكير بالتسجيل', target_audience: 'all_students', recipients_count: 4200, sent_at: '2026-04-07T10:00:00Z', channels: ['push', 'email'] },
   { message_id: 'comm_002', subject_en: 'Payment Deadline', subject_ar: 'موعد السداد', target_audience: 'at_risk', recipients_count: 47, sent_at: '2026-04-05T14:00:00Z', channels: ['push', 'email', 'sms'] },
+];
+
+/* ────────────────────────────────────────────────────────────
+ * CCK-Hub workflow mock data
+ *   Backs the Document Management & Workflow System spec.
+ *   Types are duplicated here on purpose — admin app is a
+ *   standalone front-end with no backend wired up yet.
+ * ──────────────────────────────────────────────────────────── */
+
+export type RequestType =
+  | 'twimc'
+  | 'twimc_balance'
+  | 'transcript'
+  | 'semester_withdrawal'
+  | 'college_withdrawal'
+  | 'absence_excuse'
+  | 'expected_grad'
+  | 'puc_letter'
+  | 'puc_no_aid'
+  | 'industrial_cert'
+  | 'lost_id'
+  | 'update_id_photo';
+
+export type RequestStatus = 'submitted' | 'in_progress' | 'completed' | 'cancelled';
+
+export interface RequestComment {
+  id: string;
+  author_en: string;
+  author_ar: string;
+  body: string;
+  created_at: string;
+  internal: boolean;
+}
+
+export interface RequestAttachment {
+  id: string;
+  name: string;
+  size_kb: number;
+  uploaded_by_en: string;
+  uploaded_by_ar: string;
+  uploaded_at: string;
+}
+
+export interface RequestWorkflowStep {
+  key: string;
+  label_en: string;
+  label_ar: string;
+  status: 'completed' | 'current' | 'pending';
+  completed_at?: string;
+}
+
+export interface StudentRequest {
+  id: string;
+  type: RequestType;
+  student_id: string;
+  student_name_en: string;
+  student_name_ar: string;
+  status: RequestStatus;
+  submitted_at: string;
+  assigned_to_en: string | null;
+  assigned_to_ar: string | null;
+  payment_status: 'paid' | 'pending' | 'not_required';
+  workflow: RequestWorkflowStep[];
+  attachments: RequestAttachment[];
+  comments: RequestComment[];
+}
+
+const wfTwimc = (step: 0 | 1 | 2 | 3): RequestWorkflowStep[] => [
+  { key: 'submitted', label_en: 'Submitted by student', label_ar: 'قدّمها الطالب',
+    status: step >= 0 ? 'completed' : 'pending', completed_at: '2026-04-21T08:00:00Z' },
+  { key: 'paid', label_en: 'Online payment received', label_ar: 'تم استلام الدفع',
+    status: step >= 1 ? 'completed' : step === 0 ? 'current' : 'pending' },
+  { key: 'in_progress', label_en: 'Assigned to Registration', label_ar: 'مسند للتسجيل',
+    status: step >= 2 ? 'completed' : step === 1 ? 'current' : 'pending' },
+  { key: 'completed', label_en: 'Letter ready for pickup', label_ar: 'الخطاب جاهز للاستلام',
+    status: step >= 3 ? 'completed' : step === 2 ? 'current' : 'pending' },
+];
+
+const wfWithdrawal = (step: 0 | 1 | 2 | 3 | 4): RequestWorkflowStep[] => [
+  { key: 'submitted', label_en: 'Form submitted by student', label_ar: 'قدّم الطالب النموذج',
+    status: step >= 0 ? 'completed' : 'pending' },
+  { key: 'advisor', label_en: 'Advisor feedback', label_ar: 'رأي المرشد',
+    status: step >= 1 ? 'completed' : step === 0 ? 'current' : 'pending' },
+  { key: 'finance', label_en: 'Finance approval', label_ar: 'موافقة المالية',
+    status: step >= 2 ? 'completed' : step === 1 ? 'current' : 'pending' },
+  { key: 'puc', label_en: 'PUC documents (if sponsored)', label_ar: 'مستندات PUC (للمبتعثين)',
+    status: step >= 3 ? 'completed' : step === 2 ? 'current' : 'pending' },
+  { key: 'registration', label_en: 'Registration processing', label_ar: 'إجراء التسجيل',
+    status: step >= 4 ? 'completed' : step === 3 ? 'current' : 'pending' },
+];
+
+const wfAbsence = (step: 0 | 1 | 2): RequestWorkflowStep[] => [
+  { key: 'submitted', label_en: 'Excuse + medical doc submitted', label_ar: 'تقديم العذر والمستند الطبي',
+    status: step >= 0 ? 'completed' : 'pending' },
+  { key: 'review', label_en: 'Registration review', label_ar: 'مراجعة التسجيل',
+    status: step >= 1 ? 'completed' : step === 0 ? 'current' : 'pending' },
+  { key: 'applied', label_en: 'Excuse applied to courses in SIS', label_ar: 'تطبيق العذر في النظام الأكاديمي',
+    status: step >= 2 ? 'completed' : step === 1 ? 'current' : 'pending' },
+];
+
+const STUDENT_REQUESTS: StudentRequest[] = [
+  {
+    id: 'REQ-2026-0431', type: 'twimc',
+    student_id: '20211045', student_name_en: 'Yousef Al-Mutairi', student_name_ar: 'يوسف المطيري',
+    status: 'in_progress', submitted_at: '2026-04-23T08:14:00Z',
+    assigned_to_en: 'Noura Al-Shahri', assigned_to_ar: 'نورة الشهري',
+    payment_status: 'paid',
+    workflow: wfTwimc(2),
+    attachments: [
+      { id: 'att1', name: 'civil_id.pdf', size_kb: 412, uploaded_by_en: 'Yousef Al-Mutairi', uploaded_by_ar: 'يوسف المطيري', uploaded_at: '2026-04-23T08:14:00Z' },
+    ],
+    comments: [
+      { id: 'c1', author_en: 'Noura Al-Shahri', author_ar: 'نورة الشهري',
+        body: 'Letter drafted, pending department head signature.', created_at: '2026-04-24T10:21:00Z', internal: true },
+    ],
+  },
+  {
+    id: 'REQ-2026-0432', type: 'transcript',
+    student_id: '20221180', student_name_en: 'Mariam Al-Ajmi', student_name_ar: 'مريم العجمي',
+    status: 'submitted', submitted_at: '2026-04-25T11:02:00Z',
+    assigned_to_en: null, assigned_to_ar: null, payment_status: 'paid',
+    workflow: wfTwimc(1),
+    attachments: [],
+    comments: [],
+  },
+  {
+    id: 'REQ-2026-0433', type: 'semester_withdrawal',
+    student_id: '20201990', student_name_en: 'Khalid Al-Rashidi', student_name_ar: 'خالد الرشيدي',
+    status: 'in_progress', submitted_at: '2026-04-19T13:40:00Z',
+    assigned_to_en: 'Noura Al-Shahri', assigned_to_ar: 'نورة الشهري', payment_status: 'not_required',
+    workflow: wfWithdrawal(2),
+    attachments: [
+      { id: 'att2', name: 'withdrawal_form_signed.pdf', size_kb: 880, uploaded_by_en: 'Khalid Al-Rashidi', uploaded_by_ar: 'خالد الرشيدي', uploaded_at: '2026-04-19T13:40:00Z' },
+      { id: 'att3', name: 'PUC_freeze_form.pdf', size_kb: 624, uploaded_by_en: 'Khalid Al-Rashidi', uploaded_by_ar: 'خالد الرشيدي', uploaded_at: '2026-04-20T09:11:00Z' },
+    ],
+    comments: [
+      { id: 'c2', author_en: 'Ahmed Al-Ghamdi (Advisor)', author_ar: 'أحمد الغامدي (مرشد)',
+        body: 'Student has cleared all incomplete grades. Recommended approval.', created_at: '2026-04-21T08:55:00Z', internal: false },
+    ],
+  },
+  {
+    id: 'REQ-2026-0434', type: 'absence_excuse',
+    student_id: '20231022', student_name_en: 'Lina Al-Otaibi', student_name_ar: 'لينا العتيبي',
+    status: 'submitted', submitted_at: '2026-04-26T07:20:00Z',
+    assigned_to_en: null, assigned_to_ar: null, payment_status: 'not_required',
+    workflow: wfAbsence(1),
+    attachments: [
+      { id: 'att4', name: 'medical_report.pdf', size_kb: 521, uploaded_by_en: 'Lina Al-Otaibi', uploaded_by_ar: 'لينا العتيبي', uploaded_at: '2026-04-26T07:20:00Z' },
+    ],
+    comments: [],
+  },
+  {
+    id: 'REQ-2026-0435', type: 'puc_letter',
+    student_id: '20211045', student_name_en: 'Yousef Al-Mutairi', student_name_ar: 'يوسف المطيري',
+    status: 'completed', submitted_at: '2026-04-10T09:00:00Z',
+    assigned_to_en: 'Noura Al-Shahri', assigned_to_ar: 'نورة الشهري', payment_status: 'not_required',
+    workflow: wfTwimc(3),
+    attachments: [
+      { id: 'att5', name: 'civil_id.pdf', size_kb: 412, uploaded_by_en: 'Yousef Al-Mutairi', uploaded_by_ar: 'يوسف المطيري', uploaded_at: '2026-04-10T09:00:00Z' },
+    ],
+    comments: [],
+  },
+  {
+    id: 'REQ-2026-0436', type: 'college_withdrawal',
+    student_id: '20191130', student_name_en: 'Fatima Al-Sabah', student_name_ar: 'فاطمة الصباح',
+    status: 'in_progress', submitted_at: '2026-04-15T14:00:00Z',
+    assigned_to_en: 'Noura Al-Shahri', assigned_to_ar: 'نورة الشهري', payment_status: 'not_required',
+    workflow: wfWithdrawal(3),
+    attachments: [
+      { id: 'att6', name: 'college_withdrawal_form.pdf', size_kb: 901, uploaded_by_en: 'Fatima Al-Sabah', uploaded_by_ar: 'فاطمة الصباح', uploaded_at: '2026-04-15T14:00:00Z' },
+      { id: 'att7', name: 'PUC_scholarship_cancel.pdf', size_kb: 612, uploaded_by_en: 'Fatima Al-Sabah', uploaded_by_ar: 'فاطمة الصباح', uploaded_at: '2026-04-16T11:20:00Z' },
+    ],
+    comments: [],
+  },
+  {
+    id: 'REQ-2026-0437', type: 'expected_grad',
+    student_id: '20191205', student_name_en: 'Abdullah Al-Failakawi', student_name_ar: 'عبدالله الفيلكاوي',
+    status: 'submitted', submitted_at: '2026-04-26T09:30:00Z',
+    assigned_to_en: null, assigned_to_ar: null, payment_status: 'paid',
+    workflow: wfTwimc(1),
+    attachments: [],
+    comments: [],
+  },
+  {
+    id: 'REQ-2026-0438', type: 'industrial_cert',
+    student_id: '20251002', student_name_en: 'Saad Al-Hajri', student_name_ar: 'سعد الهاجري',
+    status: 'in_progress', submitted_at: '2026-04-22T10:15:00Z',
+    assigned_to_en: 'Ahmed Al-Ghamdi', assigned_to_ar: 'أحمد الغامدي', payment_status: 'not_required',
+    workflow: wfTwimc(2),
+    attachments: [
+      { id: 'att8', name: 'industrial_certificate.pdf', size_kb: 1180, uploaded_by_en: 'Ahmed Al-Ghamdi', uploaded_by_ar: 'أحمد الغامدي', uploaded_at: '2026-04-22T10:15:00Z' },
+    ],
+    comments: [
+      { id: 'c3', author_en: 'Ahmed Al-Ghamdi', author_ar: 'أحمد الغامدي',
+        body: 'Forwarded to Registration to draft PUC acceptance letter.', created_at: '2026-04-23T13:00:00Z', internal: true },
+    ],
+  },
+  {
+    id: 'REQ-2026-0439', type: 'lost_id',
+    student_id: '20221180', student_name_en: 'Mariam Al-Ajmi', student_name_ar: 'مريم العجمي',
+    status: 'in_progress', submitted_at: '2026-04-24T15:30:00Z',
+    assigned_to_en: 'IT Helpdesk', assigned_to_ar: 'مكتب الدعم التقني', payment_status: 'paid',
+    workflow: [
+      { key: 'submitted', label_en: 'Lost ID request submitted', label_ar: 'تقديم طلب فقدان البطاقة', status: 'completed' },
+      { key: 'finance', label_en: 'Finance — replacement fee', label_ar: 'المالية — رسوم البدل', status: 'completed' },
+      { key: 'it', label_en: 'IT prints new card', label_ar: 'IT يطبع البطاقة الجديدة', status: 'current' },
+      { key: 'registration', label_en: 'Pickup at Registration', label_ar: 'الاستلام من التسجيل', status: 'pending' },
+    ],
+    attachments: [],
+    comments: [],
+  },
+];
+
+export interface AdmissionApplicant {
+  id: string;
+  applicant_name_en: string;
+  applicant_name_ar: string;
+  category: 'self_funded' | 'puc_sponsored' | 'other' | 'tc';
+  transferred_from?: string;
+  major: string;
+  semester_admitted: string;
+  entry_level: string;
+  stage: 'admission' | 'academic' | 'admission_approval' | 'registration' | 'completed';
+  documents: { key: string; status: 'uploaded' | 'missing' | 'flagged' }[];
+  submitted_at: string;
+  acceptance_letter_generated: boolean;
+}
+
+const ADMISSION_DOC_KEYS = [
+  'civil_id', 'passport', 'equivalency', 'high_school',
+  'father_civil_id', 'declaration', 'payment_proof',
+  'puc_declaration', 'placement_test',
+];
+
+const ADMISSION_APPLICANTS: AdmissionApplicant[] = [
+  {
+    id: 'ADM-2026-101',
+    applicant_name_en: 'Hessa Al-Mansour', applicant_name_ar: 'حصة المنصور',
+    category: 'self_funded',
+    major: 'Business Administration', semester_admitted: 'Fall 2026', entry_level: 'Level 3',
+    stage: 'admission_approval',
+    documents: ADMISSION_DOC_KEYS.map((k) => ({
+      key: k,
+      status: k === 'puc_declaration' ? 'missing' : k === 'placement_test' ? 'flagged' : 'uploaded',
+    })),
+    submitted_at: '2026-04-15T09:00:00Z',
+    acceptance_letter_generated: false,
+  },
+  {
+    id: 'ADM-2026-102',
+    applicant_name_en: 'Faisal Al-Sane', applicant_name_ar: 'فيصل السانع',
+    category: 'puc_sponsored',
+    major: 'Computer Engineering Technology', semester_admitted: 'Fall 2026', entry_level: 'Level 2',
+    stage: 'admission',
+    documents: ADMISSION_DOC_KEYS.map((k) => ({
+      key: k,
+      status: k === 'payment_proof' ? 'missing' : 'uploaded',
+    })),
+    submitted_at: '2026-04-22T11:30:00Z',
+    acceptance_letter_generated: false,
+  },
+  {
+    id: 'ADM-2026-103',
+    applicant_name_en: 'Dana Al-Khalifa', applicant_name_ar: 'دانة الخليفة',
+    category: 'tc', transferred_from: 'Kuwait University — College of Engineering',
+    major: 'Mechanical Engineering Technology', semester_admitted: 'Fall 2026', entry_level: 'Level 4',
+    stage: 'academic',
+    documents: ADMISSION_DOC_KEYS.map((k) => ({ key: k, status: 'uploaded' })),
+    submitted_at: '2026-04-08T14:00:00Z',
+    acceptance_letter_generated: false,
+  },
+  {
+    id: 'ADM-2026-104',
+    applicant_name_en: 'Talal Al-Kandari', applicant_name_ar: 'طلال الكندري',
+    category: 'self_funded',
+    major: 'Business Administration', semester_admitted: 'Fall 2026', entry_level: 'Level 1',
+    stage: 'completed',
+    documents: ADMISSION_DOC_KEYS.map((k) => ({ key: k, status: 'uploaded' })),
+    submitted_at: '2026-03-28T10:00:00Z',
+    acceptance_letter_generated: true,
+  },
+  {
+    id: 'ADM-2026-105',
+    applicant_name_en: 'Aisha Al-Anezi', applicant_name_ar: 'عائشة العنزي',
+    category: 'puc_sponsored',
+    major: 'Aviation Maintenance Engineering Technology', semester_admitted: 'Fall 2026', entry_level: 'Level 3',
+    stage: 'registration',
+    documents: ADMISSION_DOC_KEYS.map((k) => ({ key: k, status: 'uploaded' })),
+    submitted_at: '2026-04-02T08:30:00Z',
+    acceptance_letter_generated: true,
+  },
+];
+
+export type SocialCategory = 'kuwaiti' | 'kuwaiti_mother' | 'disabled' | 'married' | 'bank_change';
+export interface SocialApplication {
+  id: string;
+  application_no: string;
+  student_id: string;
+  student_name_en: string;
+  student_name_ar: string;
+  category: SocialCategory;
+  status: 'pending' | 'in_progress' | 'rejected' | 'completed';
+  submitted_at: string;
+  documents: { key: string; quality: 'ok' | 'issue' }[];
+  sent_to_puc: boolean;
+}
+
+const SOCIAL_DOCS: Record<SocialCategory, string[]> = {
+  kuwaiti: ['civil_id', 'security', 'social_affairs', 'salary_transfer'],
+  kuwaiti_mother: [
+    'civil_id', 'manpower', 'social_affairs', 'mother_nationality',
+    'mother_civil_id', 'birth_cert', 'salary_transfer', 'twimc_mother',
+  ],
+  disabled: ['disability_proof'],
+  married: ['marriage_cert', 'marriage_continuity', 'wife_civil_id'],
+  bank_change: ['civil_id', 'salary_transfer', 'bank_form'],
+};
+
+const SOCIAL_APPLICATIONS: SocialApplication[] = [
+  {
+    id: 'SOC-2026-001', application_no: 'SA-26-001',
+    student_id: '20221180', student_name_en: 'Mariam Al-Ajmi', student_name_ar: 'مريم العجمي',
+    category: 'kuwaiti', status: 'in_progress',
+    submitted_at: '2026-04-18T10:00:00Z',
+    documents: SOCIAL_DOCS.kuwaiti.map((k) => ({ key: k, quality: 'ok' })),
+    sent_to_puc: false,
+  },
+  {
+    id: 'SOC-2026-002', application_no: 'SA-26-002',
+    student_id: '20231022', student_name_en: 'Lina Al-Otaibi', student_name_ar: 'لينا العتيبي',
+    category: 'kuwaiti_mother', status: 'pending',
+    submitted_at: '2026-04-22T14:30:00Z',
+    documents: SOCIAL_DOCS.kuwaiti_mother.map((k, i) => ({
+      key: k, quality: i === 3 ? 'issue' : 'ok',
+    })),
+    sent_to_puc: false,
+  },
+  {
+    id: 'SOC-2026-003', application_no: 'SA-26-003',
+    student_id: '20211045', student_name_en: 'Yousef Al-Mutairi', student_name_ar: 'يوسف المطيري',
+    category: 'married', status: 'completed',
+    submitted_at: '2026-04-05T09:15:00Z',
+    documents: SOCIAL_DOCS.married.map((k) => ({ key: k, quality: 'ok' })),
+    sent_to_puc: true,
+  },
+  {
+    id: 'SOC-2026-004', application_no: 'SA-26-004',
+    student_id: '20241002', student_name_en: 'Reem Al-Failakawi', student_name_ar: 'ريم الفيلكاوي',
+    category: 'disabled', status: 'in_progress',
+    submitted_at: '2026-04-20T11:00:00Z',
+    documents: SOCIAL_DOCS.disabled.map((k) => ({ key: k, quality: 'ok' })),
+    sent_to_puc: false,
+  },
+  {
+    id: 'SOC-2026-005', application_no: 'SA-26-005',
+    student_id: '20191130', student_name_en: 'Fatima Al-Sabah', student_name_ar: 'فاطمة الصباح',
+    category: 'bank_change', status: 'pending',
+    submitted_at: '2026-04-25T08:00:00Z',
+    documents: SOCIAL_DOCS.bank_change.map((k) => ({ key: k, quality: 'ok' })),
+    sent_to_puc: false,
+  },
+];
+
+export interface Appeal {
+  id: string;
+  student_id: string;
+  student_name_en: string;
+  student_name_ar: string;
+  course_code: string;
+  course_name: string;
+  current_grade: string;
+  status: 'submitted' | 'in_progress' | 'completed';
+  submitted_at: string;
+  faculty_assigned_en: string;
+  faculty_assigned_ar: string;
+  form_uploaded: boolean;
+}
+
+const APPEALS: Appeal[] = [
+  {
+    id: 'APP-2026-001', student_id: '20211045',
+    student_name_en: 'Yousef Al-Mutairi', student_name_ar: 'يوسف المطيري',
+    course_code: 'BUS 301', course_name: 'Operations Management',
+    current_grade: 'D+', status: 'submitted', submitted_at: '2026-04-25T11:00:00Z',
+    faculty_assigned_en: 'Dr. Hassan Al-Sayed', faculty_assigned_ar: 'د. حسن السيد',
+    form_uploaded: true,
+  },
+  {
+    id: 'APP-2026-002', student_id: '20221180',
+    student_name_en: 'Mariam Al-Ajmi', student_name_ar: 'مريم العجمي',
+    course_code: 'ENG 201', course_name: 'Engineering Mechanics',
+    current_grade: 'C-', status: 'in_progress', submitted_at: '2026-04-24T13:00:00Z',
+    faculty_assigned_en: 'Dr. Layla Al-Rashid', faculty_assigned_ar: 'د. ليلى الرشيد',
+    form_uploaded: true,
+  },
+];
+
+export interface FaRoster {
+  course_code: string;
+  course_name: string;
+  section: string;
+  instructor_en: string;
+  instructor_ar: string;
+  students: {
+    id: string;
+    student_id: string;
+    name_en: string;
+    name_ar: string;
+    attendance_pct: number;
+    absences: number;
+    assessments: { label: string; score: number }[];
+    total_grade: number;
+    decision: 'pending' | 'fa_admitted' | 'absence_removed' | 'forwarded';
+  }[];
+}
+
+const FA_ROSTERS: FaRoster[] = [
+  {
+    course_code: 'BUS 201', course_name: 'Principles of Marketing',
+    section: 'Section A', instructor_en: 'Dr. Khalid Al-Roumi', instructor_ar: 'د. خالد الرومي',
+    students: [
+      {
+        id: 'fa1', student_id: '20231022', name_en: 'Lina Al-Otaibi', name_ar: 'لينا العتيبي',
+        attendance_pct: 62, absences: 11,
+        assessments: [{ label: 'Quiz 1', score: 7 }, { label: 'Midterm', score: 18 }, { label: 'Project', score: 12 }],
+        total_grade: 37, decision: 'pending',
+      },
+      {
+        id: 'fa2', student_id: '20211045', name_en: 'Yousef Al-Mutairi', name_ar: 'يوسف المطيري',
+        attendance_pct: 70, absences: 9,
+        assessments: [{ label: 'Quiz 1', score: 8 }, { label: 'Midterm', score: 22 }, { label: 'Project', score: 14 }],
+        total_grade: 44, decision: 'pending',
+      },
+    ],
+  },
+  {
+    course_code: 'ENG 102', course_name: 'English Composition',
+    section: 'Section B', instructor_en: 'Ms. Sarah Coombs', instructor_ar: 'الأستاذة سارة كومبس',
+    students: [
+      {
+        id: 'fa3', student_id: '20251002', name_en: 'Saad Al-Hajri', name_ar: 'سعد الهاجري',
+        attendance_pct: 58, absences: 12,
+        assessments: [{ label: 'Essay 1', score: 14 }, { label: 'Midterm', score: 19 }],
+        total_grade: 33, decision: 'pending',
+      },
+    ],
+  },
+];
+
+export interface AcademicWarning {
+  id: string;
+  student_id: string;
+  name_en: string;
+  name_ar: string;
+  gpa: number;
+  warning_semester: string;
+  notified_at: string;
+  signed_at: string | null;
+}
+
+const WARNINGS: AcademicWarning[] = [
+  { id: 'w1', student_id: '20231022', name_en: 'Lina Al-Otaibi', name_ar: 'لينا العتيبي',
+    gpa: 1.7, warning_semester: 'Spring 2026', notified_at: '2026-04-20T08:00:00Z', signed_at: null },
+  { id: 'w2', student_id: '20221180', name_en: 'Mariam Al-Ajmi', name_ar: 'مريم العجمي',
+    gpa: 1.85, warning_semester: 'Spring 2026', notified_at: '2026-04-18T08:00:00Z', signed_at: '2026-04-22T11:00:00Z' },
+  { id: 'w3', student_id: '20251002', name_en: 'Saad Al-Hajri', name_ar: 'سعد الهاجري',
+    gpa: 1.6, warning_semester: 'Spring 2026', notified_at: '2026-04-21T08:00:00Z', signed_at: null },
+];
+
+export interface FeedbackEntry {
+  id: string;
+  type: 'complaint' | 'suggestion';
+  subject: string;
+  body: string;
+  student_id: string;
+  student_name_en: string;
+  student_name_ar: string;
+  department: string;
+  status: 'open' | 'in_progress' | 'resolved';
+  submitted_at: string;
+}
+
+const FEEDBACK_ENTRIES: FeedbackEntry[] = [
+  { id: 'fb1', type: 'complaint', subject: 'Wifi outage in Building 4',
+    body: 'Wifi has been unreliable in Block 4 study area for the past week.',
+    student_id: '20211045', student_name_en: 'Yousef Al-Mutairi', student_name_ar: 'يوسف المطيري',
+    department: 'IT', status: 'in_progress', submitted_at: '2026-04-22T10:00:00Z' },
+  { id: 'fb2', type: 'complaint', subject: 'Cafeteria pricing',
+    body: 'Cafeteria meal prices have increased without notice.',
+    student_id: '20231022', student_name_en: 'Lina Al-Otaibi', student_name_ar: 'لينا العتيبي',
+    department: 'Student Life', status: 'open', submitted_at: '2026-04-25T09:30:00Z' },
+  { id: 'fb3', type: 'suggestion', subject: 'Add evening library hours during finals',
+    body: 'Could the library stay open until midnight during finals week?',
+    student_id: '20221180', student_name_en: 'Mariam Al-Ajmi', student_name_ar: 'مريم العجمي',
+    department: 'Library', status: 'open', submitted_at: '2026-04-24T20:00:00Z' },
+  { id: 'fb4', type: 'suggestion', subject: 'Mobile app — Arabic course names',
+    body: 'Some course names in the app are still only in English.',
+    student_id: '20251002', student_name_en: 'Saad Al-Hajri', student_name_ar: 'سعد الهاجري',
+    department: 'IT', status: 'resolved', submitted_at: '2026-04-12T14:00:00Z' },
+];
+
+export interface SportApplication {
+  id: string;
+  student_id: string;
+  student_name_en: string;
+  student_name_ar: string;
+  activity: string;
+  proof_doc: string;
+  discount_pct: number;
+  status: 'pending' | 'approved' | 'rejected';
+  submitted_at: string;
+}
+
+const SPORT_APPLICATIONS: SportApplication[] = [
+  { id: 'sp1', student_id: '20211045', student_name_en: 'Yousef Al-Mutairi', student_name_ar: 'يوسف المطيري',
+    activity: 'Kuwait National Football Team — Youth', proof_doc: 'national_team_id.pdf',
+    discount_pct: 25, status: 'pending', submitted_at: '2026-04-22T11:00:00Z' },
+  { id: 'sp2', student_id: '20231022', student_name_en: 'Lina Al-Otaibi', student_name_ar: 'لينا العتيبي',
+    activity: 'Kazma SC — Women\'s Volleyball', proof_doc: 'kazma_volleyball.pdf',
+    discount_pct: 15, status: 'approved', submitted_at: '2026-04-10T08:00:00Z' },
+];
+
+export interface DirectoryEntry {
+  id: string;
+  name_en: string;
+  name_ar: string;
+  department_en: string;
+  department_ar: string;
+  email: string;
+  phone: string;
+}
+
+const DIRECTORY_ENTRIES: DirectoryEntry[] = [
+  { id: 'd1', name_en: 'Registration Office', name_ar: 'مكتب التسجيل',
+    department_en: 'Registration', department_ar: 'التسجيل',
+    email: 'registration@cck.edu.kw', phone: '+965 1842 426' },
+  { id: 'd2', name_en: 'Admission Office', name_ar: 'مكتب القبول',
+    department_en: 'Admission', department_ar: 'القبول',
+    email: 'admission@cck.edu.kw', phone: '+965 1842 426' },
+  { id: 'd3', name_en: 'Finance Department', name_ar: 'قسم المالية',
+    department_en: 'Finance', department_ar: 'المالية',
+    email: 'finance@cck.edu.kw', phone: '+965 1842 426' },
+  { id: 'd4', name_en: 'Student Life', name_ar: 'الحياة الطلابية',
+    department_en: 'Student Affairs', department_ar: 'شؤون الطلاب',
+    email: 'studentlife@cck.edu.kw', phone: '+965 1842 426' },
+  { id: 'd5', name_en: 'Faculty of Business', name_ar: 'كلية الأعمال',
+    department_en: 'Academics', department_ar: 'الأكاديمي',
+    email: 'business.faculty@cck.edu.kw', phone: '+965 1842 426' },
+  { id: 'd6', name_en: 'Faculty of Engineering Technology', name_ar: 'كلية هندسة التكنولوجيا',
+    department_en: 'Academics', department_ar: 'الأكاديمي',
+    email: 'engineering.faculty@cck.edu.kw', phone: '+965 1842 426' },
+  { id: 'd7', name_en: 'IT Helpdesk', name_ar: 'الدعم التقني',
+    department_en: 'IT', department_ar: 'تقنية المعلومات',
+    email: 'helpdesk@cck.edu.kw', phone: '+965 1842 426' },
+];
+
+const STAFF_DASHBOARD_ACTIVITY = [
+  { id: 'a1', label_en: 'You completed REQ-2026-0420 (TWIMC)', label_ar: 'أنجزت الطلب REQ-2026-0420 (إلى من يهمه الأمر)', timestamp: '2026-04-26T08:00:00Z' },
+  { id: 'a2', label_en: 'New applicant ADM-2026-105 advanced to Registration', label_ar: 'تقدم المتقدم ADM-2026-105 لمرحلة التسجيل', timestamp: '2026-04-26T07:30:00Z' },
+  { id: 'a3', label_en: 'Lina Al-Otaibi submitted an Excused Absence', label_ar: 'قدّمت لينا العتيبي عذر غياب', timestamp: '2026-04-26T07:20:00Z' },
+  { id: 'a4', label_en: 'FA decision pending — BUS 201 Section A (2 students)', label_ar: 'قرار FA معلق — BUS 201 شعبة A (طالبان)', timestamp: '2026-04-25T16:00:00Z' },
 ];
 
 export const api = {
@@ -521,7 +1070,7 @@ export const api = {
     await delay(500);
     return { message_id: `comm_${Date.now()}`, recipients_count: 342, status: 'queued', ...body };
   }),
-  getBranding: async () => withErrorHandling('getBranding', async () => { await delay(); return { university_name_en: 'Canadian College of Kuwait', university_name_ar: 'الكلية الكندية في الكويت', primary_color: '#006341', secondary_color: '#E20613', font_family: 'Almarai', logo_url: '' }; }),
+  getBranding: async () => withErrorHandling('getBranding', async () => { await delay(); return { university_name_en: 'Canadian College of Kuwait', university_name_ar: 'الكلية الكندية في الكويت', primary_color: '#006341', secondary_color: '#76B82A' }; }),
   updateBranding: async (body: Record<string, unknown>) => withErrorHandling('updateBranding', async () => { await delay(500); return { ...body, updated_at: new Date().toISOString() }; }),
   getUsers: async () => withErrorHandling('getUsers', async () => { await delay(); return ADMIN_USERS; }),
   createUser: async (body: Record<string, unknown>) => withErrorHandling('createUser', async () => {
@@ -638,5 +1187,184 @@ export const api = {
   bulkSuspend: async (userIds: string[]) => withErrorHandling('bulkSuspend', async () => {
     await delay(500);
     return { suspended: userIds.length, updated_at: new Date().toISOString() };
+  }),
+
+  /* ─── CCK-Hub workflow APIs ─── */
+
+  getStaffDashboard: async () => withErrorHandling('getStaffDashboard', async () => {
+    await delay();
+    const open = STUDENT_REQUESTS.filter((r) => r.status !== 'completed' && r.status !== 'cancelled');
+    const inProgress = STUDENT_REQUESTS.filter((r) => r.status === 'in_progress').length;
+    const submitted = STUDENT_REQUESTS.filter((r) => r.status === 'submitted').length;
+    const completed = STUDENT_REQUESTS.filter((r) => r.status === 'completed').length;
+    const queues = [
+      { key: 'requests', label_en: 'Student Requests', label_ar: 'طلبات الطلاب',
+        href: '/requests', open: open.length, in_progress: inProgress, completed },
+      { key: 'admissions', label_en: 'Admissions', label_ar: 'القبول',
+        href: '/admissions', open: ADMISSION_APPLICANTS.filter((a) => a.stage !== 'completed').length,
+        in_progress: ADMISSION_APPLICANTS.filter((a) => a.stage !== 'completed' && a.stage !== 'admission').length,
+        completed: ADMISSION_APPLICANTS.filter((a) => a.stage === 'completed').length },
+      { key: 'social', label_en: 'Social Allowance', label_ar: 'الإعانة الاجتماعية',
+        href: '/social-allowance',
+        open: SOCIAL_APPLICATIONS.filter((s) => s.status !== 'completed').length,
+        in_progress: SOCIAL_APPLICATIONS.filter((s) => s.status === 'in_progress').length,
+        completed: SOCIAL_APPLICATIONS.filter((s) => s.status === 'completed').length },
+      { key: 'appeals', label_en: 'Appeals', label_ar: 'التظلمات',
+        href: '/appeals',
+        open: APPEALS.filter((a) => a.status !== 'completed').length,
+        in_progress: APPEALS.filter((a) => a.status === 'in_progress').length,
+        completed: APPEALS.filter((a) => a.status === 'completed').length },
+      { key: 'fa', label_en: 'FA Decisions', label_ar: 'قرارات FA',
+        href: '/fa-screen',
+        open: FA_ROSTERS.reduce((acc, r) => acc + r.students.filter((s) => s.decision === 'pending').length, 0),
+        in_progress: 0,
+        completed: FA_ROSTERS.reduce((acc, r) => acc + r.students.filter((s) => s.decision !== 'pending').length, 0) },
+      { key: 'feedback', label_en: 'Complaints & Suggestions', label_ar: 'الشكاوى والمقترحات',
+        href: '/feedback',
+        open: FEEDBACK_ENTRIES.filter((f) => f.status !== 'resolved').length,
+        in_progress: FEEDBACK_ENTRIES.filter((f) => f.status === 'in_progress').length,
+        completed: FEEDBACK_ENTRIES.filter((f) => f.status === 'resolved').length },
+    ];
+    const alerts = open
+      .map((r) => {
+        const ageDays = Math.floor((Date.now() - new Date(r.submitted_at).getTime()) / 86_400_000);
+        return { id: r.id, type: r.type, student_name_en: r.student_name_en, student_name_ar: r.student_name_ar,
+          age_days: ageDays, overdue: ageDays > 5 };
+      })
+      .filter((a) => a.age_days >= 4)
+      .sort((a, b) => b.age_days - a.age_days);
+    return {
+      stats: {
+        assigned_to_me: STUDENT_REQUESTS.filter((r) => r.assigned_to_en === 'Noura Al-Shahri' && r.status !== 'completed').length,
+        open: open.length,
+        due_today: alerts.filter((a) => !a.overdue && a.age_days >= 4).length,
+        overdue: alerts.filter((a) => a.overdue).length,
+        completed_this_week: completed,
+      },
+      queues,
+      alerts: alerts.slice(0, 6),
+      recent_activity: STAFF_DASHBOARD_ACTIVITY,
+    };
+  }),
+
+  getRequests: async () => withErrorHandling('getRequests', async () => {
+    await delay();
+    return [...STUDENT_REQUESTS].sort((a, b) =>
+      new Date(b.submitted_at).getTime() - new Date(a.submitted_at).getTime());
+  }),
+
+  getRequest: async (id: string) => withErrorHandling('getRequest', async () => {
+    await delay();
+    return STUDENT_REQUESTS.find((r) => r.id === id) ?? null;
+  }),
+
+  updateRequestStatus: async (id: string, status: RequestStatus) => withErrorHandling('updateRequestStatus', async () => {
+    await delay();
+    return { id, status, updated_at: new Date().toISOString() };
+  }),
+
+  assignRequest: async (id: string, assignee: { en: string; ar: string } | null) => withErrorHandling('assignRequest', async () => {
+    await delay();
+    return { id, assignee, updated_at: new Date().toISOString() };
+  }),
+
+  addRequestComment: async (id: string, body: string) => withErrorHandling('addRequestComment', async () => {
+    await delay();
+    return { id: `c_${Date.now()}`, request_id: id, body, created_at: new Date().toISOString() };
+  }),
+
+  notifyRequestStudent: async (id: string) => withErrorHandling('notifyRequestStudent', async () => {
+    await delay(400);
+    return { id, notified: true, sent_at: new Date().toISOString() };
+  }),
+
+  getAdmissionApplicants: async () => withErrorHandling('getAdmissionApplicants', async () => {
+    await delay();
+    return [...ADMISSION_APPLICANTS];
+  }),
+
+  decideAdmission: async (id: string, decision: 'approve' | 'reject', comment: string) => withErrorHandling('decideAdmission', async () => {
+    await delay(400);
+    return { id, decision, comment, decided_at: new Date().toISOString() };
+  }),
+
+  generateAcceptanceLetter: async (id: string) => withErrorHandling('generateAcceptanceLetter', async () => {
+    await delay(500);
+    return { id, letter_id: `letter_${Date.now()}`, generated_at: new Date().toISOString() };
+  }),
+
+  getSocialApplications: async () => withErrorHandling('getSocialApplications', async () => {
+    await delay();
+    return [...SOCIAL_APPLICATIONS];
+  }),
+
+  updateSocialStatus: async (id: string, status: SocialApplication['status']) => withErrorHandling('updateSocialStatus', async () => {
+    await delay();
+    return { id, status, updated_at: new Date().toISOString() };
+  }),
+
+  markSocialSentToPuc: async (id: string) => withErrorHandling('markSocialSentToPuc', async () => {
+    await delay();
+    return { id, sent_to_puc: true, updated_at: new Date().toISOString() };
+  }),
+
+  getAppeals: async () => withErrorHandling('getAppeals', async () => {
+    await delay();
+    return [...APPEALS];
+  }),
+
+  getAppealsReleaseStatus: async () => withErrorHandling('getAppealsReleaseStatus', async () => {
+    await delay();
+    return { released: true };
+  }),
+
+  toggleAppealsRelease: async () => withErrorHandling('toggleAppealsRelease', async () => {
+    await delay();
+    return { released: false };
+  }),
+
+  getFaRosters: async () => withErrorHandling('getFaRosters', async () => {
+    await delay();
+    return [...FA_ROSTERS];
+  }),
+
+  decideFa: async (studentRowId: string, decision: 'fa_admitted' | 'absence_removed') => withErrorHandling('decideFa', async () => {
+    await delay();
+    return { id: studentRowId, decision, updated_at: new Date().toISOString() };
+  }),
+
+  getWarnings: async () => withErrorHandling('getWarnings', async () => {
+    await delay();
+    return [...WARNINGS];
+  }),
+
+  markWarningSigned: async (id: string) => withErrorHandling('markWarningSigned', async () => {
+    await delay();
+    return { id, signed_at: new Date().toISOString() };
+  }),
+
+  getFeedback: async () => withErrorHandling('getFeedback', async () => {
+    await delay();
+    return [...FEEDBACK_ENTRIES];
+  }),
+
+  resolveFeedback: async (id: string) => withErrorHandling('resolveFeedback', async () => {
+    await delay();
+    return { id, status: 'resolved', updated_at: new Date().toISOString() };
+  }),
+
+  getSportApplications: async () => withErrorHandling('getSportApplications', async () => {
+    await delay();
+    return [...SPORT_APPLICATIONS];
+  }),
+
+  decideSport: async (id: string, decision: 'approved' | 'rejected') => withErrorHandling('decideSport', async () => {
+    await delay();
+    return { id, status: decision, updated_at: new Date().toISOString() };
+  }),
+
+  getDirectory: async () => withErrorHandling('getDirectory', async () => {
+    await delay();
+    return [...DIRECTORY_ENTRIES];
   }),
 };

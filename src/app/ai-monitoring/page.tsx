@@ -13,21 +13,14 @@ interface AIData {
   escalation_rate: number;
   avg_response_time_sec: number;
   conversations_today: number;
-  topic_distribution: { topic_en: string; topic_ar: string; count: number; percentage: number }[];
-  escalation_reasons: { reason_en: string; reason_ar: string; count: number; percentage: number }[];
+  topic_distribution: { topic: string; count: number; percentage: number }[];
+  escalation_reasons: { reason: string; count: number; percentage: number }[];
   satisfaction_breakdown: { rating: number; count: number; percentage: number }[];
-  recent_escalations: { id: string; student_en: string; student_ar: string; topic_en: string; topic_ar: string; timestamp: string; status: string }[];
+  recent_escalations: { id: string; student: string; topic: string; timestamp: string; status: string }[];
 }
 
-const STATUS_LABELS_AR: Record<string, string> = {
-  pending: 'قيد الانتظار',
-  assigned: 'مُسند',
-  resolved: 'مُنجز',
-};
-
 export default function AIMonitoringPage() {
-  const { t, dir, locale } = useI18n();
-  const pick = (en: string, ar: string) => (locale === 'ar' ? ar : en);
+  const { t, dir } = useI18n();
   const [data, setData] = useState<AIData | null>(null);
   const [error, setError] = useState(false);
 
@@ -60,9 +53,9 @@ export default function AIMonitoringPage() {
           <h2 className="text-lg font-semibold mb-4">{t('ai.topicDistribution')}</h2>
           <div className="space-y-3">
             {data.topic_distribution.map((tp) => (
-              <div key={tp.topic_en}>
+              <div key={tp.topic}>
                 <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-600">{pick(tp.topic_en, tp.topic_ar)}</span>
+                  <span className="text-gray-600">{tp.topic}</span>
                   <span className="text-gray-400">{tp.count.toLocaleString()} ({tp.percentage}%)</span>
                 </div>
                 <div className="w-full bg-gray-100 rounded-full h-2">
@@ -97,8 +90,8 @@ export default function AIMonitoringPage() {
           <h2 className="text-lg font-semibold mb-4">{t('ai.escalationReasons')}</h2>
           <div className="space-y-3">
             {data.escalation_reasons.map((r) => (
-              <div key={r.reason_en} className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">{pick(r.reason_en, r.reason_ar)}</span>
+              <div key={r.reason} className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">{r.reason}</span>
                 <div>
                   <span className="font-medium">{r.count}</span>
                   <span className="text-gray-400 text-xs ms-2">({r.percentage}%)</span>
@@ -114,15 +107,15 @@ export default function AIMonitoringPage() {
             {data.recent_escalations.map((e) => (
               <div key={e.id} className="border border-gray-100 rounded-lg p-3">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-medium text-sm">{pick(e.student_en, e.student_ar)}</span>
+                  <span className="font-medium text-sm">{e.student}</span>
                   <span className={`px-2 py-0.5 rounded text-xs font-medium ${
                     e.status === 'resolved' ? 'bg-oasis-100 text-oasis-700' :
                     e.status === 'assigned' ? 'bg-blue-100 text-blue-700' :
                     'bg-gold-100 text-gold-700'
-                  }`}>{locale === 'ar' ? STATUS_LABELS_AR[e.status] || e.status : e.status}</span>
+                  }`}>{e.status}</span>
                 </div>
-                <p className="text-sm text-gray-600">{pick(e.topic_en, e.topic_ar)}</p>
-                <p className="text-xs text-gray-400 mt-1">{new Date(e.timestamp).toLocaleString(locale === 'ar' ? 'ar-KW' : 'en-US')}</p>
+                <p className="text-sm text-gray-600">{e.topic}</p>
+                <p className="text-xs text-gray-400 mt-1">{new Date(e.timestamp).toLocaleString()}</p>
               </div>
             ))}
           </div>
