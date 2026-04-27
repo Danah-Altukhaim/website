@@ -898,6 +898,7 @@ export interface FaRoster {
   section: string;
   instructor_en: string;
   instructor_ar: string;
+  instructor_email: string;
   students: {
     id: string;
     student_id: string;
@@ -907,14 +908,16 @@ export interface FaRoster {
     absences: number;
     assessments: { label: string; score: number }[];
     total_grade: number;
-    decision: 'pending' | 'fa_admitted' | 'absence_removed' | 'forwarded';
+    decision: 'pending' | 'fa_admitted' | 'absence_removed';
+    warning_email_sent?: boolean;
   }[];
 }
 
 const FA_ROSTERS: FaRoster[] = [
   {
     course_code: 'BUS 201', course_name: 'Principles of Marketing',
-    section: 'Section A', instructor_en: 'Dr. Khalid Al-Roumi', instructor_ar: 'د. خالد الرومي',
+    section: 'Section A', instructor_en: 'Ahmed Al-Ghamdi', instructor_ar: 'أحمد الغامدي',
+    instructor_email: 'admission@cck.edu.kw',
     students: [
       {
         id: 'fa1', student_id: '20231022', name_en: 'Lina Al-Otaibi', name_ar: 'لينا العتيبي',
@@ -931,8 +934,22 @@ const FA_ROSTERS: FaRoster[] = [
     ],
   },
   {
+    course_code: 'BUS 305', course_name: 'Operations Management',
+    section: 'Section B', instructor_en: 'Ahmed Al-Ghamdi', instructor_ar: 'أحمد الغامدي',
+    instructor_email: 'admission@cck.edu.kw',
+    students: [
+      {
+        id: 'fa4', student_id: '20221180', name_en: 'Mariam Al-Ajmi', name_ar: 'مريم العجمي',
+        attendance_pct: 64, absences: 10,
+        assessments: [{ label: 'Quiz 1', score: 6 }, { label: 'Midterm', score: 20 }],
+        total_grade: 26, decision: 'pending',
+      },
+    ],
+  },
+  {
     course_code: 'ENG 102', course_name: 'English Composition',
-    section: 'Section B', instructor_en: 'Ms. Sarah Coombs', instructor_ar: 'الأستاذة سارة كومبس',
+    section: 'Section B', instructor_en: 'Sarah Coombs', instructor_ar: 'سارة كومبس',
+    instructor_email: 'sarah.coombs@cck.edu.kw',
     students: [
       {
         id: 'fa3', student_id: '20251002', name_en: 'Saad Al-Hajri', name_ar: 'سعد الهاجري',
