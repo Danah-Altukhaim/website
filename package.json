@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@masari/shared": "*",
     "@tanstack/react-query": "^5.100.9",
     "next": "14.2.21",
     "react": "^18.3.1",
