@@ -1,38 +1,40 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, type Appeal } from '@/lib/api';
 import { useI18n } from '@/lib/i18n';
 import { SkeletonTable } from '@/components/Skeleton';
 import EmptyState from '@/components/EmptyState';
 import ErrorState from '@/components/ErrorState';
 
+const APPEALS_KEY = ['appeals'] as const;
+const APPEALS_RELEASE_KEY = ['appeals', 'release'] as const;
+
 export default function AppealsPage() {
   const { t, locale, dir } = useI18n();
-  const [appeals, setAppeals] = useState<Appeal[] | null>(null);
-  const [released, setReleased] = useState<boolean | null>(null);
-  const [error, setError] = useState(false);
-
-  const load = useCallback(() => {
-    setError(false);
-    Promise.all([
-      api.getAppeals().then((d) => setAppeals(d as Appeal[])),
-      api.getAppealsReleaseStatus().then((d) => setReleased((d as { released: boolean }).released)),
-    ]).catch(() => setError(true));
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
+  const qc = useQueryClient();
+  const appealsQ = useQuery<Appeal[]>({
+    queryKey: APPEALS_KEY,
+    queryFn: () => api.getAppeals() as Promise<Appeal[]>,
+  });
+  const releaseQ = useQuery<boolean>({
+    queryKey: APPEALS_RELEASE_KEY,
+    queryFn: async () => ((await api.getAppealsReleaseStatus()) as { released: boolean }).released,
+  });
+  const appeals = appealsQ.data;
+  const released = releaseQ.data ?? null;
+  const isError = appealsQ.isError || releaseQ.isError;
 
   const toggle = async () => {
     const next = await api.toggleAppealsRelease();
-    setReleased((next as { released: boolean }).released);
+    qc.setQueryData<boolean>(APPEALS_RELEASE_KEY, (next as { released: boolean }).released);
   };
 
   const fmtDate = (iso: string) => new Date(iso).toLocaleString(locale === 'ar' ? 'ar-KW' : 'en-GB', {
     day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit',
   });
 
-  if (error) return <ErrorState title={t('common.error')} description={t('common.errorDescription')} onRetry={load} retryLabel={t('common.retry')} />;
+  if (isError) return <ErrorState title={t('common.error')} description={t('common.errorDescription')} onRetry={() => { appealsQ.refetch(); releaseQ.refetch(); }} retryLabel={t('common.retry')} />;
 
   return (
     <div dir={dir}>

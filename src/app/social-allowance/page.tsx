@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, type SocialApplication, type SocialCategory } from '@/lib/api';
 import { useI18n } from '@/lib/i18n';
 import { SkeletonTable } from '@/components/Skeleton';
@@ -15,21 +16,18 @@ const STATUS_STYLE: Record<SocialApplication['status'], string> = {
 };
 
 const CATEGORIES: SocialCategory[] = ['kuwaiti', 'kuwaiti_mother', 'disabled', 'married', 'bank_change'];
+const SOCIAL_KEY = ['social', 'applications'] as const;
 
 export default function SocialAllowancePage() {
   const { t, locale, dir } = useI18n();
-  const [apps, setApps] = useState<SocialApplication[] | null>(null);
-  const [error, setError] = useState(false);
+  const qc = useQueryClient();
+  const { data: apps, isError, isLoading, refetch } = useQuery<SocialApplication[]>({
+    queryKey: SOCIAL_KEY,
+    queryFn: () => api.getSocialApplications() as Promise<SocialApplication[]>,
+  });
   const [filter, setFilter] = useState<SocialCategory | 'all'>('all');
   const [busy, setBusy] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
-
-  const load = useCallback(() => {
-    setError(false);
-    api.getSocialApplications().then((d) => setApps(d as SocialApplication[])).catch(() => setError(true));
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -40,7 +38,9 @@ export default function SocialAllowancePage() {
     setBusy(id + status);
     try {
       await api.updateSocialStatus(id, status);
-      setApps((prev) => prev?.map((a) => a.id === id ? { ...a, status } : a) ?? null);
+      qc.setQueryData<SocialApplication[]>(SOCIAL_KEY, (prev) =>
+        prev?.map((a) => a.id === id ? { ...a, status } : a) ?? prev,
+      );
     } finally {
       setBusy(null);
     }
@@ -50,14 +50,16 @@ export default function SocialAllowancePage() {
     setBusy(id + 'puc');
     try {
       await api.markSocialSentToPuc(id);
-      setApps((prev) => prev?.map((a) => a.id === id ? { ...a, sent_to_puc: true } : a) ?? null);
+      qc.setQueryData<SocialApplication[]>(SOCIAL_KEY, (prev) =>
+        prev?.map((a) => a.id === id ? { ...a, sent_to_puc: true } : a) ?? prev,
+      );
       showToast(t('social.sentToPuc'));
     } finally {
       setBusy(null);
     }
   };
 
-  if (error) return <ErrorState title={t('common.error')} description={t('common.errorDescription')} onRetry={load} retryLabel={t('common.retry')} />;
+  if (isError) return <ErrorState title={t('common.error')} description={t('common.errorDescription')} onRetry={() => refetch()} retryLabel={t('common.retry')} />;
 
   const filtered = !apps ? [] : apps.filter((a) => filter === 'all' || a.category === filter);
 
@@ -67,7 +69,7 @@ export default function SocialAllowancePage() {
       <p className="text-sm text-[#737477] mb-6">{t('social.subtitle')}</p>
 
       {toast && (
-        <div className="mb-4 bg-pair-50 border border-pair-200 rounded-lg px-4 py-2 text-sm text-pair-700">
+        <div role="status" aria-live="polite" className="mb-4 bg-pair-50 border border-pair-200 rounded-lg px-4 py-2 text-sm text-pair-700">
           {toast}
         </div>
       )}
@@ -94,7 +96,7 @@ export default function SocialAllowancePage() {
         ))}
       </div>
 
-      {!apps ? (
+      {isLoading || !apps ? (
         <SkeletonTable rows={5} cols={5} />
       ) : filtered.length === 0 ? (
         <EmptyState title={t('common.noData')} />

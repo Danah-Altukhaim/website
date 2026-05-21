@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, type SportApplication } from '@/lib/api';
 import { useI18n } from '@/lib/i18n';
 import { SkeletonTable } from '@/components/Skeleton';
@@ -13,24 +14,24 @@ const STATUS_STYLE: Record<SportApplication['status'], string> = {
   rejected: 'bg-danger-50 text-danger-700',
 };
 
+const SPORT_KEY = ['sport', 'applications'] as const;
+
 export default function SportPage() {
   const { t, locale, dir } = useI18n();
-  const [apps, setApps] = useState<SportApplication[] | null>(null);
-  const [error, setError] = useState(false);
+  const qc = useQueryClient();
+  const { data: apps, isError, isLoading, refetch } = useQuery<SportApplication[]>({
+    queryKey: SPORT_KEY,
+    queryFn: () => api.getSportApplications() as Promise<SportApplication[]>,
+  });
   const [busy, setBusy] = useState<string | null>(null);
-
-  const load = useCallback(() => {
-    setError(false);
-    api.getSportApplications().then((d) => setApps(d as SportApplication[])).catch(() => setError(true));
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
 
   const decide = async (id: string, decision: 'approved' | 'rejected') => {
     setBusy(id + decision);
     try {
       await api.decideSport(id, decision);
-      setApps((prev) => prev?.map((s) => s.id === id ? { ...s, status: decision } : s) ?? null);
+      qc.setQueryData<SportApplication[]>(SPORT_KEY, (prev) =>
+        prev?.map((s) => s.id === id ? { ...s, status: decision } : s) ?? prev,
+      );
     } finally {
       setBusy(null);
     }
@@ -40,14 +41,14 @@ export default function SportPage() {
     day: '2-digit', month: 'short', year: '2-digit',
   });
 
-  if (error) return <ErrorState title={t('common.error')} description={t('common.errorDescription')} onRetry={load} retryLabel={t('common.retry')} />;
+  if (isError) return <ErrorState title={t('common.error')} description={t('common.errorDescription')} onRetry={() => refetch()} retryLabel={t('common.retry')} />;
 
   return (
     <div dir={dir}>
       <h1 className="text-2xl font-bold mb-1">{t('sport.title')}</h1>
       <p className="text-sm text-[#737477] mb-6">{t('sport.subtitle')}</p>
 
-      {!apps ? (
+      {isLoading || !apps ? (
         <SkeletonTable rows={3} cols={5} />
       ) : apps.length === 0 ? (
         <EmptyState title={t('common.noData')} />
@@ -71,7 +72,19 @@ export default function SportPage() {
                     <p className="font-medium">{locale === 'ar' ? s.student_name_ar : s.student_name_en}</p>
                     <p className="text-xs text-[#737477]">{s.student_id} · {fmtDate(s.submitted_at)}</p>
                   </td>
-                  <td className="px-4 py-3 text-[#222]">{s.activity}</td>
+                  <td className="px-4 py-3">
+                    <p className="text-[#222]">{s.activity}</p>
+                    <span className={`mt-1 inline-block px-1.5 py-0.5 rounded text-[11px] font-medium ${
+                      s.player_type === 'local_club' ? 'bg-pair-50 text-pair-700' : 'bg-gold-50 text-gold-700'
+                    }`}>
+                      {t(`sport.playerType.${s.player_type}`)}
+                    </span>
+                    {s.player_type === 'amateur' && s.coach_en && (
+                      <p className="text-xs text-[#737477] mt-0.5">
+                        {t('sport.coach')}: {locale === 'ar' ? s.coach_ar : s.coach_en}
+                      </p>
+                    )}
+                  </td>
                   <td className="px-4 py-3">
                     <span className="px-2 py-0.5 rounded bg-gray-100 text-[#222] text-xs font-mono">{s.proof_doc}</span>
                   </td>

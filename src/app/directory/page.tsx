@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { api, type DirectoryEntry } from '@/lib/api';
 import { useI18n } from '@/lib/i18n';
 import { SkeletonTable } from '@/components/Skeleton';
@@ -9,17 +9,12 @@ import ErrorState from '@/components/ErrorState';
 
 export default function DirectoryPage() {
   const { t, locale, dir } = useI18n();
-  const [entries, setEntries] = useState<DirectoryEntry[] | null>(null);
-  const [error, setError] = useState(false);
+  const { data: entries, isError, refetch } = useQuery<DirectoryEntry[]>({
+    queryKey: ['directory'],
+    queryFn: () => api.getDirectory() as Promise<DirectoryEntry[]>,
+  });
 
-  const load = useCallback(() => {
-    setError(false);
-    api.getDirectory().then((d) => setEntries(d as DirectoryEntry[])).catch(() => setError(true));
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
-
-  if (error) return <ErrorState title={t('common.error')} description={t('common.errorDescription')} onRetry={load} retryLabel={t('common.retry')} />;
+  if (isError) return <ErrorState title={t('common.error')} description={t('common.errorDescription')} onRetry={() => refetch()} retryLabel={t('common.retry')} />;
 
   return (
     <div dir={dir}>

@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
+import { useQuery } from '@tanstack/react-query';
 import Card from '@/components/Card';
 import { SkeletonPage } from '@/components/Skeleton';
 import ErrorState from '@/components/ErrorState';
@@ -50,18 +50,13 @@ interface Dashboard {
 
 export default function StaffDashboardPage() {
   const { t, locale, dir } = useI18n();
-  const [data, setData] = useState<Dashboard | null>(null);
-  const [error, setError] = useState(false);
+  const { data, isError, refetch } = useQuery<Dashboard>({
+    queryKey: ['staff', 'dashboard'],
+    queryFn: () => api.getStaffDashboard() as Promise<Dashboard>,
+  });
 
-  const load = useCallback(() => {
-    setError(false);
-    api.getStaffDashboard().then((d) => setData(d as Dashboard)).catch(() => setError(true));
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
-
-  if (error) return <ErrorState title={t('common.error')} description={t('common.errorDescription')} onRetry={load} retryLabel={t('common.retry')} />;
-  if (!data) return <SkeletonPage />;
+  if (isError) return <ErrorState title={t('common.error')} description={t('common.errorDescription')} onRetry={() => refetch()} retryLabel={t('common.retry')} />;
+  if (!data) return <SkeletonPage stats={5} />;
 
   const fmtDate = (iso: string) => new Date(iso).toLocaleString(locale === 'ar' ? 'ar-KW' : 'en-GB', {
     day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit',
@@ -69,8 +64,21 @@ export default function StaffDashboardPage() {
 
   return (
     <div dir={dir}>
-      <h1 className="text-2xl font-bold mb-1">{t('dashboard.title')}</h1>
-      <p className="text-sm text-[#737477] mb-6">{t('dashboard.subtitle')}</p>
+      <header className="mb-6">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-pair-600">
+          {t('brand.institution')}
+        </p>
+        <div className="flex items-end justify-between gap-4 mt-1.5">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold text-[#222] truncate">{t('dashboard.title')}</h1>
+            <p className="text-sm text-[#737477] mt-1">{t('dashboard.subtitle')}</p>
+          </div>
+          <p className="hidden md:block text-xs italic text-[#737477] max-w-[14rem] text-end shrink-0">
+            {t('brand.tagline')}
+          </p>
+        </div>
+        <div className="mt-3 h-0.5 bg-pair-600/30" />
+      </header>
 
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         <Card title={t('dashboard.assignedToMe')} value={data.stats.assigned_to_me.toString()} />
@@ -93,7 +101,7 @@ export default function StaffDashboardPage() {
                   <th className="text-start py-2 pe-4">{t('dashboard.queueInProgress')}</th>
                   <th className="text-start py-2 pe-4">{t('dashboard.queuePending')}</th>
                   <th className="text-start py-2 pe-4">{t('dashboard.queueCompleted')}</th>
-                  <th className="text-end py-2"> </th>
+                  <th className="text-end py-2"><span className="sr-only">{t('common.actions')}</span></th>
                 </tr>
               </thead>
               <tbody>

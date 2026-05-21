@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { api, type StudentRequest, type RequestStatus, type RequestType } from '@/lib/api';
+import { useQuery } from '@tanstack/react-query';
+import { api, getRequestStageInfo, type StudentRequest, type RequestStatus, type RequestType, type RequestStageStatus } from '@/lib/api';
 import { useI18n } from '@/lib/i18n';
 import { SkeletonTable } from '@/components/Skeleton';
 import EmptyState from '@/components/EmptyState';
@@ -18,23 +19,33 @@ const STATUS_STYLE: Record<RequestStatus, string> = {
   submitted: 'bg-gold-50 text-gold-700',
   in_progress: 'bg-pair-50 text-pair-700',
   completed: 'bg-oasis-50 text-oasis-700',
+  rejected: 'bg-danger-50 text-danger-700',
   cancelled: 'bg-gray-100 text-gray-600',
+};
+
+const statusLabel = (t: (k: string) => string, s: RequestStatus): string =>
+  s === 'submitted' ? t('status.pending')
+  : s === 'in_progress' ? t('status.ongoing')
+  : s === 'completed' ? t('status.resolved')
+  : s === 'rejected' ? t('status.rejected')
+  : t('status.cancelled');
+
+const STAGE_PILL_STYLE: Record<RequestStageStatus, string> = {
+  on_track: 'bg-oasis-50 text-oasis-700',
+  due_soon: 'bg-gold-50 text-gold-700',
+  due_today: 'bg-gold-100 text-gold-700 ring-1 ring-gold-500/30',
+  overdue: 'bg-danger-50 text-danger-700',
 };
 
 export default function RequestsPage() {
   const { t, locale, dir } = useI18n();
-  const [requests, setRequests] = useState<StudentRequest[] | null>(null);
-  const [error, setError] = useState(false);
+  const { data: requests, isError, isLoading, refetch } = useQuery<StudentRequest[]>({
+    queryKey: ['requests'],
+    queryFn: () => api.getRequests() as Promise<StudentRequest[]>,
+  });
   const [typeFilter, setTypeFilter] = useState<RequestType | 'all'>('all');
   const [statusFilter, setStatusFilter] = useState<RequestStatus | 'all'>('all');
   const [search, setSearch] = useState('');
-
-  const load = useCallback(() => {
-    setError(false);
-    api.getRequests().then((d) => setRequests(d as StudentRequest[])).catch(() => setError(true));
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
 
   const filtered = useMemo(() => {
     if (!requests) return [];
@@ -56,7 +67,19 @@ export default function RequestsPage() {
     day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit',
   });
 
-  if (error) return <ErrorState title={t('common.error')} description={t('common.errorDescription')} onRetry={load} retryLabel={t('common.retry')} />;
+  const stageDeptLabel = (r: StudentRequest, stage: ReturnType<typeof getRequestStageInfo>): string => {
+    if (!stage) return '';
+    if (stage.department) return t(`dept.${stage.department}`);
+    return locale === 'ar' ? stage.step.label_ar : stage.step.label_en;
+  };
+
+  const stageDueLabel = (stage: NonNullable<ReturnType<typeof getRequestStageInfo>>): string => {
+    if (stage.status === 'overdue') return t('requests.overdueDays', { value: stage.daysOverdue });
+    if (stage.status === 'due_today') return t('requests.dueToday');
+    return t('requests.dueInDays', { value: stage.daysUntilDue });
+  };
+
+  if (isError) return <ErrorState title={t('common.error')} description={t('common.errorDescription')} onRetry={() => refetch()} retryLabel={t('common.retry')} />;
 
   return (
     <div dir={dir}>
@@ -90,12 +113,13 @@ export default function RequestsPage() {
           <option value="submitted">{t('status.pending')}</option>
           <option value="in_progress">{t('status.ongoing')}</option>
           <option value="completed">{t('status.resolved')}</option>
-          <option value="cancelled">{t('status.inactive')}</option>
+          <option value="rejected">{t('status.rejected')}</option>
+          <option value="cancelled">{t('status.cancelled')}</option>
         </select>
       </div>
 
-      {!requests ? (
-        <SkeletonTable rows={6} cols={6} />
+      {isLoading || !requests ? (
+        <SkeletonTable rows={6} cols={7} />
       ) : filtered.length === 0 ? (
         <EmptyState title={t('requests.noResults')} />
       ) : (
@@ -107,9 +131,10 @@ export default function RequestsPage() {
                 <th className="px-4 py-3 text-start font-medium">{t('requests.student')}</th>
                 <th className="px-4 py-3 text-start font-medium">{t('requests.type')}</th>
                 <th className="px-4 py-3 text-start font-medium">{t('common.status')}</th>
+                <th className="px-4 py-3 text-start font-medium">{t('requests.pendingWith')}</th>
                 <th className="px-4 py-3 text-start font-medium">{t('requests.assignedTo')}</th>
                 <th className="px-4 py-3 text-start font-medium">{t('requests.submittedAt')}</th>
-                <th className="px-4 py-3 text-end font-medium"> </th>
+                <th className="px-4 py-3 text-end font-medium"><span className="sr-only">{t('common.actions')}</span></th>
               </tr>
             </thead>
             <tbody>
@@ -123,11 +148,24 @@ export default function RequestsPage() {
                   <td className="px-4 py-3 text-[#222]">{t(`requestType.${r.type}`)}</td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-0.5 rounded text-xs font-medium ${STATUS_STYLE[r.status]}`}>
-                      {r.status === 'submitted' ? t('status.pending')
-                        : r.status === 'in_progress' ? t('status.ongoing')
-                        : r.status === 'completed' ? t('status.resolved')
-                        : t('status.inactive')}
+                      {statusLabel(t, r.status)}
                     </span>
+                  </td>
+                  <td className="px-4 py-3 text-sm">
+                    {(() => {
+                      const stage = getRequestStageInfo(r);
+                      if (!stage) return <span className="text-[#737477]">-</span>;
+                      return (
+                        <div className="space-y-1">
+                          <p className="text-[#222]">{stageDeptLabel(r, stage)}</p>
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium ${STAGE_PILL_STYLE[stage.status]}`}>
+                            <span>{t('requests.daysAtStage', { value: stage.daysAtStage })}</span>
+                            <span aria-hidden>·</span>
+                            <span>{stageDueLabel(stage)}</span>
+                          </span>
+                        </div>
+                      );
+                    })()}
                   </td>
                   <td className="px-4 py-3 text-[#737477] text-sm">
                     {r.assigned_to_en

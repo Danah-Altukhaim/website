@@ -1,30 +1,31 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, type AcademicWarning } from '@/lib/api';
 import { useI18n } from '@/lib/i18n';
 import { SkeletonTable } from '@/components/Skeleton';
 import EmptyState from '@/components/EmptyState';
 import ErrorState from '@/components/ErrorState';
 
+const WARNINGS_KEY = ['warnings'] as const;
+
 export default function WarningsPage() {
   const { t, locale, dir } = useI18n();
-  const [warnings, setWarnings] = useState<AcademicWarning[] | null>(null);
-  const [error, setError] = useState(false);
+  const qc = useQueryClient();
+  const { data: warnings, isError, isLoading, refetch } = useQuery<AcademicWarning[]>({
+    queryKey: WARNINGS_KEY,
+    queryFn: () => api.getWarnings() as Promise<AcademicWarning[]>,
+  });
   const [busy, setBusy] = useState<string | null>(null);
-
-  const load = useCallback(() => {
-    setError(false);
-    api.getWarnings().then((d) => setWarnings(d as AcademicWarning[])).catch(() => setError(true));
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
 
   const markSigned = async (id: string) => {
     setBusy(id);
     try {
       await api.markWarningSigned(id);
-      setWarnings((prev) => prev?.map((w) => w.id === id ? { ...w, signed_at: new Date().toISOString() } : w) ?? null);
+      qc.setQueryData<AcademicWarning[]>(WARNINGS_KEY, (prev) =>
+        prev?.map((w) => w.id === id ? { ...w, signed_at: new Date().toISOString() } : w) ?? prev,
+      );
     } finally {
       setBusy(null);
     }
@@ -34,14 +35,14 @@ export default function WarningsPage() {
     day: '2-digit', month: 'short', year: '2-digit',
   });
 
-  if (error) return <ErrorState title={t('common.error')} description={t('common.errorDescription')} onRetry={load} retryLabel={t('common.retry')} />;
+  if (isError) return <ErrorState title={t('common.error')} description={t('common.errorDescription')} onRetry={() => refetch()} retryLabel={t('common.retry')} />;
 
   return (
     <div dir={dir}>
       <h1 className="text-2xl font-bold mb-1">{t('warnings.title')}</h1>
       <p className="text-sm text-[#737477] mb-6">{t('warnings.subtitle')}</p>
 
-      {!warnings ? (
+      {isLoading || !warnings ? (
         <SkeletonTable rows={4} cols={5} />
       ) : warnings.length === 0 ? (
         <EmptyState title={t('common.noData')} />

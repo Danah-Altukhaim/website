@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import Card from '@/components/Card';
 import { SkeletonPage } from '@/components/Skeleton';
 import ErrorState from '@/components/ErrorState';
@@ -29,21 +29,19 @@ interface HeatmapData {
 
 export default function EngagementPage() {
   const { t, locale, dir } = useI18n();
-  const [data, setData] = useState<EngagementData | null>(null);
-  const [heatmap, setHeatmap] = useState<HeatmapData | null>(null);
-  const [error, setError] = useState(false);
+  const dataQ = useQuery<EngagementData>({
+    queryKey: ['engagement', 'overview'],
+    queryFn: () => api.getEngagement() as Promise<EngagementData>,
+  });
+  const heatmapQ = useQuery<HeatmapData>({
+    queryKey: ['engagement', 'heatmap'],
+    queryFn: () => api.getFeatureHeatmap() as Promise<HeatmapData>,
+  });
+  const data = dataQ.data;
+  const heatmap = heatmapQ.data;
+  const isError = dataQ.isError || heatmapQ.isError;
 
-  const loadData = useCallback(() => {
-    setError(false);
-    Promise.all([
-      api.getEngagement().then((d) => setData(d as EngagementData)),
-      api.getFeatureHeatmap().then((d) => setHeatmap(d as HeatmapData)),
-    ]).catch(() => setError(true));
-  }, []);
-
-  useEffect(() => { loadData(); }, [loadData]);
-
-  if (error) return <ErrorState title={t('common.error')} description={t('common.errorDescription')} onRetry={loadData} retryLabel={t('common.retry')} />;
+  if (isError) return <ErrorState title={t('common.error')} description={t('common.errorDescription')} onRetry={() => { dataQ.refetch(); heatmapQ.refetch(); }} retryLabel={t('common.retry')} />;
   if (!data) return <SkeletonPage />;
 
   const maxPeakUsers = Math.max(...data.peak_hours.map((p) => p.users));
@@ -113,22 +111,17 @@ export default function EngagementPage() {
             </table>
           </div>
           {/* Legend */}
-          <div className="flex items-center gap-2 mt-4 text-xs text-gray-500">
+          <div className="flex items-center gap-3 mt-4 text-xs text-gray-500">
             <span>{t('engagement.users')}:</span>
-            <div className="flex items-center gap-1">
-              <div className="w-6 h-4 rounded bg-pair-50" />
-              <span>Low</span>
+            <span aria-hidden className="text-[11px]">{t('engagement.legendLow')}</span>
+            <div className="flex items-center gap-0.5" role="img" aria-label={`${t('engagement.legendLow')} → ${t('engagement.legendHigh')}`}>
+              <div className="w-5 h-4 rounded-s bg-pair-50" />
+              <div className="w-5 h-4 bg-pair-100" />
+              <div className="w-5 h-4 bg-pair-200" />
+              <div className="w-5 h-4 bg-pair-400" />
+              <div className="w-5 h-4 rounded-e bg-pair-600" />
             </div>
-            <div className="flex items-center gap-1">
-              <div className="w-6 h-4 rounded bg-pair-200" />
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-6 h-4 rounded bg-pair-400" />
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-6 h-4 rounded bg-pair-600" />
-              <span>High</span>
-            </div>
+            <span aria-hidden className="text-[11px]">{t('engagement.legendHigh')}</span>
           </div>
         </div>
       )}
@@ -233,7 +226,7 @@ export default function EngagementPage() {
       </div>
 
       <p className="text-xs text-gray-400 mt-4">
-        {t('common.period')}: {data.period.start} — {data.period.end}
+        {t('common.period')}: {data.period.start} - {data.period.end}
       </p>
     </div>
   );
