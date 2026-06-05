@@ -1,9 +1,17 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { COURSES, PROGRAMS, getCourse } from '@masari/shared';
-import type { CatalogCourse, CourseType, CourseLanguage } from '@masari/shared';
+import { useState, useMemo, useEffect } from 'react';
+import type { CatalogCourse, CourseType, CourseLanguage, ProgramSlug } from '@masari/shared';
 import { useI18n } from '@/lib/i18n';
+import {
+  useCatalogCourses,
+  useCatalogPrograms,
+  useCatalogEdited,
+  catalogActions,
+} from '@/lib/catalogStore';
+import CourseEditModal from '@/components/CourseEditModal';
+import ProgramEditModal from '@/components/ProgramEditModal';
+import ConfirmDialog from '@/components/ConfirmDialog';
 
 const TYPE_STYLE: Record<CourseType, string> = {
   lecture: 'bg-pair-50 text-pair-700',
@@ -12,34 +20,86 @@ const TYPE_STYLE: Record<CourseType, string> = {
   unknown: 'bg-gray-100 text-gray-600',
 };
 
+/** Readable labels for program slugs that have no published major sheet. */
+const FALLBACK_PROGRAM_LABELS: Partial<Record<ProgramSlug, string>> = {
+  'diploma-cp': 'Diploma - Computer Programming',
+  'diploma-iawd': 'Diploma - Interactive Web Design',
+  'diploma-imd': 'Diploma - Interactive Media Design',
+  'basc-cs': 'BASc Computer Science',
+};
+
 export default function CatalogPage() {
   const { t, locale, dir } = useI18n();
   const isAr = locale === 'ar';
+  const courses = useCatalogCourses();
+  const programs = useCatalogPrograms();
+  const edited = useCatalogEdited();
+
   const [tab, setTab] = useState<'courses' | 'programs'>('courses');
   const [search, setSearch] = useState('');
   const [programFilter, setProgramFilter] = useState<string>('all');
-  const [selectedProgram, setSelectedProgram] = useState<string>(PROGRAMS[0]?.slug ?? '');
+  const [selectedProgram, setSelectedProgram] = useState<string>('');
 
-  const courses = useMemo(() => {
+  // Modal / dialog state
+  const [courseModal, setCourseModal] = useState<{ course: CatalogCourse | null } | null>(null);
+  const [programModal, setProgramModal] = useState<{ program: typeof programs[number] | null } | null>(null);
+  const [deleteCourse, setDeleteCourse] = useState<CatalogCourse | null>(null);
+  const [deleteProgramSlug, setDeleteProgramSlug] = useState<string | null>(null);
+  const [confirmReset, setConfirmReset] = useState(false);
+
+  // Keep the selected program valid as the list changes.
+  useEffect(() => {
+    if (programs.length === 0) { setSelectedProgram(''); return; }
+    if (!programs.some((p) => p.slug === selectedProgram)) {
+      setSelectedProgram(programs[0].slug);
+    }
+  }, [programs, selectedProgram]);
+
+  const courseByCode = useMemo(() => {
+    const map = new Map<string, CatalogCourse>();
+    for (const c of courses) map.set(c.code, c);
+    return map;
+  }, [courses]);
+
+  const filteredCourses = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return COURSES.filter((c) => {
-      if (programFilter !== 'all' && !c.programs.includes(programFilter as CatalogCourse['programs'][number])) return false;
+    return courses.filter((c) => {
+      if (programFilter !== 'all' && !c.programs.includes(programFilter as ProgramSlug)) return false;
       if (!q) return true;
       return c.code.toLowerCase().includes(q)
         || c.name_en.toLowerCase().includes(q)
         || (c.name_ar?.includes(q) ?? false);
     });
-  }, [search, programFilter]);
+  }, [courses, search, programFilter]);
 
-  const program = PROGRAMS.find((p) => p.slug === selectedProgram) ?? null;
+  const program = programs.find((p) => p.slug === selectedProgram) ?? null;
 
   const courseName = (c: CatalogCourse) => isAr && c.name_ar ? c.name_ar : c.name_en;
   const langLabel = (l: CourseLanguage) => t(`catalog.lang.${l}`);
+  const programLabel = (slug: ProgramSlug): string =>
+    programs.find((p) => p.slug === slug)?.name_en ?? FALLBACK_PROGRAM_LABELS[slug] ?? slug;
+
+  const actionBtn = 'px-2.5 py-1 text-xs font-medium rounded-lg border transition';
 
   return (
     <div dir={dir}>
-      <h1 className="text-2xl font-bold mb-1">{t('catalog.title')}</h1>
-      <p className="text-sm text-[#737477] mb-4">{t('catalog.subtitle')}</p>
+      <div className="flex items-start justify-between gap-4 mb-4">
+        <div>
+          <h1 className="text-2xl font-bold mb-1">{t('catalog.title')}</h1>
+          <p className="text-sm text-[#737477]">{t('catalog.subtitle')}</p>
+        </div>
+        {edited && (
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-gold-50 text-gold-700">
+              {t('catalog.edited')}
+            </span>
+            <button onClick={() => setConfirmReset(true)}
+              className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">
+              {t('catalog.reset')}
+            </button>
+          </div>
+        )}
+      </div>
 
       <div className="flex gap-2 border-b border-gray-200 mb-4">
         <button
@@ -48,7 +108,7 @@ export default function CatalogPage() {
             tab === 'courses' ? 'text-pair-600 border-pair-600' : 'text-[#737477] border-transparent'
           }`}
         >
-          {t('catalog.tabCourses')} ({COURSES.length})
+          {t('catalog.tabCourses')} ({courses.length})
         </button>
         <button
           onClick={() => setTab('programs')}
@@ -56,7 +116,7 @@ export default function CatalogPage() {
             tab === 'programs' ? 'text-pair-600 border-pair-600' : 'text-[#737477] border-transparent'
           }`}
         >
-          {t('catalog.tabPrograms')} ({PROGRAMS.length})
+          {t('catalog.tabPrograms')} ({programs.length})
         </button>
       </div>
 
@@ -76,10 +136,16 @@ export default function CatalogPage() {
               className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
             >
               <option value="all">{t('catalog.allPrograms')}</option>
-              {PROGRAMS.map((p) => (
+              {programs.map((p) => (
                 <option key={p.slug} value={p.slug}>{p.name_en}</option>
               ))}
             </select>
+            <button
+              onClick={() => setCourseModal({ course: null })}
+              className="px-4 py-2 text-sm bg-pair-600 text-white rounded-lg hover:bg-pair-700"
+            >
+              + {t('catalog.addCourse')}
+            </button>
           </div>
 
           <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
@@ -92,10 +158,11 @@ export default function CatalogPage() {
                   <th className="px-4 py-3 text-start font-medium">{t('catalog.type')}</th>
                   <th className="px-4 py-3 text-start font-medium">{t('catalog.language')}</th>
                   <th className="px-4 py-3 text-start font-medium">{t('catalog.prerequisites')}</th>
+                  <th className="px-4 py-3 text-end font-medium">{t('catalog.actions')}</th>
                 </tr>
               </thead>
               <tbody>
-                {courses.map((c) => (
+                {filteredCourses.map((c) => (
                   <tr key={c.code} className="border-b border-gray-50 last:border-0 align-top">
                     <td className="px-4 py-3 font-mono text-xs text-[#222]">{c.code}</td>
                     <td className="px-4 py-3">
@@ -114,11 +181,27 @@ export default function CatalogPage() {
                         ? <span className="text-[#737477]">{t('catalog.noPrereqs')}</span>
                         : <span className="font-mono text-[#222]">{c.prerequisites.join(', ')}</span>}
                     </td>
+                    <td className="px-4 py-3">
+                      <div className="flex justify-end gap-2">
+                        <button
+                          onClick={() => setCourseModal({ course: c })}
+                          className={`${actionBtn} border-gray-300 text-[#222] hover:bg-gray-50`}
+                        >
+                          {t('catalog.edit')}
+                        </button>
+                        <button
+                          onClick={() => setDeleteCourse(c)}
+                          className={`${actionBtn} border-danger-200 text-danger-600 hover:bg-danger-50`}
+                        >
+                          {t('catalog.delete')}
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            {courses.length === 0 && (
+            {filteredCourses.length === 0 && (
               <p className="text-sm text-[#737477] text-center py-8">{t('common.noData')}</p>
             )}
           </div>
@@ -127,16 +210,40 @@ export default function CatalogPage() {
 
       {tab === 'programs' && (
         <>
-          <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4">
+          <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4 flex flex-wrap gap-3 items-center">
             <select
               value={selectedProgram}
               onChange={(e) => setSelectedProgram(e.target.value)}
-              className="w-full md:w-auto border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
+              className="flex-1 min-w-[220px] md:flex-none md:w-auto border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
             >
-              {PROGRAMS.map((p) => (
+              {programs.map((p) => (
                 <option key={p.slug} value={p.slug}>{p.name_en}</option>
               ))}
             </select>
+            <div className="flex gap-2 ms-auto">
+              {program && (
+                <>
+                  <button
+                    onClick={() => setProgramModal({ program })}
+                    className="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
+                  >
+                    {t('catalog.editProgram')}
+                  </button>
+                  <button
+                    onClick={() => setDeleteProgramSlug(program.slug)}
+                    className="px-4 py-2 text-sm border border-danger-200 text-danger-600 rounded-lg hover:bg-danger-50"
+                  >
+                    {t('catalog.deleteProgram')}
+                  </button>
+                </>
+              )}
+              <button
+                onClick={() => setProgramModal({ program: null })}
+                className="px-4 py-2 text-sm bg-pair-600 text-white rounded-lg hover:bg-pair-700"
+              >
+                + {t('catalog.addProgram')}
+              </button>
+            </div>
           </div>
 
           {program && (
@@ -161,7 +268,7 @@ export default function CatalogPage() {
                     <table className="w-full text-sm">
                       <tbody>
                         {sem.courses.map((code) => {
-                          const c = getCourse(code);
+                          const c = courseByCode.get(code);
                           const prereqs = sem.prerequisites[code] ?? [];
                           const coreqs = sem.corequisites[code] ?? [];
                           return (
@@ -193,6 +300,68 @@ export default function CatalogPage() {
           )}
         </>
       )}
+
+      {courseModal && (
+        <CourseEditModal
+          course={courseModal.course}
+          existingCodes={courses.map((c) => c.code)}
+          programLabel={programLabel}
+          onClose={() => setCourseModal(null)}
+        />
+      )}
+
+      {programModal && (
+        <ProgramEditModal
+          program={programModal.program}
+          existingSlugs={programs.map((p) => p.slug)}
+          onClose={() => {
+            const created = programModal.program;
+            setProgramModal(null);
+            if (!created) setTab('programs');
+          }}
+        />
+      )}
+
+      <ConfirmDialog
+        open={deleteCourse !== null}
+        title={t('catalog.deleteCourseTitle')}
+        message={t('catalog.deleteCourseMessage', {
+          code: deleteCourse?.code ?? '',
+          name: deleteCourse ? courseName(deleteCourse) : '',
+        })}
+        variant="danger"
+        confirmLabel={t('catalog.delete')}
+        onConfirm={() => {
+          if (deleteCourse) catalogActions.deleteCourse(deleteCourse.code);
+          setDeleteCourse(null);
+        }}
+        onCancel={() => setDeleteCourse(null)}
+      />
+
+      <ConfirmDialog
+        open={deleteProgramSlug !== null}
+        title={t('catalog.deleteProgramTitle')}
+        message={t('catalog.deleteProgramMessage', {
+          name: programs.find((p) => p.slug === deleteProgramSlug)?.name_en ?? '',
+        })}
+        variant="danger"
+        confirmLabel={t('catalog.delete')}
+        onConfirm={() => {
+          if (deleteProgramSlug) catalogActions.deleteProgram(deleteProgramSlug);
+          setDeleteProgramSlug(null);
+        }}
+        onCancel={() => setDeleteProgramSlug(null)}
+      />
+
+      <ConfirmDialog
+        open={confirmReset}
+        title={t('catalog.resetConfirmTitle')}
+        message={t('catalog.resetConfirmMessage')}
+        variant="danger"
+        confirmLabel={t('catalog.reset')}
+        onConfirm={() => { catalogActions.reset(); setConfirmReset(false); }}
+        onCancel={() => setConfirmReset(false)}
+      />
     </div>
   );
 }

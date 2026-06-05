@@ -20,6 +20,12 @@ import {
   type FinanceAccount, type FinanceClearance, type FinanceInstallment,
   type InstallmentStatus, type AccountStanding, type ClearanceStatus,
 } from '@/lib/api';
+import StatusBadge, { type LifecycleStatus } from '@/components/StatusBadge';
+
+const clearanceToLifecycle = (s: ClearanceStatus): LifecycleStatus =>
+  s === 'pending' ? 'not_started'
+  : s === 'cleared' ? 'completed'
+  : 'rejected';
 
 interface FinanceOverview {
   current_study_week: number;
@@ -62,12 +68,6 @@ const STANDING_STYLE: Record<AccountStanding, string> = {
   cleared: 'bg-oasis-50 text-oasis-700',
   on_track: 'bg-pair-50 text-pair-700',
   hold: 'bg-danger-50 text-danger-700',
-};
-
-const CLEARANCE_STYLE: Record<ClearanceStatus, string> = {
-  pending: 'bg-gold-50 text-gold-700',
-  cleared: 'bg-oasis-50 text-oasis-700',
-  blocked: 'bg-danger-50 text-danger-700',
 };
 
 const kwd = (n: number) => `${n.toLocaleString('en-US', { maximumFractionDigits: 2 })} KWD`;
@@ -349,11 +349,7 @@ function ClearancesTab({
                 {c.student_id} · {t(`finance.clearance.type.${c.type}`)}
               </p>
             </div>
-            <span className={`px-2 py-0.5 rounded text-xs font-medium ${CLEARANCE_STYLE[c.status]}`}>
-              {c.status === 'pending'
-                ? t('status.pending')
-                : t(`finance.clearance.${c.status}`)}
-            </span>
+            <StatusBadge status={clearanceToLifecycle(c.status)} />
           </div>
 
           <div className="flex flex-wrap gap-2 mt-3">

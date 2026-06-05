@@ -7,12 +7,13 @@ import { useI18n } from '@/lib/i18n';
 import { SkeletonTable } from '@/components/Skeleton';
 import EmptyState from '@/components/EmptyState';
 import ErrorState from '@/components/ErrorState';
+import RejectReasonDialog from '@/components/RejectReasonDialog';
+import StatusBadge, { type LifecycleStatus } from '@/components/StatusBadge';
 
-const STATUS_STYLE: Record<SportApplication['status'], string> = {
-  pending: 'bg-gold-50 text-gold-700',
-  approved: 'bg-oasis-50 text-oasis-700',
-  rejected: 'bg-danger-50 text-danger-700',
-};
+const toLifecycle = (s: SportApplication['status']): LifecycleStatus =>
+  s === 'pending' ? 'not_started'
+  : s === 'approved' ? 'completed'
+  : 'rejected';
 
 const SPORT_KEY = ['sport', 'applications'] as const;
 
@@ -24,17 +25,24 @@ export default function SportPage() {
     queryFn: () => api.getSportApplications() as Promise<SportApplication[]>,
   });
   const [busy, setBusy] = useState<string | null>(null);
+  const [rejectTarget, setRejectTarget] = useState<SportApplication | null>(null);
 
-  const decide = async (id: string, decision: 'approved' | 'rejected') => {
+  const decide = async (id: string, decision: 'approved' | 'rejected', reason?: string) => {
     setBusy(id + decision);
     try {
-      await api.decideSport(id, decision);
+      await api.decideSport(id, decision, reason);
       qc.setQueryData<SportApplication[]>(SPORT_KEY, (prev) =>
         prev?.map((s) => s.id === id ? { ...s, status: decision } : s) ?? prev,
       );
     } finally {
       setBusy(null);
     }
+  };
+
+  const confirmReject = async (reason: string) => {
+    if (!rejectTarget) return;
+    await decide(rejectTarget.id, 'rejected', reason);
+    setRejectTarget(null);
   };
 
   const fmtDate = (iso: string) => new Date(iso).toLocaleDateString(locale === 'ar' ? 'ar-KW' : 'en-GB', {
@@ -90,11 +98,7 @@ export default function SportPage() {
                   </td>
                   <td className="px-4 py-3 font-semibold">{s.discount_pct}%</td>
                   <td className="px-4 py-3">
-                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${STATUS_STYLE[s.status]}`}>
-                      {s.status === 'pending' ? t('status.pending')
-                        : s.status === 'approved' ? t('status.approved')
-                        : t('common.error')}
-                    </span>
+                    <StatusBadge status={toLifecycle(s.status)} />
                   </td>
                   <td className="px-4 py-3 text-end">
                     {s.status === 'pending' && (
@@ -107,7 +111,7 @@ export default function SportPage() {
                           {t('sport.approve')}
                         </button>
                         <button
-                          onClick={() => decide(s.id, 'rejected')}
+                          onClick={() => setRejectTarget(s)}
                           disabled={busy === s.id + 'rejected'}
                           className="px-2.5 py-1 border border-danger-200 text-danger-700 rounded text-xs hover:bg-danger-50 disabled:opacity-50"
                         >
@@ -122,6 +126,17 @@ export default function SportPage() {
           </table>
         </div>
       )}
+
+      <RejectReasonDialog
+        open={rejectTarget !== null}
+        title={t('sport.reject')}
+        subject={rejectTarget
+          ? `${locale === 'ar' ? rejectTarget.student_name_ar : rejectTarget.student_name_en} · ${rejectTarget.activity}`
+          : undefined}
+        busy={busy === (rejectTarget?.id ?? '') + 'rejected'}
+        onConfirm={confirmReject}
+        onCancel={() => setRejectTarget(null)}
+      />
     </div>
   );
 }

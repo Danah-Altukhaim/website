@@ -10,6 +10,22 @@ import Pagination from '@/components/Pagination';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import { api } from '@/lib/api';
 import { useI18n } from '@/lib/i18n';
+import StatusBadge, { type LifecycleStatus } from '@/components/StatusBadge';
+
+// Retention outcomes are stored as one of the four canonical statuses (or
+// empty string for "not set"). Older mock data may still contain legacy
+// labels like "Resolved" / "Ongoing" / "Escalated" / "Withdrew" — normalize
+// those on read so the badge renders consistently.
+const normalizeOutcome = (raw: string): LifecycleStatus | '' => {
+  if (!raw) return '';
+  if (raw === 'pending' || raw === 'completed' || raw === 'rejected' || raw === 'not_started') {
+    return raw;
+  }
+  if (raw === 'Resolved') return 'completed';
+  if (raw === 'Ongoing') return 'pending';
+  if (raw === 'Escalated' || raw === 'Withdrew') return 'rejected';
+  return '';
+};
 
 const RETENTION_KEY = ['retention', 'overview'] as const;
 const AT_RISK_KEY = ['retention', 'atRisk'] as const;
@@ -359,30 +375,24 @@ export default function RetentionPage() {
               <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-gray-500">{t('retention.outcome')}:</span>
-                  <select
-                    value={outcomes[s.id] || ''}
-                    onChange={(e) => handleOutcomeChange(s.id, e.target.value)}
-                    className="border border-gray-200 rounded px-2 py-1 text-xs"
-                  >
-                    <option value="">{t('status.notSet')}</option>
-                    <option value="Resolved">{t('status.resolved')}</option>
-                    <option value="Ongoing">{t('status.ongoing')}</option>
-                    <option value="Escalated">{t('status.escalated')}</option>
-                    <option value="Withdrew">{t('status.withdrew')}</option>
-                  </select>
-                  {outcomes[s.id] && (
-                    <span className={`px-2 py-0.5 rounded text-xs ${
-                      outcomes[s.id] === 'Resolved' ? 'bg-oasis-100 text-oasis-700' :
-                      outcomes[s.id] === 'Ongoing' ? 'bg-blue-100 text-blue-700' :
-                      outcomes[s.id] === 'Escalated' ? 'bg-danger-100 text-danger-700' :
-                      'bg-gray-100 text-gray-700'
-                    }`}>
-                      {outcomes[s.id] === 'Resolved' ? t('status.resolved') :
-                       outcomes[s.id] === 'Ongoing' ? t('status.ongoing') :
-                       outcomes[s.id] === 'Escalated' ? t('status.escalated') :
-                       t('status.withdrew')}
-                    </span>
-                  )}
+                  {(() => {
+                    const current = normalizeOutcome(outcomes[s.id] ?? '');
+                    return (
+                      <>
+                        <select
+                          value={current}
+                          onChange={(e) => handleOutcomeChange(s.id, e.target.value)}
+                          className="border border-gray-200 rounded px-2 py-1 text-xs"
+                        >
+                          <option value="">{t('status.notSet')}</option>
+                          <option value="pending">{t('status.pending')}</option>
+                          <option value="completed">{t('status.completed')}</option>
+                          <option value="rejected">{t('status.rejected')}</option>
+                        </select>
+                        {current && <StatusBadge status={current} />}
+                      </>
+                    );
+                  })()}
                 </div>
                 <span className="text-xs text-gray-400">{t('retention.followUp')}</span>
               </div>

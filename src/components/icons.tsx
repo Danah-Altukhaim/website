@@ -168,6 +168,15 @@ export const SparklesIcon = (p: IconProps) => (
   </svg>
 );
 
+export const BuildingIcon = (p: IconProps) => (
+  <svg xmlns={base} {...stroke} className={p.className} aria-hidden>
+    <path d="M4 17V4a1 1 0 011-1h6a1 1 0 011 1v13" />
+    <path d="M12 8h3a1 1 0 011 1v8" />
+    <path d="M2 17h16" />
+    <path d="M6.5 6.5h0M9.5 6.5h0M6.5 9.5h0M9.5 9.5h0M6.5 12.5h0M9.5 12.5h0" />
+  </svg>
+);
+
 export const LogoutIcon = (p: IconProps) => (
   <svg xmlns={base} {...stroke} className={p.className} aria-hidden>
     <path d="M7 17H4a1 1 0 01-1-1V4a1 1 0 011-1h3" /><path d="M13 14l4-4-4-4" /><path d="M17 10H7" />

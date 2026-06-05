@@ -20,6 +20,8 @@ export interface GradeOverview {
   courses: CourseGrade[];
   /** Academic standing — drives the academic-warning surface (CCK Hub Update). */
   academic_standing?: 'good_standing' | 'probation';
+  /** Critical-case category (CCK Hub Feedback v3) - low CGPA, Kuwaiti at-risk, etc. */
+  critical_case?: import('../constants/academic-progression').CriticalCaseCategory | null;
 }
 
 export interface CourseGrade {

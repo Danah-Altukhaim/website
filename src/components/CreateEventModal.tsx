@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { api, type StudentLifeEvent } from '@/lib/api';
+import { api, STAFF_DEPARTMENTS, type StudentLifeEvent, type AudienceTag, type StaffScope } from '@/lib/api';
 import { useI18n } from '@/lib/i18n';
 
 interface CreateEventModalProps {
@@ -10,9 +10,10 @@ interface CreateEventModalProps {
 }
 
 type Scope = StudentLifeEvent['scope'];
-type Audience = StudentLifeEvent['audience'];
 
-const AUDIENCE_SIZE: Record<Audience, number> = {
+const AUDIENCE_TAGS: AudienceTag[] = ['all', 'freshmen', 'graduating', 'specific', 'staff'];
+
+const STUDENT_SIZE: Record<'all' | 'freshmen' | 'graduating' | 'specific', number> = {
   all: 4200,
   freshmen: 950,
   graduating: 620,
@@ -33,9 +34,34 @@ export default function CreateEventModal({ onClose, onCreated }: CreateEventModa
   const [descEn, setDescEn] = useState('');
   const [descAr, setDescAr] = useState('');
   const [scope, setScope] = useState<Scope>('internal');
-  const [audience, setAudience] = useState<Audience>('all');
+  const [audience, setAudience] = useState<AudienceTag[]>(['all']);
   const [groupEn, setGroupEn] = useState('');
   const [groupAr, setGroupAr] = useState('');
+  const [staffScope, setStaffScope] = useState<StaffScope>('all');
+  const [staffDepts, setStaffDepts] = useState<string[]>([]);
+
+  const toggleAudience = (tag: AudienceTag) =>
+    setAudience((prev) => (prev.includes(tag) ? prev.filter((a) => a !== tag) : [...prev, tag]));
+  const toggleDept = (key: string) =>
+    setStaffDepts((prev) => (prev.includes(key) ? prev.filter((d) => d !== key) : [...prev, key]));
+
+  const computeSize = () => {
+    let size = 0;
+    if (audience.includes('all')) {
+      size += STUDENT_SIZE.all;
+    } else {
+      if (audience.includes('freshmen')) size += STUDENT_SIZE.freshmen;
+      if (audience.includes('graduating')) size += STUDENT_SIZE.graduating;
+    }
+    if (audience.includes('specific')) size += STUDENT_SIZE.specific;
+    if (audience.includes('staff')) {
+      const depts = staffScope === 'all'
+        ? STAFF_DEPARTMENTS
+        : STAFF_DEPARTMENTS.filter((d) => staffDepts.includes(d.key));
+      size += depts.reduce((sum, d) => sum + d.size, 0);
+    }
+    return size;
+  };
 
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -49,8 +75,11 @@ export default function CreateEventModal({ onClose, onCreated }: CreateEventModa
   }, [onClose]);
 
   const submit = async () => {
-    const valid = titleEn.trim() && titleAr.trim() && date &&
-      (audience !== 'specific' || (groupEn.trim() && groupAr.trim()));
+    const hasSpecific = audience.includes('specific');
+    const hasStaff = audience.includes('staff');
+    const valid = titleEn.trim() && titleAr.trim() && date && audience.length > 0 &&
+      (!hasSpecific || (groupEn.trim() && groupAr.trim())) &&
+      (!hasStaff || staffScope === 'all' || staffDepts.length > 0);
     if (!valid) { setError(true); return; }
     setError(false);
     setSaving(true);
@@ -66,9 +95,11 @@ export default function CreateEventModal({ onClose, onCreated }: CreateEventModa
         description_ar: descAr.trim() || undefined,
         scope,
         audience,
-        audience_detail_en: audience === 'specific' ? groupEn.trim() : undefined,
-        audience_detail_ar: audience === 'specific' ? groupAr.trim() : undefined,
-        audience_size: AUDIENCE_SIZE[audience],
+        audience_detail_en: hasSpecific ? groupEn.trim() : undefined,
+        audience_detail_ar: hasSpecific ? groupAr.trim() : undefined,
+        staff_scope: hasStaff ? staffScope : undefined,
+        staff_departments: hasStaff && staffScope === 'departments' ? staffDepts : undefined,
+        audience_size: computeSize(),
         registration_open: true,
       }) as StudentLifeEvent;
       onCreated(created);
@@ -121,16 +152,31 @@ export default function CreateEventModal({ onClose, onCreated }: CreateEventModa
               <option value="external">{t('studentLife.scope.external')}</option>
             </select>
           </div>
-          <div>
+          <div className="md:col-span-2">
             <label className={label}>{t('studentLife.eventAudience')}</label>
-            <select className={field} value={audience} onChange={(e) => setAudience(e.target.value as Audience)}>
-              <option value="all">{t('studentLife.audience.all')}</option>
-              <option value="freshmen">{t('studentLife.audience.freshmen')}</option>
-              <option value="graduating">{t('studentLife.audience.graduating')}</option>
-              <option value="specific">{t('studentLife.audience.specific')}</option>
-            </select>
+            <div className="flex flex-wrap gap-2">
+              {AUDIENCE_TAGS.map((tag) => {
+                const active = audience.includes(tag);
+                return (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => toggleAudience(tag)}
+                    aria-pressed={active}
+                    className={`px-3 py-1.5 border rounded-lg text-sm font-medium transition ${
+                      active
+                        ? 'border-pair-600 bg-pair-50 text-pair-700'
+                        : 'border-gray-300 text-[#222] hover:bg-gray-50'
+                    }`}
+                  >
+                    {t(`studentLife.audience.${tag}`)}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-xs text-[#737477] mt-1">{t('studentLife.audienceHint')}</p>
           </div>
-          {audience === 'specific' && (
+          {audience.includes('specific') && (
             <>
               <div>
                 <label className={label}>{t('studentLife.audienceGroupEn')}</label>
@@ -141,6 +187,50 @@ export default function CreateEventModal({ onClose, onCreated }: CreateEventModa
                 <input className={field} value={groupAr} onChange={(e) => setGroupAr(e.target.value)} dir="rtl" />
               </div>
             </>
+          )}
+          {audience.includes('staff') && (
+            <div className="md:col-span-2">
+              <label className={label}>{t('studentLife.staffScope')}</label>
+              <div className="flex flex-wrap gap-2">
+                {(['all', 'departments'] as StaffScope[]).map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setStaffScope(s)}
+                    aria-pressed={staffScope === s}
+                    className={`px-3 py-1.5 border rounded-lg text-sm font-medium transition ${
+                      staffScope === s
+                        ? 'border-pair-600 bg-pair-50 text-pair-700'
+                        : 'border-gray-300 text-[#222] hover:bg-gray-50'
+                    }`}
+                  >
+                    {t(s === 'all' ? 'studentLife.staffAll' : 'studentLife.staffDepartments')}
+                  </button>
+                ))}
+              </div>
+              {staffScope === 'departments' && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {STAFF_DEPARTMENTS.map((d) => {
+                    const active = staffDepts.includes(d.key);
+                    return (
+                      <button
+                        key={d.key}
+                        type="button"
+                        onClick={() => toggleDept(d.key)}
+                        aria-pressed={active}
+                        className={`px-3 py-1.5 border rounded-lg text-sm font-medium transition ${
+                          active
+                            ? 'border-pair-600 bg-pair-50 text-pair-700'
+                            : 'border-gray-300 text-[#222] hover:bg-gray-50'
+                        }`}
+                      >
+                        {dir === 'rtl' ? d.label_ar : d.label_en}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           )}
           <div className="md:col-span-2">
             <label className={label}>{t('studentLife.eventDescEn')}</label>

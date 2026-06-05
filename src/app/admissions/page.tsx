@@ -7,6 +7,7 @@ import { useI18n } from '@/lib/i18n';
 import { SkeletonTable } from '@/components/Skeleton';
 import EmptyState from '@/components/EmptyState';
 import ErrorState from '@/components/ErrorState';
+import RejectReasonDialog from '@/components/RejectReasonDialog';
 
 const APPLICANTS_KEY = ['admissions', 'applicants'] as const;
 
@@ -19,8 +20,10 @@ const STAGE_STYLE: Record<AdmissionApplicant['stage'], string> = {
   completed: 'bg-gray-100 text-gray-600',
 };
 
+// Photo sits at the top alongside the rest of the documents per feedback.
+// White-background fix is applied later by IT before card printing.
 const DOC_KEYS = [
-  'civil_id', 'passport', 'equivalency', 'high_school',
+  'photo', 'civil_id', 'passport', 'equivalency', 'high_school',
   'father_civil_id', 'declaration', 'payment_proof',
   'puc_declaration', 'placement_test',
 ];
@@ -42,6 +45,12 @@ export default function AdmissionsPage() {
   const [toast, setToast] = useState<string | null>(null);
   const [icCreated, setIcCreated] = useState<Set<string>>(new Set());
   const [createOpen, setCreateOpen] = useState(false);
+  const [rejectOpen, setRejectOpen] = useState(false);
+  const [previewKey, setPreviewKey] = useState<string | null>(null);
+  const previewDoc = useMemo(() => {
+    if (!selected || !previewKey) return null;
+    return selected.documents.find((d) => d.key === previewKey) ?? null;
+  }, [selected, previewKey]);
   const emptyForm = {
     name_en: '', name_ar: '', category: 'self_funded', major: '',
     semester_admitted: 'Fall 2026', entry_level: 'Level 1', transferred_from: '',
@@ -53,26 +62,32 @@ export default function AdmissionsPage() {
     setTimeout(() => setToast(null), 3500);
   };
 
-  const decide = async (decision: 'approve' | 'reject') => {
+  const decide = async (decision: 'approve' | 'reject', reasonOverride?: string) => {
     if (!selected) return;
-    if (!decisionComment.trim()) {
+    const comment = decision === 'reject' ? (reasonOverride ?? '') : decisionComment;
+    if (decision === 'approve' && !comment.trim()) {
       showToast(t('admissions.commentRequired'));
       return;
     }
     setBusy(decision);
     try {
-      await api.decideAdmission(selected.id, decision, decisionComment);
+      await api.decideAdmission(selected.id, decision, comment);
       const nextStage: AdmissionApplicant['stage'] = decision === 'reject'
         ? selected.stage
         : (STAGE_ORDER[Math.min(STAGE_ORDER.indexOf(selected.stage) + 1, STAGE_ORDER.length - 1)]);
       qc.setQueryData<AdmissionApplicant[]>(APPLICANTS_KEY, (prev) =>
         prev?.map((a) => a.id === selected.id ? { ...a, stage: nextStage } : a) ?? prev,
       );
-      setDecisionComment('');
+      if (decision === 'approve') setDecisionComment('');
       showToast(decision === 'approve' ? t('admissions.approved') : t('admissions.rejected'));
     } finally {
       setBusy(null);
     }
+  };
+
+  const confirmRejectApplicant = async (reason: string) => {
+    await decide('reject', reason);
+    setRejectOpen(false);
   };
 
   const generateLetter = async () => {
@@ -291,8 +306,50 @@ export default function AdmissionsPage() {
                     {docCounts.ok}/{selected.documents.length}
                   </span>
                 </div>
+                {/* Photo row sits at the top with a thumbnail-style swatch and
+                    a small note about the IT white-background step (feedback). */}
+                {(() => {
+                  const photo = selected.documents.find((x) => x.key === 'photo');
+                  if (!photo) return null;
+                  const status = photo.status;
+                  return (
+                    <button
+                      type="button"
+                      onClick={() => setPreviewKey('photo')}
+                      className="mb-3 w-full flex items-center gap-3 p-2.5 bg-gray-50 rounded text-start hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-pair-200"
+                    >
+                      <div className="w-12 h-12 bg-white border border-gray-200 flex items-center justify-center shrink-0">
+                        {status === 'uploaded' ? (
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="text-[#737477]" aria-hidden>
+                            <circle cx="12" cy="9" r="3.5" />
+                            <path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5" />
+                          </svg>
+                        ) : (
+                          <span className="text-[10px] text-[#737477]">—</span>
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium">{t('admissions.docs.photo')}</p>
+                        <p className="text-[11px] text-[#737477] mt-0.5">
+                          {status === 'uploaded' ? t('admissions.photoStatusOk')
+                            : status === 'flagged' ? t('admissions.photoStatusFlagged')
+                            : t('admissions.photoStatusMissing')}
+                        </p>
+                      </div>
+                      <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${
+                        status === 'uploaded' ? 'bg-oasis-50 text-oasis-700'
+                        : status === 'flagged' ? 'bg-gold-50 text-gold-700'
+                        : 'bg-danger-50 text-danger-700'
+                      }`}>
+                        {status === 'uploaded' ? t('admissions.docUploaded')
+                          : status === 'flagged' ? t('admissions.docFlagged')
+                          : t('admissions.docMissing')}
+                      </span>
+                    </button>
+                  );
+                })()}
                 <ul className="space-y-1.5">
-                  {DOC_KEYS.map((k) => {
+                  {DOC_KEYS.filter((k) => k !== 'photo').map((k) => {
                     const d = selected.documents.find((x) => x.key === k);
                     if (!d) return null;
                     const dotClass =
@@ -304,16 +361,25 @@ export default function AdmissionsPage() {
                       : d.status === 'flagged' ? 'admissions.docFlagged'
                       : 'admissions.docMissing';
                     return (
-                      <li key={k} className="flex items-center justify-between gap-2 text-sm">
-                        <span className="flex items-center gap-2 min-w-0">
-                          <span className={`w-2 h-2 rounded-full shrink-0 ${dotClass}`} />
-                          <span className="truncate">{t(`admissions.docs.${k}`)}</span>
-                        </span>
-                        <span className="text-xs text-[#737477] shrink-0">{t(labelKey)}</span>
+                      <li key={k}>
+                        <button
+                          type="button"
+                          onClick={() => setPreviewKey(k)}
+                          className="w-full flex items-center justify-between gap-2 text-sm py-1 px-1 -mx-1 rounded text-start hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-pair-200"
+                        >
+                          <span className="flex items-center gap-2 min-w-0">
+                            <span className={`w-2 h-2 rounded-full shrink-0 ${dotClass}`} />
+                            <span className="truncate">{t(`admissions.docs.${k}`)}</span>
+                          </span>
+                          <span className="text-xs text-[#737477] shrink-0">{t(labelKey)}</span>
+                        </button>
                       </li>
                     );
                   })}
                 </ul>
+                <p className="text-[11px] text-[#737477] mt-3 leading-snug">
+                  {t('admissions.photoWhiteBg')}
+                </p>
               </div>
 
               {/* Admission-initiated Industrial Certificate request → Registration */}
@@ -371,7 +437,7 @@ export default function AdmissionsPage() {
                       {t('admissions.approve')}
                     </button>
                     <button
-                      onClick={() => decide('reject')}
+                      onClick={() => setRejectOpen(true)}
                       disabled={busy !== null}
                       className="flex-1 px-3 py-2 border border-danger-200 text-danger-700 rounded-lg text-sm font-medium hover:bg-danger-50 disabled:opacity-50"
                     >
@@ -395,6 +461,82 @@ export default function AdmissionsPage() {
           )}
         </aside>
       </div>
+
+      {previewDoc && selected && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          dir={dir}
+          onClick={() => setPreviewKey(null)}
+        >
+          <div
+            className="bg-white rounded-xl border border-gray-200 w-full max-w-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <header className="flex items-center justify-between px-5 py-3 border-b border-gray-100">
+              <div className="min-w-0">
+                <p className="text-xs uppercase tracking-wider text-[#737477]">{t('admissions.previewLabel')}</p>
+                <p className="text-sm font-semibold truncate">{t(`admissions.docs.${previewDoc.key}`)}</p>
+              </div>
+              <button
+                onClick={() => setPreviewKey(null)}
+                className="text-sm text-[#737477] hover:text-[#222] px-3 py-1"
+              >
+                {t('admissions.previewClose')}
+              </button>
+            </header>
+            <div className="px-5 py-6">
+              <div className="bg-gray-50 border border-gray-200 rounded-lg h-72 flex items-center justify-center">
+                <div className="text-center px-4">
+                  {previewDoc.status === 'uploaded' ? (
+                    <>
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" className="text-[#737477] mx-auto" aria-hidden>
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <path d="M14 2v6h6" />
+                      </svg>
+                      <p className="mt-3 text-sm font-medium text-[#222]">{t(`admissions.docs.${previewDoc.key}`)}</p>
+                      <p className="text-xs text-[#737477] mt-1">
+                        {locale === 'ar' ? selected.applicant_name_ar : selected.applicant_name_en} · {selected.id}
+                      </p>
+                    </>
+                  ) : previewDoc.status === 'flagged' ? (
+                    <>
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" className="text-gold-600 mx-auto" aria-hidden>
+                        <path d="M12 9v4" />
+                        <path d="M12 17h.01" />
+                        <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                      </svg>
+                      <p className="mt-3 text-sm font-medium text-[#222]">{t(`admissions.docs.${previewDoc.key}`)}</p>
+                      <p className="text-xs text-gold-700 mt-1">{t('admissions.previewFlagged')}</p>
+                    </>
+                  ) : (
+                    <>
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" className="text-danger-600 mx-auto" aria-hidden>
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M4.93 4.93l14.14 14.14" />
+                      </svg>
+                      <p className="mt-3 text-sm font-medium text-[#222]">{t(`admissions.docs.${previewDoc.key}`)}</p>
+                      <p className="text-xs text-danger-700 mt-1">{t('admissions.previewNotUploaded')}</p>
+                    </>
+                  )}
+                </div>
+              </div>
+              <div className="mt-3 flex items-center justify-between text-xs">
+                <span className="text-[#737477]">{t('admissions.previewStatusLabel')}</span>
+                <span className={`px-1.5 py-0.5 rounded font-medium ${
+                  previewDoc.status === 'uploaded' ? 'bg-oasis-50 text-oasis-700'
+                  : previewDoc.status === 'flagged' ? 'bg-gold-50 text-gold-700'
+                  : 'bg-danger-50 text-danger-700'
+                }`}>
+                  {previewDoc.status === 'uploaded' ? t('admissions.docUploaded')
+                    : previewDoc.status === 'flagged' ? t('admissions.docFlagged')
+                    : t('admissions.docMissing')}
+                </span>
+              </div>
+              <p className="text-xs text-[#737477] mt-3">{t('admissions.previewNotice')}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {createOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 overflow-y-auto" dir={dir}>
@@ -468,6 +610,17 @@ export default function AdmissionsPage() {
           </div>
         </div>
       )}
+
+      <RejectReasonDialog
+        open={rejectOpen}
+        title={t('admissions.reject')}
+        subject={selected
+          ? `${locale === 'ar' ? selected.applicant_name_ar : selected.applicant_name_en} · ${selected.id}`
+          : undefined}
+        busy={busy === 'reject'}
+        onConfirm={confirmRejectApplicant}
+        onCancel={() => setRejectOpen(false)}
+      />
     </div>
   );
 }

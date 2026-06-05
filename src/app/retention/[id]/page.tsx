@@ -7,6 +7,19 @@ import { SkeletonPage } from '@/components/Skeleton';
 import ErrorState from '@/components/ErrorState';
 import { api } from '@/lib/api';
 import { useI18n } from '@/lib/i18n';
+import StatusBadge, { type LifecycleStatus } from '@/components/StatusBadge';
+
+// Older intervention records may still carry legacy outcome labels.
+const normalizeOutcome = (raw: string): LifecycleStatus | null => {
+  if (!raw) return null;
+  if (raw === 'pending' || raw === 'completed' || raw === 'rejected' || raw === 'not_started') {
+    return raw;
+  }
+  if (raw === 'Resolved') return 'completed';
+  if (raw === 'Ongoing') return 'pending';
+  if (raw === 'Escalated' || raw === 'Withdrew') return 'rejected';
+  return null;
+};
 
 interface StudentProfile {
   id: string;
@@ -202,9 +215,12 @@ export default function StudentProfilePage() {
                   <td className="py-2">{inv.type}</td>
                   <td className="py-2">{inv.advisor}</td>
                   <td className="py-2">
-                    <span className={`px-2 py-0.5 rounded text-xs ${inv.outcome === 'Resolved' ? 'bg-oasis-100 text-oasis-700' : inv.outcome === 'Ongoing' ? 'bg-blue-100 text-blue-700' : inv.outcome === 'Escalated' ? 'bg-danger-100 text-danger-700' : 'bg-gray-100 text-gray-700'}`}>
-                      {inv.outcome}
-                    </span>
+                    {(() => {
+                      const norm = normalizeOutcome(inv.outcome);
+                      return norm
+                        ? <StatusBadge status={norm} />
+                        : <StatusBadge status="not_started" />;
+                    })()}
                   </td>
                   <td className="py-2 text-xs text-gray-500">{inv.notes}</td>
                 </tr>

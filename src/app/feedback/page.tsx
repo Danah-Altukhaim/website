@@ -7,14 +7,14 @@ import { useI18n } from '@/lib/i18n';
 import { SkeletonTable } from '@/components/Skeleton';
 import EmptyState from '@/components/EmptyState';
 import ErrorState from '@/components/ErrorState';
+import StatusBadge, { type LifecycleStatus } from '@/components/StatusBadge';
 
 const FEEDBACK_KEY = ['feedback'] as const;
 
-const STATUS_STYLE: Record<FeedbackEntry['status'], string> = {
-  open: 'bg-gold-50 text-gold-700',
-  in_progress: 'bg-pair-50 text-pair-700',
-  resolved: 'bg-oasis-50 text-oasis-700',
-};
+const toLifecycle = (s: FeedbackEntry['status']): LifecycleStatus =>
+  s === 'open' ? 'not_started'
+  : s === 'in_progress' ? 'pending'
+  : 'completed';
 
 export default function FeedbackPage() {
   const { t, locale, dir } = useI18n();
@@ -122,11 +122,7 @@ export default function FeedbackPage() {
                   <span className="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-[#222]">
                     {t('feedback.routedTo')}: {f.department}
                   </span>
-                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${STATUS_STYLE[f.status]}`}>
-                    {f.status === 'resolved' ? t('feedback.resolved')
-                      : f.status === 'in_progress' ? t('status.ongoing')
-                      : t('status.pending')}
-                  </span>
+                  <StatusBadge status={toLifecycle(f.status)} />
                 </div>
               </div>
               <p className="text-sm text-[#222] mt-3 mb-3">{f.body}</p>

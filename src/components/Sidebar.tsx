@@ -10,7 +10,7 @@ import {
   ChartIcon, HomeIcon, InboxIcon, GraduationIcon, HandHeartIcon, GavelIcon,
   AlertIcon, FlagIcon, ChatIcon, TrophyIcon, PhoneIcon, ShieldIcon,
   CreditCardIcon, WalletIcon, BrainIcon, MegaphoneIcon, UsersIcon, GearIcon, ClipboardIcon,
-  WrenchIcon, BookIcon, SparklesIcon,
+  WrenchIcon, BookIcon, SparklesIcon, CalendarIcon, BuildingIcon,
   LogoutIcon, LanguageIcon, CloseIcon, CollapseChevron,
 } from './icons';
 
@@ -24,12 +24,13 @@ const nav = [
   { href: '/appeals', labelKey: 'nav.appeals', section: 'nav.workflows', icon: GavelIcon },
   { href: '/fa-screen', labelKey: 'nav.faScreen', section: 'nav.workflows', icon: AlertIcon },
   { href: '/warnings', labelKey: 'nav.warnings', section: 'nav.workflows', icon: FlagIcon },
-  { href: '/attendance-policy', labelKey: 'nav.attendancePolicy', section: 'nav.workflows', icon: ClipboardIcon },
+  { href: '/calendar', labelKey: 'nav.calendar', section: 'nav.workflows', icon: CalendarIcon },
   { href: '/feedback', labelKey: 'nav.complaints', section: 'nav.workflows', icon: ChatIcon },
   { href: '/finance', labelKey: 'nav.finance', section: 'nav.workflows', icon: WalletIcon },
   { href: '/sport', labelKey: 'nav.sport', section: 'nav.workflows', icon: TrophyIcon },
   { href: '/student-life', labelKey: 'nav.studentLife', section: 'nav.workflows', icon: SparklesIcon },
   { href: '/it-helpdesk', labelKey: 'nav.itHelpdesk', section: 'nav.workflows', icon: WrenchIcon },
+  { href: '/facilities', labelKey: 'nav.facilities', section: 'nav.workflows', icon: BuildingIcon },
   { href: '/directory', labelKey: 'nav.directory', section: 'nav.workflows', icon: PhoneIcon },
   { href: '/engagement', labelKey: 'nav.engagement', section: 'nav.analytics', icon: ChartIcon },
   { href: '/retention', labelKey: 'nav.retention', section: 'nav.analytics', icon: ShieldIcon },

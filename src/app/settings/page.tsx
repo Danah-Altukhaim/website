@@ -2,6 +2,11 @@
 
 import { useState } from 'react';
 import { api } from '@/lib/api';
+import {
+  CCK_TRANSFER_POLICY, CCK_GRADING_POLICY,
+  CCK_GRADING_SCHEME, CCK_ACADEMIC_STANDING,
+  CCK_EQUIVALENCY_RULES,
+} from '@/lib/cckPolicies';
 import { useI18n } from '@/lib/i18n';
 
 const TABS = [
@@ -9,6 +14,7 @@ const TABS = [
   { key: 'general', labelKey: 'settings.general' },
   { key: 'security', labelKey: 'settings.security' },
   { key: 'sso', labelKey: 'settings.sso' },
+  { key: 'policies', labelKey: 'settings.policies' },
 ];
 
 const MODULES = [
@@ -43,7 +49,7 @@ function getContrastRatio(hex1: string, hex2: string): number {
 }
 
 export default function SettingsPage() {
-  const { t, isRTL } = useI18n();
+  const { t, locale, isRTL } = useI18n();
   const [activeTab, setActiveTab] = useState('branding');
 
   // Branding state
@@ -616,13 +622,140 @@ export default function SettingsPage() {
           </div>
         )}
 
-        <button
-          type="submit"
-          disabled={saving}
-          className="mt-8 px-6 py-2.5 bg-pair-600 text-white rounded-lg font-medium hover:bg-pair-700 disabled:opacity-50"
-        >
-          {saving ? t('common.saving') : t('common.save')}
-        </button>
+        {/* Policies Tab — read-only single source of truth */}
+        {activeTab === 'policies' && (
+          <div className="space-y-8">
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <h2 className="text-lg font-semibold">{t('settings.policiesTitle')}</h2>
+              <p className="text-sm text-gray-500 mt-1">{t('settings.policiesDesc')}</p>
+            </div>
+
+            {/* Credit Transfer Policy */}
+            <section className="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
+              <header>
+                <h3 className="text-base font-semibold">{t('settings.policy.transferTitle')}</h3>
+                <p className="text-xs text-[#737477] mt-1">
+                  {t('settings.policy.approvedBy', {
+                    by: CCK_TRANSFER_POLICY.approved_by,
+                    at: CCK_TRANSFER_POLICY.approved_at,
+                    effective: CCK_TRANSFER_POLICY.effective,
+                  })}
+                </p>
+              </header>
+
+              <div>
+                <h4 className="text-sm font-semibold mb-2">{t('settings.policy.transferRulesTitle')}</h4>
+                <ol className="space-y-1.5 list-decimal list-inside text-sm">
+                  {CCK_EQUIVALENCY_RULES.map((rule) => (
+                    <li key={rule.key} className="text-[#222]">
+                      {locale === 'ar' ? rule.label_ar : rule.label_en}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+
+              <ol className="space-y-3">
+                {CCK_TRANSFER_POLICY.sections.map((s) => (
+                  <li key={s.number} className="rounded-lg border border-gray-200 p-4">
+                    <p className="text-[11px] uppercase tracking-wider text-pair-700 font-semibold">
+                      {t('settings.policy.transferSection', { number: s.number })}
+                    </p>
+                    <p className="text-sm font-semibold mt-1">
+                      {locale === 'ar' ? s.title_ar : s.title_en}
+                    </p>
+                    <p className="text-sm text-[#222] mt-1">
+                      {locale === 'ar' ? s.body_ar : s.body_en}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </section>
+
+            {/* Grading System Policy */}
+            <section className="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
+              <header>
+                <h3 className="text-base font-semibold">{t('settings.policy.gradingTitle')}</h3>
+                <p className="text-xs text-[#737477] mt-1">
+                  {t('settings.policy.approvedBy', {
+                    by: CCK_GRADING_POLICY.approved_by,
+                    at: CCK_GRADING_POLICY.approved_at,
+                    effective: CCK_GRADING_POLICY.effective,
+                  })}
+                </p>
+              </header>
+
+              <div className="rounded-lg border border-gray-200 overflow-hidden">
+                <header className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+                  <h4 className="text-sm font-semibold">{t('settings.policy.gradingScheme')}</h4>
+                </header>
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-[#737477] border-b">
+                      <th className="px-4 py-2 text-start font-medium">{t('settings.policy.letter')}</th>
+                      <th className="px-4 py-2 text-start font-medium">{t('settings.policy.range')}</th>
+                      <th className="px-4 py-2 text-start font-medium">{t('settings.policy.score')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {CCK_GRADING_SCHEME.map((g) => (
+                      <tr key={g.letter} className="border-b border-gray-50 last:border-0">
+                        <td className="px-4 py-2 font-semibold" dir="ltr">{g.letter}</td>
+                        <td className="px-4 py-2" dir="ltr">{g.description_en}</td>
+                        <td className="px-4 py-2 tabular-nums" dir="ltr">{g.score.toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="rounded-lg border border-gray-200 overflow-hidden">
+                <header className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+                  <h4 className="text-sm font-semibold">{t('settings.policy.standingTitle')}</h4>
+                </header>
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-[#737477] border-b">
+                      <th className="px-4 py-2 text-start font-medium">{t('settings.policy.standingClassification')}</th>
+                      <th className="px-4 py-2 text-start font-medium">{t('settings.policy.standingRange')}</th>
+                      <th className="px-4 py-2 text-start font-medium">{t('settings.policy.standingArabic')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {CCK_ACADEMIC_STANDING.map((row) => (
+                      <tr key={row.classification_en} className="border-b border-gray-50 last:border-0">
+                        <td className="px-4 py-2 font-medium">{row.classification_en}</td>
+                        <td className="px-4 py-2" dir="ltr">{row.range_en}</td>
+                        <td className="px-4 py-2 text-end" dir="rtl">{row.classification_ar}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-semibold mb-2">{t('settings.policy.notesTitle')}</h4>
+                <ul className="space-y-1.5 text-sm">
+                  {(locale === 'ar' ? CCK_GRADING_POLICY.notes_ar : CCK_GRADING_POLICY.notes_en).map((n, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="mt-1.5 inline-block w-1.5 h-1.5 rounded-full bg-pair-600 shrink-0" />
+                      <span>{n}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {activeTab !== 'policies' && (
+          <button
+            type="submit"
+            disabled={saving}
+            className="mt-8 px-6 py-2.5 bg-pair-600 text-white rounded-lg font-medium hover:bg-pair-700 disabled:opacity-50"
+          >
+            {saving ? t('common.saving') : t('common.save')}
+          </button>
+        )}
       </form>
     </div>
   );

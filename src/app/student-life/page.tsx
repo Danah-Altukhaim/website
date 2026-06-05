@@ -4,20 +4,22 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, type StudentLifeEvent, type ClubJoinRequest } from '@/lib/api';
+import { audienceChips } from '@/lib/audience';
 import { useI18n } from '@/lib/i18n';
 import { SkeletonTable } from '@/components/Skeleton';
 import EmptyState from '@/components/EmptyState';
 import ErrorState from '@/components/ErrorState';
 import CreateEventModal from '@/components/CreateEventModal';
+import RejectReasonDialog from '@/components/RejectReasonDialog';
+import StatusBadge, { type LifecycleStatus } from '@/components/StatusBadge';
 
 const EVENTS_KEY = ['student-life', 'events'] as const;
 const CLUBS_KEY = ['student-life', 'club-requests'] as const;
 
-const REQ_STYLE: Record<ClubJoinRequest['status'], string> = {
-  pending: 'bg-gold-50 text-gold-700',
-  approved: 'bg-oasis-50 text-oasis-700',
-  rejected: 'bg-danger-50 text-danger-700',
-};
+const toLifecycle = (s: ClubJoinRequest['status']): LifecycleStatus =>
+  s === 'pending' ? 'not_started'
+  : s === 'approved' ? 'completed'
+  : 'rejected';
 
 export default function StudentLifePage() {
   const { t, locale, dir } = useI18n();
@@ -25,6 +27,7 @@ export default function StudentLifePage() {
   const [tab, setTab] = useState<'events' | 'clubs'>('events');
   const [busy, setBusy] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [rejectTarget, setRejectTarget] = useState<ClubJoinRequest | null>(null);
 
   const { data: events, isError: evError, isLoading: evLoading, refetch: evRefetch } =
     useQuery<StudentLifeEvent[]>({
@@ -49,16 +52,22 @@ export default function StudentLifePage() {
     }
   };
 
-  const decideClub = async (id: string, decision: 'approved' | 'rejected') => {
+  const decideClub = async (id: string, decision: 'approved' | 'rejected', reason?: string) => {
     setBusy(id + decision);
     try {
-      await api.decideClubRequest(id, decision);
+      await api.decideClubRequest(id, decision, reason);
       qc.setQueryData<ClubJoinRequest[]>(CLUBS_KEY, (prev) =>
         prev?.map((c) => c.id === id ? { ...c, status: decision } : c) ?? prev,
       );
     } finally {
       setBusy(null);
     }
+  };
+
+  const confirmRejectClub = async (reason: string) => {
+    if (!rejectTarget) return;
+    await decideClub(rejectTarget.id, 'rejected', reason);
+    setRejectTarget(null);
   };
 
   const onCreated = (ev: StudentLifeEvent) => {
@@ -138,11 +147,12 @@ export default function StudentLifePage() {
                   </span>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 mt-3">
-                  <span className="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-[#222]">
-                    {t('studentLife.audience')}: {t(`studentLife.audience.${e.audience}`)}
-                    {e.audience === 'specific' && e.audience_detail_en
-                      ? ` - ${locale === 'ar' ? e.audience_detail_ar : e.audience_detail_en}` : ''}
-                  </span>
+                  <span className="text-xs font-medium text-[#737477]">{t('studentLife.audience')}:</span>
+                  {audienceChips(e, t, locale === 'ar').map((labelText, i) => (
+                    <span key={i} className="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-[#222]">
+                      {labelText}
+                    </span>
+                  ))}
                   <span className="text-xs text-[#737477]">
                     {t('studentLife.registrations', { value: e.registrations })}
                   </span>
@@ -194,11 +204,7 @@ export default function StudentLifePage() {
                     <td className="px-4 py-3 text-[#222]">{locale === 'ar' ? c.club_ar : c.club_en}</td>
                     <td className="px-4 py-3 text-[#737477]">{locale === 'ar' ? c.advisor_ar : c.advisor_en}</td>
                     <td className="px-4 py-3">
-                      <span className={`px-2 py-0.5 rounded text-xs font-medium ${REQ_STYLE[c.status]}`}>
-                        {c.status === 'pending' ? t('status.pending')
-                          : c.status === 'approved' ? t('status.approved')
-                          : t('status.rejected')}
-                      </span>
+                      <StatusBadge status={toLifecycle(c.status)} />
                     </td>
                     <td className="px-4 py-3 text-end">
                       {c.status === 'pending' && (
@@ -211,7 +217,7 @@ export default function StudentLifePage() {
                             {t('studentLife.approveJoin')}
                           </button>
                           <button
-                            onClick={() => decideClub(c.id, 'rejected')}
+                            onClick={() => setRejectTarget(c)}
                             disabled={busy === c.id + 'rejected'}
                             className="px-2.5 py-1 border border-danger-200 text-danger-700 rounded text-xs hover:bg-danger-50 disabled:opacity-50"
                           >
@@ -231,6 +237,17 @@ export default function StudentLifePage() {
       {showCreate && (
         <CreateEventModal onClose={() => setShowCreate(false)} onCreated={onCreated} />
       )}
+
+      <RejectReasonDialog
+        open={rejectTarget !== null}
+        title={t('studentLife.rejectJoin')}
+        subject={rejectTarget
+          ? `${locale === 'ar' ? rejectTarget.student_name_ar : rejectTarget.student_name_en} · ${locale === 'ar' ? rejectTarget.club_ar : rejectTarget.club_en}`
+          : undefined}
+        busy={busy === (rejectTarget?.id ?? '') + 'rejected'}
+        onConfirm={confirmRejectClub}
+        onCancel={() => setRejectTarget(null)}
+      />
     </div>
   );
 }

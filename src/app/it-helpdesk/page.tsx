@@ -8,15 +8,15 @@ import { useAuth } from '@/lib/auth';
 import { SkeletonTable } from '@/components/Skeleton';
 import EmptyState from '@/components/EmptyState';
 import ErrorState from '@/components/ErrorState';
+import StatusBadge, { type LifecycleStatus } from '@/components/StatusBadge';
 
 const IT_KEY = ['it', 'tickets'] as const;
 const CATEGORIES: (ITCategory | 'all')[] = ['all', 'account_access', 'sis_lms', 'device'];
 
-const STATUS_STYLE: Record<ITTicket['status'], string> = {
-  open: 'bg-gold-50 text-gold-700',
-  in_progress: 'bg-pair-50 text-pair-700',
-  resolved: 'bg-oasis-50 text-oasis-700',
-};
+const toLifecycle = (s: ITTicket['status']): LifecycleStatus =>
+  s === 'open' ? 'not_started'
+  : s === 'in_progress' ? 'pending'
+  : 'completed';
 
 const CATEGORY_STYLE: Record<ITCategory, string> = {
   account_access: 'bg-pair-50 text-pair-700',
@@ -135,11 +135,7 @@ export default function ITHelpdeskPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${STATUS_STYLE[x.status]}`}>
-                      {x.status === 'open' ? t('status.pending')
-                        : x.status === 'in_progress' ? t('status.ongoing')
-                        : t('status.resolved')}
-                    </span>
+                    <StatusBadge status={toLifecycle(x.status)} />
                     {x.assigned_to_en && (
                       <p className="text-xs text-[#737477] mt-1">
                         {locale === 'ar' ? x.assigned_to_ar : x.assigned_to_en}

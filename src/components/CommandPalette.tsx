@@ -13,7 +13,6 @@ const ROUTES: { href: string; labelKey: string; sectionKey: string }[] = [
   { href: '/appeals', labelKey: 'nav.appeals', sectionKey: 'nav.workflows' },
   { href: '/fa-screen', labelKey: 'nav.faScreen', sectionKey: 'nav.workflows' },
   { href: '/warnings', labelKey: 'nav.warnings', sectionKey: 'nav.workflows' },
-  { href: '/attendance-policy', labelKey: 'nav.attendancePolicy', sectionKey: 'nav.workflows' },
   { href: '/feedback', labelKey: 'nav.complaints', sectionKey: 'nav.workflows' },
   { href: '/sport', labelKey: 'nav.sport', sectionKey: 'nav.workflows' },
   { href: '/directory', labelKey: 'nav.directory', sectionKey: 'nav.workflows' },

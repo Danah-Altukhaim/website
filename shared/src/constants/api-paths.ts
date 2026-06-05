@@ -17,6 +17,7 @@ export const API_PATHS = {
 
   STUDENT_REGISTER_COURSE: (courseId: string) => `${V1}/students/me/register-course/${courseId}`,
   STUDENT_CALENDAR: `${V1}/students/me/calendar`,
+  STUDENT_ADVISING_MEETINGS: `${V1}/students/me/advising-meetings`,
   STUDENT_AVAILABLE_COURSES: `${V1}/students/me/available-courses`,
 
   // Payments
@@ -76,6 +77,8 @@ export const API_PATHS = {
   SERVICE_REQUESTS: `${V1}/services/requests`,
   SERVICE_REQUEST_DETAIL: (id: string) => `${V1}/services/requests/${id}`,
   SERVICE_REQUEST_CANCEL: (id: string) => `${V1}/services/requests/${id}/cancel`,
+  SERVICE_REQUEST_AMEND_ATTACHMENT: (id: string, attachmentId: string) =>
+    `${V1}/services/requests/${id}/attachments/${attachmentId}/amend`,
   SERVICE_REQUEST_CREATE: `${V1}/services/requests`,
   SERVICE_CONTACT_DIRECTORY: `${V1}/services/contact-directory`,
   SERVICE_EXCUSED_ABSENCE_POLICY: `${V1}/services/excused-absence/policy`,

@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, type StudentLifeEventDetail, type EventNotification } from '@/lib/api';
+import { audienceChips } from '@/lib/audience';
 import { useI18n } from '@/lib/i18n';
 import { SkeletonPage } from '@/components/Skeleton';
 import EmptyState from '@/components/EmptyState';
@@ -57,9 +58,7 @@ export default function EventDetailPage() {
   }
   if (!event) return <SkeletonPage />;
 
-  const audienceLabel = t(`studentLife.audience.${event.audience}`) +
-    (event.audience === 'specific' && event.audience_detail_en
-      ? ` - ${isAr ? event.audience_detail_ar : event.audience_detail_en}` : '');
+  const audienceLabels = audienceChips(event, t, isAr);
 
   const infoCard = (title: string, value: string) => (
     <div className="bg-white rounded-xl border border-gray-200 p-4">
@@ -113,9 +112,13 @@ export default function EventDetailPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <h2 className="text-lg font-semibold mb-3">{t('studentLife.audienceReach')}</h2>
-          <span className="inline-flex px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-[#222] mb-2">
-            {audienceLabel}
-          </span>
+          <div className="flex flex-wrap gap-2 mb-2">
+            {audienceLabels.map((labelText, i) => (
+              <span key={i} className="inline-flex px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-[#222]">
+                {labelText}
+              </span>
+            ))}
+          </div>
           <p className="text-sm text-[#737477]">
             {t('studentLife.audienceReachDesc', { value: event.audience_size.toLocaleString() })}
           </p>
