@@ -1000,7 +1000,19 @@ export default function EquivalencyWorkflow({
               "Registration department" columns on one side, "Academic Department"
               columns on the other. */}
           <div className="overflow-x-auto rounded-lg border border-gray-300 mb-4">
-            <table className="w-full text-sm border-collapse">
+            <table className="w-full table-fixed text-sm border-collapse">
+              <colgroup>
+                <col className="w-[13%]" />
+                <col className="w-[16%]" />
+                <col className="w-[6%]" />
+                <col className="w-[6%]" />
+                <col className="w-[10%]" />
+                <col className="w-[8%]" />
+                <col className="w-[18%]" />
+                <col className="w-[6%]" />
+                <col className="w-[10%]" />
+                <col className="w-[7%]" />
+              </colgroup>
               <thead>
                 <tr>
                   <th
@@ -1043,8 +1055,8 @@ export default function EquivalencyWorkflow({
                     return (
                       <tr key={s.id} className="align-top">
                         {/* Registration department columns */}
-                        <td className="border border-gray-300 px-2 py-2 whitespace-nowrap" dir="ltr">{s.code}</td>
-                        <td className="border border-gray-300 px-2 py-2 min-w-[160px]">
+                        <td className="border border-gray-300 px-2 py-2 break-words" dir="ltr">{s.code}</td>
+                        <td className="border border-gray-300 px-2 py-2 break-words">
                           {s.name}
                           <label className="mt-1.5 flex items-center gap-1.5 text-[11px] text-[#737477]">
                             <input
@@ -1063,7 +1075,7 @@ export default function EquivalencyWorkflow({
                             inputMode="decimal"
                             aria-label={t('eqwf.creditLabel')}
                             dir="ltr"
-                            className="w-14 px-2 py-1 rounded border border-gray-300 text-xs"
+                            className="w-full px-2 py-1 rounded border border-gray-300 text-xs"
                           />
                         </td>
                         <td className="border border-gray-300 px-2 py-2">
@@ -1073,7 +1085,7 @@ export default function EquivalencyWorkflow({
                             placeholder={t('eqwf.gradePlaceholder')}
                             aria-label={t('eqwf.gradeLabel')}
                             dir="ltr"
-                            className="w-14 px-2 py-1 rounded border border-gray-300 text-xs"
+                            className="w-full px-2 py-1 rounded border border-gray-300 text-xs"
                           />
                         </td>
                         <td className="border border-gray-300 px-2 py-2">
@@ -1082,14 +1094,14 @@ export default function EquivalencyWorkflow({
                             onChange={(e) => setSemester(s.id, e.target.value)}
                             placeholder={t('eqwf.semesterPlaceholder')}
                             aria-label={t('eqwf.colSemester')}
-                            className="w-28 px-2 py-1 rounded border border-gray-300 text-xs"
+                            className="w-full px-2 py-1 rounded border border-gray-300 text-xs"
                           />
                         </td>
                         {/* Academic department columns */}
-                        <td className="border border-gray-300 px-2 py-2 whitespace-nowrap" dir="ltr">
+                        <td className="border border-gray-300 px-2 py-2 break-words" dir="ltr">
                           {cck && cck.code !== '-' ? cck.code : <span className="text-[#737477]">—</span>}
                         </td>
-                        <td className="border border-gray-300 px-2 py-2 min-w-[200px]">
+                        <td className="border border-gray-300 px-2 py-2">
                           <CckCombobox
                             courses={cckCourses}
                             value={s.cckId}
@@ -1119,7 +1131,7 @@ export default function EquivalencyWorkflow({
                             onChange={(e) => setComments(s.id, e.target.value)}
                             placeholder={t('eqwf.commentsPlaceholder')}
                             aria-label={t('eqwf.colComments')}
-                            className="w-28 px-2 py-1 rounded border border-gray-300 text-xs"
+                            className="w-full px-2 py-1 rounded border border-gray-300 text-xs"
                           />
                         </td>
                         <td className="border border-gray-300 px-1 py-2 text-center">
