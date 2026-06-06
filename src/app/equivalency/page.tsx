@@ -9,6 +9,7 @@ import { SkeletonPage } from '@/components/Skeleton';
 import EmptyState from '@/components/EmptyState';
 import ErrorState from '@/components/ErrorState';
 import EquivalencyWorkflow from './EquivalencyWorkflow';
+import RequestsDashboard from './RequestsDashboard';
 
 type EquivalencyData = {
   entries: EquivalencyEntry[];
@@ -38,7 +39,7 @@ export default function EquivalencyPage() {
     queryFn: () => api.getEquivalency() as Promise<EquivalencyData>,
   });
   const [search, setSearch] = useState('');
-  const [tab, setTab] = useState<'request' | 'courses'>('request');
+  const [tab, setTab] = useState<'request' | 'tracker' | 'courses'>('request');
 
   // Flatten both sheets into one list. Every course keeps the pathway it
   // belongs to (PAAET diploma -> CCK major), which is the direct transfer
@@ -107,7 +108,11 @@ export default function EquivalencyPage() {
       {/* Tabs: the staged equivalency request (Equivalency Screen Update doc) and
           the read-only list of all CCK/PAAET courses. */}
       <div className="flex items-center gap-1 mb-5 border-b border-gray-200">
-        {(['request', 'courses'] as const).map((key) => (
+        {([
+          { key: 'request', label: 'equivalency.tabRequest' },
+          { key: 'tracker', label: 'equivalency.tabTracker' },
+          { key: 'courses', label: 'equivalency.tabCourses' },
+        ] as const).map(({ key, label }) => (
           <button
             key={key}
             type="button"
@@ -118,13 +123,15 @@ export default function EquivalencyPage() {
                 : 'border-transparent text-[#737477] hover:text-[#222]'
             }`}
           >
-            {t(key === 'request' ? 'equivalency.tabRequest' : 'equivalency.tabCourses')}
+            {t(label)}
           </button>
         ))}
       </div>
 
       {tab === 'request' ? (
         <EquivalencyWorkflow entries={data.entries} paaetEntries={data.paaet_entries} />
+      ) : tab === 'tracker' ? (
+        <RequestsDashboard />
       ) : (
         <CourseList
           search={search}

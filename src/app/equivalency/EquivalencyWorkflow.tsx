@@ -6,9 +6,11 @@ import type { EquivalencyEntry, PaaetEquivalencyEntry } from '@masari/shared';
 import { useI18n } from '@/lib/i18n';
 import {
   validateTransferAttempt,
+  validateCreditEquivalence,
   lowestGradeOf,
   type TransferValidationIssue,
 } from '@/lib/cckPolicies';
+import { upsertEquivalencyRequest, makeRequestId } from './requestsStore';
 
 // ---------------------------------------------------------------------------
 // Equivalency request workflow (Equivalency Screen Update doc).
@@ -58,6 +60,9 @@ interface SelectedCourse extends PaaetOption {
   cckId: string | null;
   /** Free-text Academic Department comment (e.g. the CCK category). */
   comments: string;
+  /** Group id when this PAAET course is combined with others into one CCK
+   *  course. All rows that share a group map to the same CCK course. */
+  combineGroup: string | null;
 }
 
 const stageIndex = (s: Stage) => STAGE_ORDER.indexOf(s);
@@ -280,6 +285,13 @@ export default function EquivalencyWorkflow({
 
   // Request state ───────────────────────────────────────────────────────────
   const [stage, setStage] = useState<Stage>('documents');
+  // Stable id for the request being worked on, so it can be tracked on the
+  // submitted-requests dashboard as it moves through the stages. Generated
+  // client-side (a fresh one is minted for every new request).
+  const [requestId, setRequestId] = useState('');
+  useEffect(() => {
+    if (!requestId) setRequestId(makeRequestId());
+  }, [requestId]);
   const [studentName, setStudentName] = useState('');
   // Applicant header fields, mirroring the paper Transfer Credits Equivalency Form.
   const [priorCollege, setPriorCollege] = useState(
@@ -297,6 +309,8 @@ export default function EquivalencyWorkflow({
   });
   // Eligibility inputs for the Credit Transfer Policy v2.0 compliance check.
   const [source, setSource] = useState<'paaet' | 'public' | 'private'>('paaet');
+  // Name of the private university/institution (shown only when source=private).
+  const [sourceInstitution, setSourceInstitution] = useState('');
   const [sourceGpa, setSourceGpa] = useState('');
   const [majorId, setMajorId] = useState('');
   // When set, the request is evaluated for a second major in parallel.
@@ -344,6 +358,7 @@ export default function EquivalencyWorkflow({
 
   const reset = () => {
     setStage('documents');
+    setRequestId(makeRequestId());
     setStudentName('');
     setPriorCollege('The Public Authority for Applied Education & Training');
     setCivilId('');
@@ -353,6 +368,7 @@ export default function EquivalencyWorkflow({
     setDocCertificate(false);
     setDocFiles({ transcript: null, certificate: null });
     setSource('paaet');
+    setSourceInstitution('');
     setSourceGpa('');
     setMajorId('');
     setSecondMajor(false);
@@ -396,11 +412,21 @@ export default function EquivalencyWorkflow({
         semester: '',
         cckId: null,
         comments: '',
+        combineGroup: null,
       },
     ]);
   };
   const removeCourse = (id: string) => {
-    setSelected((prev) => prev.filter((s) => s.id !== id));
+    setSelected((prev) => {
+      const removed = prev.find((s) => s.id === id);
+      let next = prev.filter((s) => s.id !== id);
+      // Dissolve a combine group that drops below two members.
+      const group = removed?.combineGroup;
+      if (group && next.filter((s) => s.combineGroup === group).length < 2) {
+        next = next.map((s) => (s.combineGroup === group ? { ...s, combineGroup: null } : s));
+      }
+      return next;
+    });
     setCombinePicks((prev) => {
       const next = new Set(prev);
       next.delete(id);
@@ -422,12 +448,14 @@ export default function EquivalencyWorkflow({
 
   // Academic staff maps CCK equivalents. Prefill the comment with the CCK
   // course's category (matching the paper form, e.g. "GED", "ENL") when blank.
-  // When the row is part of a combine selection (2+ rows ticked), the chosen
-  // CCK course is applied to every ticked row, then the selection is cleared.
+  // When the row belongs to a combine group, the chosen CCK course is applied to
+  // every course in that group so they share a single CCK equivalent.
   const setCck = (id: string, cckId: string) => {
     const cck = cckCourses.find((c) => c.id === cckId);
-    const applyTo =
-      combinePicks.has(id) && combinePicks.size >= 2 ? combinePicks : new Set([id]);
+    const row = selected.find((s) => s.id === id);
+    const applyTo = row?.combineGroup
+      ? new Set(selected.filter((s) => s.combineGroup === row.combineGroup).map((s) => s.id))
+      : new Set([id]);
     setSelected((prev) =>
       prev.map((s) =>
         applyTo.has(s.id)
@@ -439,10 +467,6 @@ export default function EquivalencyWorkflow({
           : s,
       ),
     );
-    if (applyTo.size >= 2) {
-      setCombinePicks(new Set());
-      showToast(t('eqwf.combinedToast'));
-    }
   };
 
   const toggleCombinePick = (id: string) =>
@@ -452,6 +476,38 @@ export default function EquivalencyWorkflow({
       else next.add(id);
       return next;
     });
+
+  // Combine the currently ticked PAAET courses (2+) into one group. They then
+  // share a single CCK equivalent and their credits are summed for the credit
+  // floor and total. Triggered by the combine box at the bottom of the list.
+  const combineCounter = useRef(0);
+  const combineSelected = () => {
+    if (combinePicks.size < 2) return;
+    const group = `grp-${++combineCounter.current}`;
+    setSelected((prev) => {
+      // If any course being combined already has a CCK course mapped, the rest
+      // of the group inherits it so they autofill instead of starting blank.
+      const anchor = prev.find((s) => combinePicks.has(s.id) && s.cckId);
+      return prev.map((s) =>
+        combinePicks.has(s.id)
+          ? {
+              ...s,
+              combineGroup: group,
+              cckId: anchor ? anchor.cckId : s.cckId,
+              comments: s.comments || anchor?.comments || '',
+            }
+          : s,
+      );
+    });
+    setCombinePicks(new Set());
+    showToast(t('eqwf.combinedToast'));
+  };
+
+  const uncombine = (group: string) => {
+    setSelected((prev) =>
+      prev.map((s) => (s.combineGroup === group ? { ...s, combineGroup: null } : s)),
+    );
+  };
 
   const addUnlistedCourse = () => {
     const name = unlisted.name.trim();
@@ -469,15 +525,6 @@ export default function EquivalencyWorkflow({
     setShowUnlisted(false);
     showToast(t('eqwf.unlistedAddedToast'));
   };
-
-  // Rows that share a CCK course with another row = a combined mapping.
-  const combinedCckIds = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const s of selected) {
-      if (s.cckId) counts.set(s.cckId, (counts.get(s.cckId) ?? 0) + 1);
-    }
-    return new Set([...counts.entries()].filter(([, n]) => n > 1).map(([id]) => id));
-  }, [selected]);
 
   const allMapped = selected.length > 0 && selected.every((s) => s.cckId);
 
@@ -499,11 +546,33 @@ export default function EquivalencyWorkflow({
     return total;
   }, [selected, cckCourses]);
 
+  // Credit-equivalence floor (Equivalency Screen Feedback): the prior credit per
+  // mapped CCK course (summed across a combine group) must be ≥ the CCK credit,
+  // with an allowance for being exactly one hour less.
+  const creditMappings = useMemo(() => {
+    const byCck = new Map<string, { cck: CckOption; prior: number }>();
+    for (const s of selected) {
+      if (!s.cckId) continue;
+      const cck = cckCourses.find((c) => c.id === s.cckId);
+      if (!cck) continue;
+      const prior = Number(s.creditHours) || 0;
+      const acc = byCck.get(s.cckId);
+      if (acc) acc.prior += prior;
+      else byCck.set(s.cckId, { cck, prior });
+    }
+    return [...byCck.values()].map(({ cck, prior }) => ({
+      cckCode: cck.code,
+      cckTitle: cck.name,
+      cckCredit: cck.credit,
+      priorCredit: prior,
+    }));
+  }, [selected, cckCourses]);
+
   // Credit Transfer Policy v2.0 compliance - re-evaluated live as the reviewer
   // maps courses and fills the eligibility inputs.
   const validation = useMemo<TransferValidationIssue[]>(
-    () =>
-      validateTransferAttempt({
+    () => [
+      ...validateTransferAttempt({
         source,
         sourceGpa: sourceGpa.trim() ? Number(sourceGpa) : undefined,
         transferCredits: totalCredits,
@@ -514,12 +583,54 @@ export default function EquivalencyWorkflow({
         vpaTimeException: vpaException,
         afterCensusDate: afterCensus,
       }),
-    [source, sourceGpa, totalCredits, programSchool, selected, oldCourses, vpaException, afterCensus],
+      ...validateCreditEquivalence(creditMappings),
+    ],
+    [source, sourceGpa, totalCredits, programSchool, selected, oldCourses, vpaException, afterCensus, creditMappings],
   );
   const blockingIssues = useMemo(() => validation.filter((i) => i.severity === 'block'), [validation]);
 
   const cckById = (id: string | null) =>
     id ? cckCourses.find((c) => c.id === id) ?? null : null;
+
+  // Distinct CCK credits for an arbitrary mapping list (combine groups share a
+  // CCK course, so each CCK course is counted once).
+  const creditsOf = (list: SelectedCourse[]) => {
+    const seen = new Set<string>();
+    let total = 0;
+    for (const s of list) {
+      if (!s.cckId || seen.has(s.cckId)) continue;
+      seen.add(s.cckId);
+      total += cckCourses.find((c) => c.id === s.cckId)?.credit ?? 0;
+    }
+    return total;
+  };
+
+  // Track the request on the submitted-requests dashboard. A request starts
+  // being tracked once it leaves the documents stage, and its stored stage +
+  // summary update live as it advances. Mirrors the in-memory workflow state
+  // into localStorage so the dashboard tab can list every request.
+  useEffect(() => {
+    if (!requestId || stage === 'documents') return;
+    const courseCount = selectedPrimary.length + (secondMajor ? selectedSecond.length : 0);
+    const totalCredits = creditsOf(selectedPrimary) + (secondMajor ? creditsOf(selectedSecond) : 0);
+    upsertEquivalencyRequest({
+      id: requestId,
+      stage,
+      applicant: studentName.trim(),
+      civilId: civilId.trim(),
+      major: majorName(majorId),
+      secondMajor: secondMajor ? majorName(secondMajorId) : '',
+      source,
+      sourceInstitution: source === 'private' ? sourceInstitution.trim() : '',
+      courseCount,
+      totalCredits,
+      blocked: blockingIssues.length > 0,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    requestId, stage, studentName, civilId, majorId, secondMajor, secondMajorId,
+    source, sourceInstitution, selectedPrimary, selectedSecond, blockingIssues.length,
+  ]);
 
   const roleTag = (role: 'admission' | 'academic' | 'vp') => (
     <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-pair-50 text-pair-700">
@@ -596,7 +707,11 @@ export default function EquivalencyWorkflow({
             <p className="text-xs text-[#737477] truncate">
               {civilId.trim() ? <span dir="ltr">{civilId}</span> : t('eqwf.noCivilId')}
               {requestedMajor.trim() ? ` · ${requestedMajor}` : ''}
-              {priorCollege.trim() ? ` · ${priorCollege}` : ''}
+              {source === 'private' && sourceInstitution.trim()
+                ? ` · ${sourceInstitution.trim()}`
+                : priorCollege.trim()
+                  ? ` · ${priorCollege}`
+                  : ''}
             </p>
           </div>
         </div>
@@ -773,6 +888,17 @@ export default function EquivalencyWorkflow({
                   <option value="private">{t('eqwf.sourcePrivate')}</option>
                 </select>
               </label>
+              {source === 'private' && (
+                <label className="block">
+                  <span className="text-xs font-medium text-[#737477]">{t('eqwf.sourceInstitution')}</span>
+                  <input
+                    value={sourceInstitution}
+                    onChange={(e) => setSourceInstitution(e.target.value)}
+                    placeholder={t('eqwf.sourceInstitutionPlaceholder')}
+                    className="mt-1 w-full px-3 py-2 rounded border border-gray-300 text-sm"
+                  />
+                </label>
+              )}
               <label className="block">
                 <span className="text-xs font-medium text-[#737477]">{t('eqwf.sourceGpaLabel')}</span>
                 <input
@@ -1051,22 +1177,39 @@ export default function EquivalencyWorkflow({
                 ) : (
                   selected.map((s) => {
                     const cck = cckById(s.cckId);
-                    const combined = s.cckId ? combinedCckIds.has(s.cckId) : false;
+                    const combined = !!s.combineGroup;
                     return (
                       <tr key={s.id} className="align-top">
                         {/* Registration department columns */}
                         <td className="border border-gray-300 px-2 py-2 break-words" dir="ltr">{s.code}</td>
                         <td className="border border-gray-300 px-2 py-2 break-words">
                           {s.name}
-                          <label className="mt-1.5 flex items-center gap-1.5 text-[11px] text-[#737477]">
-                            <input
-                              type="checkbox"
-                              checked={combinePicks.has(s.id)}
-                              onChange={() => toggleCombinePick(s.id)}
-                              className="accent-pair-600"
-                            />
-                            {t('eqwf.combineSelect')}
-                          </label>
+                          {/* Combine selection lives only on the PAAET side. Rows
+                              already combined show a badge with an undo control. */}
+                          {combined ? (
+                            <span className="mt-1.5 inline-flex items-center gap-1.5 text-[11px]">
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gold-50 text-gold-700">
+                                {t('eqwf.combinedBadge')}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => uncombine(s.combineGroup!)}
+                                className="text-pair-600 hover:text-pair-700"
+                              >
+                                {t('eqwf.uncombine')}
+                              </button>
+                            </span>
+                          ) : (
+                            <label className="mt-1.5 flex items-center gap-1.5 text-[11px] text-[#737477]">
+                              <input
+                                type="checkbox"
+                                checked={combinePicks.has(s.id)}
+                                onChange={() => toggleCombinePick(s.id)}
+                                className="accent-pair-600"
+                              />
+                              {t('eqwf.combineSelect')}
+                            </label>
+                          )}
                         </td>
                         <td className="border border-gray-300 px-2 py-2">
                           <input
@@ -1109,20 +1252,9 @@ export default function EquivalencyWorkflow({
                             placeholder={t('eqwf.choose')}
                             unlistedTag={t('eqwf.unlistedTag')}
                           />
-                          <label className="mt-1.5 flex items-center gap-1.5 text-[11px] text-[#737477]">
-                            <input
-                              type="checkbox"
-                              checked={combinePicks.has(s.id)}
-                              onChange={() => toggleCombinePick(s.id)}
-                              className="accent-pair-600"
-                            />
-                            {t('eqwf.combineSelect')}
-                            {combined && (
-                              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gold-50 text-gold-700">
-                                {t('eqwf.combinedBadge')}
-                              </span>
-                            )}
-                          </label>
+                          {combined && (
+                            <p className="mt-1.5 text-[11px] text-[#737477]">{t('eqwf.combinedHint')}</p>
+                          )}
                         </td>
                         <td className="border border-gray-300 px-2 py-2 text-[#737477]" dir="ltr">{cck?.credit || '—'}</td>
                         <td className="border border-gray-300 px-2 py-2">
@@ -1150,6 +1282,29 @@ export default function EquivalencyWorkflow({
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Combine box — sits at the bottom of the PAAET list. Tick two or
+              more PAAET courses above, then combine them into one CCK course. */}
+          <div className="rounded-lg border border-gray-200 p-3 mb-5">
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={false}
+                disabled={combinePicks.size < 2}
+                onChange={(e) => { if (e.target.checked) combineSelected(); }}
+                className="accent-pair-600 disabled:opacity-50"
+              />
+              <span className={combinePicks.size < 2 ? 'text-[#737477]' : 'text-[#222]'}>
+                {t('eqwf.combineBox')}
+              </span>
+              {combinePicks.size >= 2 && (
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium bg-pair-50 text-pair-700">
+                  {combinePicks.size}
+                </span>
+              )}
+            </label>
+            <p className="mt-1 text-[11px] text-[#737477]">{t('eqwf.combineBoxHint')}</p>
           </div>
 
           {/* Add-unlisted control (Academic Department) */}

@@ -243,6 +243,48 @@ export function validateTransferAttempt(input: TransferValidationInput): Transfe
   return issues;
 }
 
+/* ─── Credit-equivalence floor (Equivalency Screen Feedback) ─── */
+
+/** A single CCK course mapping with the prior credit hours being transferred
+ *  into it. For combined mappings (2+ prior courses → 1 CCK course), pass the
+ *  summed prior credit. */
+export interface CreditEquivalenceMapping {
+  /** CCK course code, for the message (e.g. "MGT2224"). */
+  cckCode: string;
+  /** CCK course title, for the message. */
+  cckTitle: string;
+  /** Credit hours of the CCK course. */
+  cckCredit: number;
+  /** Prior (PAAET / source) credit hours mapped to this CCK course. */
+  priorCredit: number;
+}
+
+/**
+ * Credit-floor rule from the Equivalency Screen Feedback: the prior credit must
+ * always be equal to or higher than the CCK course credit, with a single
+ * exception allowing it to be exactly one hour less. Anything two or more hours
+ * below the CCK course credit blocks approval.
+ */
+export function validateCreditEquivalence(
+  mappings: CreditEquivalenceMapping[],
+): TransferValidationIssue[] {
+  const issues: TransferValidationIssue[] = [];
+  for (const m of mappings) {
+    // Only meaningful once both credits are known (> 0).
+    if (!(m.cckCredit > 0) || !(m.priorCredit > 0)) continue;
+    if (m.priorCredit < m.cckCredit - 1) {
+      const label = m.cckCode && m.cckCode !== '-' ? `${m.cckCode} - ${m.cckTitle}` : m.cckTitle;
+      issues.push({
+        ruleKey: 'credit_floor',
+        severity: 'block',
+        message_en: `Prior credit ${m.priorCredit} for ${label} is more than one hour below the CCK course credit ${m.cckCredit}; transfer credit must equal the CCK credit or be at most one hour less.`,
+        message_ar: `الساعات السابقة ${m.priorCredit} للمقرر ${label} أقل بأكثر من ساعة واحدة من ساعات مقرر CCK البالغة ${m.cckCredit}؛ يجب أن تساوي الساعات المحوّلة ساعات مقرر CCK أو تقل عنها بساعة واحدة كحد أقصى.`,
+      });
+    }
+  }
+  return issues;
+}
+
 export interface CckTransferPolicySection {
   number: string;
   title_en: string;
