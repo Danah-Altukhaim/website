@@ -224,15 +224,14 @@ interface CckMajor {
   school: ProgramSchool;
 }
 const CCK_MAJORS: CckMajor[] = [
-  { value: 'dip_bme', en: 'Diploma of Business - Management & Entrepreneurship', ar: 'دبلوم إدارة الأعمال - الإدارة وريادة الأعمال', school: 'business' },
-  { value: 'dip_marketing', en: 'Diploma of Business - Marketing', ar: 'دبلوم إدارة الأعمال - التسويق', school: 'business' },
-  { value: 'dip_accounting', en: 'Diploma of Business - Accounting', ar: 'دبلوم إدارة الأعمال - المحاسبة', school: 'business' },
   { value: 'bba_bme', en: 'BBA - Management & Entrepreneurship', ar: 'بكالوريوس إدارة الأعمال - الإدارة وريادة الأعمال', school: 'business' },
   { value: 'bba_accounting', en: 'BBA - Accounting', ar: 'بكالوريوس إدارة الأعمال - المحاسبة', school: 'business' },
   { value: 'bba_marketing', en: 'BBA - Management & Entrepreneurship (Marketing)', ar: 'بكالوريوس إدارة الأعمال - الإدارة وريادة الأعمال (التسويق)', school: 'business' },
-  { value: 'dip_cp', en: 'Diploma of Computer Programming', ar: 'دبلوم برمجة الحاسوب', school: 'advanced_tech' },
-  { value: 'dip_iawd', en: 'Diploma of Internet Application & Web Development', ar: 'دبلوم تطبيقات الإنترنت وتطوير المواقع', school: 'advanced_tech' },
 ];
+
+// Stable reference for a major with no courses yet, so the per-major memos that
+// depend on `selected` don't recompute on every render.
+const EMPTY_SELECTED: SelectedCourse[] = [];
 
 export default function EquivalencyWorkflow({
   entries,
@@ -312,25 +311,39 @@ export default function EquivalencyWorkflow({
   // Name of the private university/institution (shown only when source=private).
   const [sourceInstitution, setSourceInstitution] = useState('');
   const [sourceGpa, setSourceGpa] = useState('');
-  const [majorId, setMajorId] = useState('');
-  // When set, the request is evaluated for a second major in parallel.
-  const [secondMajor, setSecondMajor] = useState(false);
-  const [secondMajorId, setSecondMajorId] = useState('');
+  // Target CCK majors to evaluate, in selection order. The first is the
+  // "primary"; any number can be added and each keeps its own course mapping.
+  const [majorIds, setMajorIds] = useState<string[]>([]);
+  const [majorDropdownOpen, setMajorDropdownOpen] = useState(false);
   const [oldCourses, setOldCourses] = useState(false);
   const [vpaException, setVpaException] = useState(false);
   const [afterCensus, setAfterCensus] = useState(false);
-  // Each evaluated major keeps its own course mapping, since the CCK equivalents
-  // differ per major. When no second major is requested only the primary list
-  // is ever touched, so this behaves exactly like a single selection.
-  const [selectedPrimary, setSelectedPrimary] = useState<SelectedCourse[]>([]);
-  const [selectedSecond, setSelectedSecond] = useState<SelectedCourse[]>([]);
-  const [activeMajorTab, setActiveMajorTab] = useState<'primary' | 'second'>('primary');
-  const activeMajor = secondMajor ? activeMajorTab : 'primary';
-  const selected = activeMajor === 'second' ? selectedSecond : selectedPrimary;
-  const setSelected = activeMajor === 'second' ? setSelectedSecond : setSelectedPrimary;
+  // Each evaluated major keeps its own course mapping, keyed by major id, since
+  // the CCK equivalents differ per major.
+  const [selectedByMajor, setSelectedByMajor] = useState<Record<string, SelectedCourse[]>>({});
+  // The tab the reviewer is currently editing. Falls back to the first selected
+  // major so it stays valid as majors are added or removed.
+  const [activeMajorTab, setActiveMajorTab] = useState('');
+  const activeMajorId = majorIds.includes(activeMajorTab) ? activeMajorTab : (majorIds[0] ?? '');
+  const selected = selectedByMajor[activeMajorId] ?? EMPTY_SELECTED;
+  const setSelected = (
+    updater: SelectedCourse[] | ((prev: SelectedCourse[]) => SelectedCourse[]),
+  ) => {
+    if (!activeMajorId) return;
+    setSelectedByMajor((prev) => {
+      const cur = prev[activeMajorId] ?? [];
+      const next = typeof updater === 'function' ? updater(cur) : updater;
+      return { ...prev, [activeMajorId]: next };
+    });
+  };
+  // Add or remove a target major from the evaluated set.
+  const toggleMajor = (value: string) => {
+    setMajorIds((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value],
+    );
+  };
   // The credit-cap policy works at the school level, so resolve the active
   // major's school (defaulting to business until a major is picked).
-  const activeMajorId = activeMajor === 'second' ? secondMajorId : majorId;
   const programSchool: ProgramSchool = CCK_MAJORS.find((m) => m.value === activeMajorId)?.school ?? 'business';
   const majorName = (id: string) => {
     const m = CCK_MAJORS.find((x) => x.value === id);
@@ -370,15 +383,13 @@ export default function EquivalencyWorkflow({
     setSource('paaet');
     setSourceInstitution('');
     setSourceGpa('');
-    setMajorId('');
-    setSecondMajor(false);
-    setSecondMajorId('');
+    setMajorIds([]);
+    setMajorDropdownOpen(false);
     setOldCourses(false);
     setVpaException(false);
     setAfterCensus(false);
-    setSelectedPrimary([]);
-    setSelectedSecond([]);
-    setActiveMajorTab('primary');
+    setSelectedByMajor({});
+    setActiveMajorTab('');
     setSearch('');
     setProgram('all');
     setCombinePicks(new Set());
@@ -509,6 +520,26 @@ export default function EquivalencyWorkflow({
     );
   };
 
+  // Display order: pull every member of a combine group together so the rows
+  // sit next to each other (the whole group lands at the position of its first
+  // member). The academic-side cells then get rowSpan'd into one shared cell.
+  const orderedRows = useMemo(() => {
+    const result: SelectedCourse[] = [];
+    const placed = new Set<string>();
+    for (const s of selected) {
+      if (placed.has(s.id)) continue;
+      if (s.combineGroup) {
+        const group = selected.filter((x) => x.combineGroup === s.combineGroup);
+        group.forEach((x) => placed.add(x.id));
+        result.push(...group);
+      } else {
+        placed.add(s.id);
+        result.push(s);
+      }
+    }
+    return result;
+  }, [selected]);
+
   const addUnlistedCourse = () => {
     const name = unlisted.name.trim();
     if (!name) return;
@@ -611,15 +642,16 @@ export default function EquivalencyWorkflow({
   // into localStorage so the dashboard tab can list every request.
   useEffect(() => {
     if (!requestId || stage === 'documents') return;
-    const courseCount = selectedPrimary.length + (secondMajor ? selectedSecond.length : 0);
-    const totalCredits = creditsOf(selectedPrimary) + (secondMajor ? creditsOf(selectedSecond) : 0);
+    const courseCount = majorIds.reduce((n, id) => n + (selectedByMajor[id]?.length ?? 0), 0);
+    const totalCredits = majorIds.reduce((n, id) => n + creditsOf(selectedByMajor[id] ?? []), 0);
     upsertEquivalencyRequest({
       id: requestId,
       stage,
       applicant: studentName.trim(),
       civilId: civilId.trim(),
-      major: majorName(majorId),
-      secondMajor: secondMajor ? majorName(secondMajorId) : '',
+      major: majorName(majorIds[0] ?? ''),
+      // Any majors beyond the first are listed together in the second slot.
+      secondMajor: majorIds.slice(1).map(majorName).filter(Boolean).join(', '),
       source,
       sourceInstitution: source === 'private' ? sourceInstitution.trim() : '',
       courseCount,
@@ -628,8 +660,8 @@ export default function EquivalencyWorkflow({
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    requestId, stage, studentName, civilId, majorId, secondMajor, secondMajorId,
-    source, sourceInstitution, selectedPrimary, selectedSecond, blockingIssues.length,
+    requestId, stage, studentName, civilId, majorIds,
+    source, sourceInstitution, selectedByMajor, blockingIssues.length,
   ]);
 
   const roleTag = (role: 'admission' | 'academic' | 'vp') => (
@@ -748,25 +780,22 @@ export default function EquivalencyWorkflow({
 
   // One tab per evaluated major — shown on every stage that mirrors a single
   // major's mapping (the reviewer switches majors here; each keeps its own rows).
-  const majorTabs = secondMajor ? (
-    <div className="flex gap-0 border-b border-gray-300 mb-4">
-      {([
-        { key: 'primary' as const, label: majorName(majorId) || t('eqwf.majorTab1') },
-        { key: 'second' as const, label: majorName(secondMajorId) || t('eqwf.majorTab2') },
-      ]).map((tab) => {
-        const active = activeMajor === tab.key;
+  const majorTabs = majorIds.length > 1 ? (
+    <div className="flex flex-wrap gap-0 border-b border-gray-300 mb-4">
+      {majorIds.map((id, i) => {
+        const active = activeMajorId === id;
         return (
           <button
-            key={tab.key}
+            key={id}
             type="button"
-            onClick={() => setActiveMajorTab(tab.key)}
+            onClick={() => setActiveMajorTab(id)}
             className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px ${
               active
                 ? 'border-pair-600 text-pair-700'
                 : 'border-transparent text-[#737477] hover:text-[#222]'
             }`}
           >
-            {tab.label}
+            {majorName(id) || `${t('eqwf.majorTab1')} ${i + 1}`}
           </button>
         );
       })}
@@ -910,26 +939,72 @@ export default function EquivalencyWorkflow({
                   className="mt-1 w-full px-3 py-2 rounded border border-gray-300 text-sm"
                 />
               </label>
-              <label className="block">
+              <div className="block relative">
                 <span className="text-xs font-medium text-[#737477]">{t('eqwf.majorLabel')}</span>
-                <select
-                  value={majorId}
-                  onChange={(e) => setMajorId(e.target.value)}
-                  className="mt-1 w-full px-3 py-2 rounded border border-gray-300 text-sm bg-white"
+                <button
+                  type="button"
+                  onClick={() => setMajorDropdownOpen((o) => !o)}
+                  className="mt-1 w-full px-3 py-2 rounded border border-gray-300 text-sm bg-white flex items-center justify-between gap-2 text-start"
                 >
-                  <option value="">{t('eqwf.majorPlaceholder')}</option>
-                  <optgroup label={t('eqwf.schoolBusiness')}>
-                    {CCK_MAJORS.filter((m) => m.school === 'business').map((m) => (
-                      <option key={m.value} value={m.value}>{locale === 'ar' ? m.ar : m.en}</option>
+                  <span className={majorIds.length ? 'text-[#222]' : 'text-[#737477]'}>
+                    {majorIds.length
+                      ? t('eqwf.majorsSelected').replace('{n}', String(majorIds.length))
+                      : t('eqwf.majorPlaceholder')}
+                  </span>
+                  <span className="text-[#737477]">▾</span>
+                </button>
+                {majorDropdownOpen && (
+                  <>
+                    <div className="fixed inset-0 z-10" onClick={() => setMajorDropdownOpen(false)} />
+                    <div className="absolute z-20 mt-1 w-full max-h-72 overflow-auto rounded border border-gray-300 bg-white shadow-lg py-1">
+                      {([
+                        { school: 'business' as const, label: t('eqwf.schoolBusiness') },
+                        { school: 'advanced_tech' as const, label: t('eqwf.schoolAdvancedTech') },
+                      ])
+                        .filter((grp) => CCK_MAJORS.some((m) => m.school === grp.school))
+                        .map((grp) => (
+                        <div key={grp.school}>
+                          <div className="px-3 py-1 text-[11px] font-semibold text-[#9a9a9a]">{grp.label}</div>
+                          {CCK_MAJORS.filter((m) => m.school === grp.school).map((m) => (
+                            <label
+                              key={m.value}
+                              className="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-gray-50 cursor-pointer"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={majorIds.includes(m.value)}
+                                onChange={() => toggleMajor(m.value)}
+                                className="accent-pair-600"
+                              />
+                              <span>{locale === 'ar' ? m.ar : m.en}</span>
+                            </label>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+                {majorIds.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {majorIds.map((id) => (
+                      <span
+                        key={id}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-pair-50 text-pair-700 text-xs"
+                      >
+                        {majorName(id)}
+                        <button
+                          type="button"
+                          onClick={() => toggleMajor(id)}
+                          aria-label={t('eqwf.removeMajor')}
+                          className="text-pair-700 hover:text-pair-900"
+                        >
+                          ×
+                        </button>
+                      </span>
                     ))}
-                  </optgroup>
-                  <optgroup label={t('eqwf.schoolAdvancedTech')}>
-                    {CCK_MAJORS.filter((m) => m.school === 'advanced_tech').map((m) => (
-                      <option key={m.value} value={m.value}>{locale === 'ar' ? m.ar : m.en}</option>
-                    ))}
-                  </optgroup>
-                </select>
-              </label>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="mt-3 space-y-2">
               <label className="flex items-center gap-2 text-sm">
@@ -946,34 +1021,6 @@ export default function EquivalencyWorkflow({
                 <input type="checkbox" checked={afterCensus} onChange={(e) => setAfterCensus(e.target.checked)} className="accent-pair-600" />
                 {t('eqwf.afterCensus')}
               </label>
-            </div>
-            <div className="mt-3 pt-3 border-t border-gray-200 space-y-2">
-              <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={secondMajor} onChange={(e) => setSecondMajor(e.target.checked)} className="accent-pair-600" />
-                {t('eqwf.secondMajor')}
-              </label>
-              {secondMajor && (
-                <label className="block ms-6">
-                  <span className="text-xs font-medium text-[#737477]">{t('eqwf.majorLabel2')}</span>
-                  <select
-                    value={secondMajorId}
-                    onChange={(e) => setSecondMajorId(e.target.value)}
-                    className="mt-1 w-full px-3 py-2 rounded border border-gray-300 text-sm bg-white"
-                  >
-                    <option value="">{t('eqwf.majorPlaceholder')}</option>
-                    <optgroup label={t('eqwf.schoolBusiness')}>
-                      {CCK_MAJORS.filter((m) => m.school === 'business').map((m) => (
-                        <option key={m.value} value={m.value}>{locale === 'ar' ? m.ar : m.en}</option>
-                      ))}
-                    </optgroup>
-                    <optgroup label={t('eqwf.schoolAdvancedTech')}>
-                      {CCK_MAJORS.filter((m) => m.school === 'advanced_tech').map((m) => (
-                        <option key={m.value} value={m.value}>{locale === 'ar' ? m.ar : m.en}</option>
-                      ))}
-                    </optgroup>
-                  </select>
-                </label>
-              )}
             </div>
           </div>
 
@@ -1175,9 +1222,16 @@ export default function EquivalencyWorkflow({
                     </td>
                   </tr>
                 ) : (
-                  selected.map((s) => {
+                  orderedRows.map((s) => {
                     const cck = cckById(s.cckId);
                     const combined = !!s.combineGroup;
+                    // Group members are adjacent in orderedRows, so the academic
+                    // columns render once (on the first member) and span the group.
+                    const groupRows = combined
+                      ? orderedRows.filter((x) => x.combineGroup === s.combineGroup)
+                      : [s];
+                    const isFirstInGroup = groupRows[0].id === s.id;
+                    const groupSpan = groupRows.length;
                     return (
                       <tr key={s.id} className="align-top">
                         {/* Registration department columns */}
@@ -1240,32 +1294,38 @@ export default function EquivalencyWorkflow({
                             className="w-full px-2 py-1 rounded border border-gray-300 text-xs"
                           />
                         </td>
-                        {/* Academic department columns */}
-                        <td className="border border-gray-300 px-2 py-2 break-words" dir="ltr">
-                          {cck && cck.code !== '-' ? cck.code : <span className="text-[#737477]">—</span>}
-                        </td>
-                        <td className="border border-gray-300 px-2 py-2">
-                          <CckCombobox
-                            courses={cckCourses}
-                            value={s.cckId}
-                            onChange={(id) => setCck(s.id, id)}
-                            placeholder={t('eqwf.choose')}
-                            unlistedTag={t('eqwf.unlistedTag')}
-                          />
-                          {combined && (
-                            <p className="mt-1.5 text-[11px] text-[#737477]">{t('eqwf.combinedHint')}</p>
-                          )}
-                        </td>
-                        <td className="border border-gray-300 px-2 py-2 text-[#737477]" dir="ltr">{cck?.credit || '—'}</td>
-                        <td className="border border-gray-300 px-2 py-2">
-                          <input
-                            value={s.comments}
-                            onChange={(e) => setComments(s.id, e.target.value)}
-                            placeholder={t('eqwf.commentsPlaceholder')}
-                            aria-label={t('eqwf.colComments')}
-                            className="w-full px-2 py-1 rounded border border-gray-300 text-xs"
-                          />
-                        </td>
+                        {/* Academic department columns — one CCK course is shared
+                            across a combine group, so these cells render once on
+                            the group's first row and span the rest. */}
+                        {isFirstInGroup && (
+                          <>
+                            <td rowSpan={groupSpan} className="border border-gray-300 px-2 py-2 break-words align-top" dir="ltr">
+                              {cck && cck.code !== '-' ? cck.code : <span className="text-[#737477]">—</span>}
+                            </td>
+                            <td rowSpan={groupSpan} className="border border-gray-300 px-2 py-2 align-top">
+                              <CckCombobox
+                                courses={cckCourses}
+                                value={s.cckId}
+                                onChange={(id) => setCck(s.id, id)}
+                                placeholder={t('eqwf.choose')}
+                                unlistedTag={t('eqwf.unlistedTag')}
+                              />
+                              {combined && (
+                                <p className="mt-1.5 text-[11px] text-[#737477]">{t('eqwf.combinedHint')}</p>
+                              )}
+                            </td>
+                            <td rowSpan={groupSpan} className="border border-gray-300 px-2 py-2 text-[#737477] align-top" dir="ltr">{cck?.credit || '—'}</td>
+                            <td rowSpan={groupSpan} className="border border-gray-300 px-2 py-2 align-top">
+                              <input
+                                value={s.comments}
+                                onChange={(e) => setComments(s.id, e.target.value)}
+                                placeholder={t('eqwf.commentsPlaceholder')}
+                                aria-label={t('eqwf.colComments')}
+                                className="w-full px-2 py-1 rounded border border-gray-300 text-xs"
+                              />
+                            </td>
+                          </>
+                        )}
                         <td className="border border-gray-300 px-1 py-2 text-center">
                           <button
                             type="button"

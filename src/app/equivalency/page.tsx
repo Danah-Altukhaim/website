@@ -39,7 +39,13 @@ export default function EquivalencyPage() {
     queryFn: () => api.getEquivalency() as Promise<EquivalencyData>,
   });
   const [search, setSearch] = useState('');
-  const [tab, setTab] = useState<'request' | 'tracker' | 'courses'>('request');
+  // Honour a `?tab=` hint so links back from a request edit page (which point at
+  // `/equivalency?tab=tracker`) reopen the tracker rather than the default tab.
+  const [tab, setTab] = useState<'request' | 'tracker' | 'courses'>(() => {
+    if (typeof window === 'undefined') return 'request';
+    const param = new URLSearchParams(window.location.search).get('tab');
+    return param === 'tracker' || param === 'courses' ? param : 'request';
+  });
 
   // Flatten both sheets into one list. Every course keeps the pathway it
   // belongs to (PAAET diploma -> CCK major), which is the direct transfer

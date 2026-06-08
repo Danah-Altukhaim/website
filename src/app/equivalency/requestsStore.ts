@@ -101,3 +101,27 @@ export function useEquivalencyRequests(): EquivalencyRequestRecord[] {
   }, []);
   return records;
 }
+
+/** Result of {@link useEquivalencyRequest}: `loading` until the client store has
+ *  been read once, then the matching record or `null` if no such id exists. */
+export interface SingleRequestResult {
+  request: EquivalencyRequestRecord | null;
+  loading: boolean;
+}
+
+/** React hook for a single request by id, kept in sync with the store. */
+export function useEquivalencyRequest(id: string): SingleRequestResult {
+  const [result, setResult] = useState<SingleRequestResult>({ request: null, loading: true });
+  useEffect(() => {
+    const sync = () =>
+      setResult({ request: read().find((r) => r.id === id) ?? null, loading: false });
+    sync();
+    window.addEventListener(CHANGE_EVENT, sync);
+    window.addEventListener('storage', sync);
+    return () => {
+      window.removeEventListener(CHANGE_EVENT, sync);
+      window.removeEventListener('storage', sync);
+    };
+  }, [id]);
+  return result;
+}

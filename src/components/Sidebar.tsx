@@ -10,7 +10,7 @@ import {
   ChartIcon, HomeIcon, InboxIcon, GraduationIcon, HandHeartIcon, GavelIcon,
   AlertIcon, FlagIcon, ChatIcon, TrophyIcon, PhoneIcon, ShieldIcon,
   CreditCardIcon, WalletIcon, BrainIcon, MegaphoneIcon, UsersIcon, GearIcon, ClipboardIcon,
-  WrenchIcon, BookIcon, SparklesIcon, CalendarIcon, BuildingIcon,
+  WrenchIcon, BookIcon, SparklesIcon, CalendarIcon, BuildingIcon, IdCardIcon,
   LogoutIcon, LanguageIcon, CloseIcon, CollapseChevron,
 } from './icons';
 
@@ -18,6 +18,7 @@ const nav = [
   { href: '/', labelKey: 'nav.dashboard', section: 'nav.workflows', icon: HomeIcon },
   { href: '/requests', labelKey: 'nav.requests', section: 'nav.workflows', icon: InboxIcon },
   { href: '/admissions', labelKey: 'nav.admissions', section: 'nav.workflows', icon: GraduationIcon },
+  { href: '/students', labelKey: 'nav.students', section: 'nav.workflows', icon: IdCardIcon },
   { href: '/equivalency', labelKey: 'nav.equivalency', section: 'nav.workflows', icon: ClipboardIcon },
   { href: '/catalog', labelKey: 'nav.catalog', section: 'nav.workflows', icon: BookIcon },
   { href: '/social-allowance', labelKey: 'nav.socialAllowance', section: 'nav.workflows', icon: HandHeartIcon },

@@ -6,6 +6,7 @@ import {
   MISC_FEES_KWD, INSTALLMENT_WEEKS,
   type ProgramTrack, type PaymentMethod,
 } from '@masari/shared';
+import { STUDENT_RECORDS, toDirectoryEntry } from './student-records';
 
 const delay = (ms = 300) => new Promise((r) => setTimeout(r, ms));
 
@@ -2051,6 +2052,16 @@ export const api = {
   getIntegrations: async () => withErrorHandling('getIntegrations', async () => { await delay(); return INTEGRATIONS; }),
   triggerSync: async () => withErrorHandling('triggerSync', async () => { await delay(500); return { sync_id: `sync_${Date.now()}`, status: 'started' }; }),
   getStudentProfile: async (id: string) => withErrorHandling('getStudentProfile', async () => { await delay(); return STUDENT_PROFILES[id] || generateProfile(id); }),
+
+  // Student Profiles - unified SIS + LMS + App record, searchable by name/number
+  getStudentRecords: async () => withErrorHandling('getStudentRecords', async () => {
+    await delay();
+    return STUDENT_RECORDS.map(toDirectoryEntry);
+  }),
+  getStudentRecord: async (id: string) => withErrorHandling('getStudentRecord', async () => {
+    await delay();
+    return STUDENT_RECORDS.find((s) => s.id === id || s.student_number === id) ?? null;
+  }),
   getAuditLog: async () => withErrorHandling('getAuditLog', async () => { await delay(); return AUDIT_LOG; }),
   getPaymentAnalytics: async () => withErrorHandling('getPaymentAnalytics', async () => { await delay(); return PAYMENT_ANALYTICS; }),
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useI18n } from '@/lib/i18n';
 import EmptyState from '@/components/EmptyState';
 import {
@@ -49,16 +50,18 @@ function StageProgress({ stage }: { stage: EquivalencyRequestStage }) {
   );
 }
 
+// Resolve the human-readable source label for the table.
+function sourceLabel(r: EquivalencyRequestRecord, t: (key: string) => string): string {
+  if (r.source === 'private') {
+    return r.sourceInstitution || t('eqwf.sourcePrivate');
+  }
+  return t(r.source === 'public' ? 'eqwf.sourcePublic' : 'eqwf.sourcePaaet');
+}
+
 export default function RequestsDashboard() {
   const { t, dir } = useI18n();
+  const router = useRouter();
   const requests = useEquivalencyRequests();
-
-  const sourceLabel = (r: EquivalencyRequestRecord) => {
-    if (r.source === 'private') {
-      return r.sourceInstitution || t('eqwf.sourcePrivate');
-    }
-    return t(r.source === 'public' ? 'eqwf.sourcePublic' : 'eqwf.sourcePaaet');
-  };
 
   return (
     <div dir={dir}>
@@ -87,7 +90,20 @@ export default function RequestsDashboard() {
             </thead>
             <tbody>
               {requests.map((r) => (
-                <tr key={r.id} className="border-b border-gray-50 last:border-0 align-top">
+                <tr
+                  key={r.id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => router.push(`/equivalency/${r.id}`)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      router.push(`/equivalency/${r.id}`);
+                    }
+                  }}
+                  aria-label={`${r.applicant || t('eqwf.unnamedApplicant')} - ${t('eqwf.editTitle')}`}
+                  className="border-b border-gray-50 last:border-0 align-top cursor-pointer hover:bg-gray-50 focus:outline-none focus:bg-gray-50"
+                >
                   <td className="px-4 py-3">
                     <p className="font-medium">{r.applicant || t('eqwf.unnamedApplicant')}</p>
                     {r.civilId && (
@@ -100,7 +116,7 @@ export default function RequestsDashboard() {
                       <p className="text-xs text-[#737477]">+ {r.secondMajor}</p>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-[#737477]">{sourceLabel(r)}</td>
+                  <td className="px-4 py-3 text-[#737477]">{sourceLabel(r, t)}</td>
                   <td className="px-4 py-3 text-[#737477]" dir="ltr">
                     {r.totalCredits} {t('eqwf.creditUnit')}
                     <span className="text-xs"> · {r.courseCount}</span>
@@ -121,7 +137,10 @@ export default function RequestsDashboard() {
                   <td className="px-4 py-3 text-end whitespace-nowrap">
                     <button
                       type="button"
-                      onClick={() => removeEquivalencyRequest(r.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeEquivalencyRequest(r.id);
+                      }}
                       className="px-2.5 py-1 rounded border border-gray-300 text-xs font-medium text-danger-700 hover:bg-danger-50"
                     >
                       {t('eqwf.dashRemove')}
